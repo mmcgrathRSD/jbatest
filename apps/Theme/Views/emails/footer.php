@@ -1,0 +1,1 @@
+<div>THIS IS THE FOOTER <?php echo __FILE__?></div>

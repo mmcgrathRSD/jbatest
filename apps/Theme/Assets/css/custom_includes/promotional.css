@@ -1,0 +1,19 @@
+.promotionalTickets {
+    display: inline-block;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+    -webkit-filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+    position: relative;
+    height: 1em;
+    padding: 1em;
+    line-height: 1em;
+    color: #fff;
+    font-size: 12px;
+    background-size: 51% 100%;
+    background-repeat: no-repeat;
+    background-image: radial-gradient(circle at 0 50%, rgba(255,255,224,0) 0.4em, #666 0.5em), radial-gradient(circle at 100% 50%, rgba(255,255,224,0) 0.4em, #666 0.5em);
+    background-position: top left, top right;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

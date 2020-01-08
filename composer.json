@@ -1,0 +1,73 @@
+{	"repositories": [
+		{ "type": "vcs", "url": "git@github.com:premierperformance/Library.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Shop.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/CustomerService.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Data.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/toolbox.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Admin.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Assets.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Mailer.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Minify.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Modules.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Pages.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Redirect.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Search.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Users.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/DealerPortal.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/Netsuite.git" },
+        { "type": "vcs", "url": "git@github.com:premierperformance/DealerPortalTheme.git" }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "5.5.*",
+        "mockery/mockery": "dev-master",
+        "psy/psysh": "@stable"
+    },
+    "require": {
+        "bcosca/fatfree": "3.6.5",
+        "braintree/braintree_php" : "4.3.0",
+        "cloudinary/cloudinary_php": "1.9.0",
+        "ddeboer/data-import" : "0.18.0",
+        "dvdoug/boxpacker": "~1.4",
+        "league/climate": "^3.2",
+        "mandrill/mandrill": "1.0.54",
+        "moneyphp/money": "3.0.5",
+        "phpmailer/phpmailer": "<=v5.9.9",
+        "mongodb/mongodb": "1.4.3",
+        "premierperformance/admin": "dev-master",
+        "premierperformance/assets": "dev-master",
+        "premierperformance/data": "dev-master",
+        "premierperformance/library": "dev-master",
+        "premierperformance/mailer": "dev-master",
+        "premierperformance/minify": "dev-master",
+        "premierperformance/modules": "dev-master",
+        "premierperformance/pages": "dev-master",
+        "premierperformance/redirect": "dev-master",
+        "premierperformance/search": "dev-master",
+        "premierperformance/shop": "dev-master",
+        "premierperformance/customerservice": "dev-master",
+        "premierperformance/toolbox": "dev-master",
+        "premierperformance/users": "dev-master",
+        "premierperformance/netsuite": "dev-master",
+        "premierperformance/dealerportal": "dev-master",
+        "premierperformance/dealerportaltheme": "dev-master",
+        "snowplow/referer-parser": "0.1.0",
+        "tedivm/jshrink": "~1.0",
+        "theiconic/php-ga-measurement-protocol": "^2.0",
+        "hashids/hashids": "^2.0",
+        "guzzlehttp/guzzle": "^6.1",
+        "dompdf/dompdf": "0.8.2",
+        "illuminate/validation": "^5.5",
+        "avalara/avataxclient": ">=18.2",
+        "ryanwinchester/netsuite-php": "2017.1.*",
+        "maknz/slack": "^1.7",
+        "filp/whoops": "^2.3",
+        "guzzlehttp/oauth-subscriber": "^0.3.0"
+    },
+    "autoload": {
+        "files": ["RocketShipIt/RocketShipIt/RocketShipIt.php"],
+        "psr-0": {
+            "RocketShipIt\\": "RocketShipIt/"
+        }
+    }
+}
+

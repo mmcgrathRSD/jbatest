@@ -1,0 +1,269 @@
+body {
+	-webkit-transition: padding 0s linear 0s;
+    -moz-transition: padding 0s linear 0s;
+    -o-transition: padding 0s linear 0s;
+	transition: padding 0s linear 0s;
+	-ms-overflow-style: scrollbar;
+}
+
+.real-clearfix {
+	clear: both;
+}
+
+.bootstrap_modal_close {
+	border: 0;
+	position: absolute;
+    right: 0;
+    top: 0;
+    color: black;
+    opacity: 1;
+    padding: 10px;
+    border-left: 2px solid black;
+    border-bottom: 2px solid black;
+	background: transparent;
+    -webkit-appearance: none;
+}
+
+.modal-open {
+	overflow: hidden;
+}
+
+.modal-content .container {
+	    background-color: rgba(0,0,0,0.9);
+}
+
+.modal-backdrop.in{
+  opacity: 0.75;
+    filter: alpha(opacity=75);
+}
+
+.modal-body p{
+    margin: 35px auto;
+    width: 95%;
+}
+.modal-btn{
+	text-align: center;
+    display: block;
+    width: 20%;
+    background-color: #0155ab;
+	
+}
+.modal.modal-btn a{
+	color:#ffffff;
+}
+.recommendedProductItem .rrRating{
+	display:none;
+}
+.modal-backdrop.in{
+  opacity: 0.75;
+    filter: alpha(opacity=75);
+}
+.modal-content{
+background-color: #F8F8F6;
+	color:#333333;
+}
+.modal-body{
+	background-color: #F8F8F6;
+	color:#333333;
+}
+.modal a, .modal a:active, .modal a:visited{
+	color: #0155ab;
+}
+
+.modal .btn {
+    color: #333333;
+}
+
+.modal-body h3{
+	    text-align: center;
+    font-weight: 600;
+	padding-top: 35px;
+}
+.modal-body p{
+        font-size: 14px;
+    margin: 49px auto;
+    width: 95%;
+    min-height: 150px;
+    font-weight: normal;
+    text-transform: none;
+    line-height: 20px;
+}
+.modal-btn{
+	text-align: center;
+    display: block;
+    width: 20%;
+    background-color: #0155ab;
+	
+}
+.modal.modal-btn a,.modal .btn{
+	color:#ffffff;
+}
+.modal-content{
+	background:#ffffff;
+    margin: 0 auto;
+    border-radius: 8px;
+	min-width:320px;
+}
+.modal-content .container{
+	width:100%;
+		background:#ffffff;
+}
+.modal-header{
+	margin-left:0;
+	border:none;
+	margin-top:25px;
+}
+
+.breadcrumb {
+	background: none;
+	padding-left: 0;
+}
+.modal-body{
+	background:#ffffff;
+}
+.glyphicon-remove{
+	cursor:pointer;
+}
+#modalPopFade{
+	position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 99999;
+    background-color: rgba(0,0,0,0.6);
+    height: 100%;
+	width:100%;
+}
+#modalPop{
+	background-color:#ffffff;
+	 position: fixed;
+	z-index:9999999999999;
+    width: 60%;
+    margin: 0 auto;
+    top: 10%;
+	    padding: 50px;
+}
+#modalPopExit{
+	    border-left: 2px solid #333333;
+    line-height: 64px;
+    width: 50px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 50px;
+    border-bottom: 2px solid #333333;
+    cursor: pointer;
+	    text-align: center;
+}
+#modalPop h3{
+	text-align:center;
+	margin-bottom:20px;
+}
+.blog-icon{
+	background:url(/theme/img/blogIcon.png);
+		display: inline-block;
+    width: 23px;
+    height: 23px;
+	background-size:stretch;
+	    transition:0s;
+}
+.blog-icon:hover{
+	background-position:0 -23px;transition:0s;
+
+}
+.footerLinks a{
+		    display: inline-block;
+    height: 23px;
+    vertical-align: bottom;
+    color: white;
+
+}
+.footerLinks i{
+	
+	    display: inline-block;
+    height: 23px;
+    vertical-align: bottom;
+    color: white;
+	    font-size: 24px;
+}
+.wishListAdd{
+	width:100%;
+	padding: 8px 16px;
+    font-size: 16px;
+    line-height: 1.3333333;
+    border-radius: 0px;
+	color:#ffffff !important;
+}
+
+.rrVertTitle strong{
+	font-size:14px;
+}
+.rrVertPrice{
+	    width: 42%;
+    font-size: 12px;
+	float: left;
+
+}
+.rrVertLinks .rrRating{
+	    float: right;
+	width: 58%;
+}
+.rrVertLinks:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+.rrVertLinks .rrRating .star-ratings{
+	font-size:12px;
+}
+.rrVertLinks{
+	margin-top: 4px;
+    display: block;
+}
+@media (max-width:768px) {
+	.social-icons i{
+		    margin-right: 13px;
+	    display: inline-block;
+    height: 23px;
+    vertical-align: bottom;
+    color: white;
+	    font-size: 24px;
+}
+	.social-icons a{
+		    display: inline-block;
+    height: 23px;
+    vertical-align: bottom;
+    color: white;
+
+}
+	#modalPop{
+		    margin: 0;
+    width: 100%;
+    top: 0;
+    left: 0;
+		height:100%;
+		    z-index: 999999;
+	}
+	#modalPopExit{
+		top:0;
+		right:0;
+	}
+	#modalPopFade{
+		width:100%;
+	}
+	.modal-header img{
+		    width: 100%;
+	}
+
+}
+
+.algoliaMaster .filters_outer_wrapper {
+	border: 1px solid #b3b3b3;
+    -moz-box-shadow: 0px 0px 4px #8c8c8c;
+    -webkit-box-shadow: 0px 0px 4px #8c8c8c;
+    box-shadow: 0px 0px 4px #8c8c8c;
+    padding: 15px;
+}
+
+.algoliaMaster .catsPanelHead {
+	display: none;
+}

@@ -1,0 +1,28 @@
+User-agent: *
+Disallow: /shop/cart
+Disallow: /shop/checkout
+Disallow: /shop/account
+Disallow: /shop/wishlist/*
+Disallow: /profiles/*
+Disallow: /search/*
+Disallow: /search/page/*
+
+User-agent: Caliperbot/1.0
+Disallow: /
+
+User-agent: SearchmetricsBot
+Disallow: /
+
+User-agent: Covario-IDS/1.0 
+Disallow: /
+
+User-agent: 008
+Disallow: /
+
+User-agent: Sosospider
+Disallow: /
+
+User-agent: XoviBot
+Disallow: /
+
+Sitemap: http://www.rallysportdirect.com/sitemap.xml

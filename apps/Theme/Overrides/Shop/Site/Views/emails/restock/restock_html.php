@@ -1,0 +1,1 @@
+<h1><?php echo  $product->title; ?> BACK IN STOCK</h1>

@@ -1,0 +1,50 @@
+.topNav {
+	background: #282828;
+	
+	li {
+			font-size: .85em;
+			color: #f8f8f8;
+		}
+		
+	.toggle-ymm {
+	    font-size: .8em;
+	    border: 0;
+	    
+	    @include mq('md') {
+    		font-size: .75em !important;
+  		}
+  		
+  		@include mq('sm') {
+    		font-size: .8em !important;
+  		}
+	}
+}
+
+.navSlave {
+	ul {
+	font-size: .8em;
+	font-family: 'lato';
+	text-shadow: 0px 0px 0.5px #e6e6e6;
+	letter-spacing: .8px;
+	}
+		
+	li {
+		&:first-of-type {
+			
+			&:hover {
+				text-decoration: none;
+			}
+		}
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.divider_pipe {
+	display: inline-block; 
+	width: 1px; 
+	height: 40px; 
+	background-color: #3f3f3f; 
+	margin-top: 12px;
+}

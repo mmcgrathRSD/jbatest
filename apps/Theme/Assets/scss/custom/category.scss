@@ -1,0 +1,8 @@
+#sort-by {
+    @include shadow(#b3b3b3, #8c8c8c);
+}
+
+#categoryFilterList #accordion {
+    @include shadow(#b3b3b3, #8c8c8c);
+    padding: $padding;
+}

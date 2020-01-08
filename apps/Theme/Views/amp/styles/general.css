@@ -1,0 +1,221 @@
+/* general styles*/
+* {
+    font-family: 'Lato', sans-serif;
+}
+
+a {
+    color: #0155ab;
+}
+
+sup {
+    line-height: initial;
+    position: static;
+    font-size: inherit;
+    vertical-align: initial;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #999999;
+    margin: none;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.aamp_container {
+    max-width: 768px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.amp-carousel-button {
+
+}
+
+.col-xs-4 {
+    width: 100%;
+    float: left;
+}
+
+.regular_anchor {
+    color: #0155ab;
+    text-decoration: underline;
+}
+
+@media only screen and (min-width : 450px) {
+    .col-xs-4 {
+        width: 50%;
+    }
+}
+
+.clear {
+    clear: both;
+}
+
+.hidden {
+    display: none;
+}
+
+.margin_bottom {
+    margin-bottom: 20px;
+}
+
+.aamp_readable {
+    line-height: 1.42857143;
+    color: #333333;
+    font-size: 14px;
+}
+
+.aamp_padding {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.aamp_inline {
+    display: inline-block;
+}
+
+.aamp_margin {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.aamp_left {
+    float: left;
+}
+
+.aamp_right {
+    float: right;
+}
+
+.aamp_center {
+    text-align: center;
+}
+
+.aamp_green {
+    color: green;
+}
+
+.aamp_red {
+    color: red;
+}
+
+.aamp_grey {
+    color: grey;
+}
+
+.aamp_modal_container {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.aamp_modal_body {
+    max-width: 700px;
+    width: 80vw;
+    background-color: #fff;
+    padding: 15px;
+    position: fixed;
+    top: 40px;
+    max-height: calc(100vh - 80px);
+    overflow: scroll;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.aamp_modal_close {
+    font-size: 26px;
+    padding: 10px;
+    border-left: 2px solid black;
+    border-bottom: 2px solid black;
+    float: right;
+    margin-right: -15px;
+    margin-top: -15px;
+}
+
+.aamp_modal_button {
+    display: none;
+}
+
+.aamp_modal_button ~ label {
+    cursor: pointer;
+}
+
+.aamp_accordion_box {
+    cursor: pointer;
+    background-color: #efefef;
+    padding: 20px;
+    border: 1px solid #dfdfdf;
+}
+
+.aamp_button_a {
+    text-decoration: none;
+}
+
+.aamp_button_a:active div, .aamp-button_a:hover div, .aamp_button_a:focus div {
+    background-color: #1287ff;
+}
+
+.aamp_button {
+    background-color: #0155AB;
+    border: none;
+    color: white;
+    border: solid 0px #000000;
+    -moz-border-radius-topleft: 2px;
+    -moz-border-radius-topright: 2px;
+    -moz-border-radius-bottomleft: 2px;
+    -moz-border-radius-bottomright: 2px;
+    -webkit-border-top-left-radius: 2px;
+    -webkit-border-top-right-radius: 2px;
+    -webkit-border-bottom-left-radius: 2px;
+    -webkit-border-bottom-right-radius: 2px;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    height: 32px;
+    line-height: 32px;
+    margin-top: 10px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+}
+
+.aamp_button:active, .aamp_button:hover, .aamp_button:focus {
+    background-color: #1287ff;
+}
+
+.aamp_clear_styles {
+    background-color: initial;
+    padding-right: initial;
+    border: initial;
+}
+
+.promotionalTickets {
+    display: inline-block;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+    -webkit-filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+    position: relative;
+    height: 1em;
+    padding: 1em;
+    line-height: 1em;
+    color: #fff;
+    font-size: 12px;
+    background-size: 51% 100%;
+    background-repeat: no-repeat;
+    background-image: radial-gradient(circle at 0 50%, rgba(255,255,224,0) 0.4em, #666 0.5em), radial-gradient(circle at 100% 50%, rgba(255,255,224,0) 0.4em, #666 0.5em);
+    background-position: top left, top right;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.promotion-responsive {
+    max-width: 100%;
+
+}

@@ -1,0 +1,445 @@
+.homeLarge {
+    background: url(/theme/img/hero.jpg) no-repeat center center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+		background-color:#000;
+    width: 100%;
+    height: 414px;
+}
+
+/* START HOME BANNER AND MOBILE LINKS TEXT */
+
+.heroWrapper, .heroList, .heroItem a {
+	height:400px;
+	width:100%;
+	overflow:hidden;
+}
+.heroNav {
+	position:absolute;
+	bottom:0;
+	text-align: center;
+    width: 100%;
+	color:#fff;
+	
+}
+.heroNav span.active {
+	opacity:1;
+}
+.heroNav span {
+	opacity:0.7;
+	margin:0 5px;
+}
+.heroList,.heroWrapper {
+	position:relative;
+}
+.heroItem a {
+	display:block;
+}
+.heroItem { 
+	display:inline-block;
+	width:100%;
+	position:absolute;
+}
+.heroItem:nth-of-type(2n){
+	
+}
+.homeLarge {
+	background: url(/theme/img/hero.jpg) no-repeat center center;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	width: 100%;
+	height: 300px;
+}
+.homeContainer {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	line-height: 4em;
+	color: white;
+}
+.homeLargeSmallText {
+	width: 290px;
+	line-height: 1em;
+}
+
+.homeImg {
+	padding-top: 4px;
+}
+.homeText {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+}
+.homeText > div {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	text-align: center;
+	color: white;
+	font-size: 3em;
+	line-height: 54px;
+}
+
+.homeContainer span:first-of-type {
+    font-size: 4em;
+}
+
+.homeCategories {
+    margin: 20px 0;
+    border-top: 1px solid #e6e6e6;
+    border-bottom: 1px solid #e6e6e6;
+    text-align: center;
+}
+
+.homeCategories .cat-item {
+    border: none;
+    border-left: 1px solid #e6e6e6;
+    display: inline-block;
+    width: 23% !important;
+}
+
+.homeCategories .cat-item:first-of-type {
+    border: none;
+}
+
+.homeBrands {
+    height: 368px; 
+    width: 100%;
+    background-image: url("https://images.rallysportdirect.com/image/upload/s---7JemCbc--/v1485284749/rallysportdirect_hero/brandsHero.jpg");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: cover;
+    color: #fff;
+    clear: both;
+}
+
+.homeBrands .container {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.homeBrands .text-center > div:first-of-type {
+    padding-top: 20px;
+}
+
+.homeBrands .text-center > div:last-of-type {
+    margin-top: 70px;
+}
+
+.brandGrimm {
+    height: 60px!important;;
+}
+
+.homeBrands img {
+    opacity: 0.75;
+    -webkit-transition: none;
+    -moz-transition: none;
+    -o-transition: none;
+    transition: none;
+	max-width: 150px;
+}
+
+.homeBrands img:hover {
+    opacity: 1;
+}
+
+/* HOME RR */
+
+.rrMore {
+    clear: both;
+    height: 25px;
+    line-height: 25px;
+    color: #fff;
+    text-align: center;
+    width: 100%;
+    background-color: #0155ab;
+    cursor: pointer;
+}
+
+.rrMore:hover {
+    background-color: #1287ff;
+}
+
+.clearRR {
+    clear: both;
+    border-top: 1px solid #e6e6e6;
+    height: 20px;
+    display: none;
+}
+
+.homeRR {
+    padding-top: 15px;
+}
+
+.homeRR ul {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.homeRR a {
+    color: #000;
+}
+
+.homeRR a:hover {
+    color: #000;
+}
+
+.homeRR a:nth-child(6), .homeRR a:nth-child(7), .homeRR a:nth-child(8), .homeRR a:nth-child(9) {
+    display: none;
+}
+
+.homeRR .RRCarouselItemName {
+    font-weight: bold;
+    font-size: 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.homeRR .newPrice {
+    font-size: 25px;
+    color: #0155ab;
+    font-weight: 300;
+}
+
+.homeRR .rrViewItem {
+    position: relative;
+    bottom: -10px;
+    width: 120px;
+    height: 30px;
+    line-height: 30px;
+    background-color: #0155ab;
+    text-align: center;
+    color: #fff;
+}
+
+.homeRR a:hover .rrViewItem {
+    background-color: #1287ff;
+}
+
+.homeRR a > div {
+    width: 25%;
+    float:left;
+    padding: 10px;
+    padding-bottom: 30px;
+    border: 1px solid #fff;
+    border-left: 1px solid #e6e6e6;
+    border-top: 1px solid #e6e6e6;
+}
+
+.homeRR a:first-of-type > div {
+    width: 50%;
+    border-top: 1px solid #e6e6e6;
+    border-left: 1px solid #fff;
+    padding-top: 3%;
+}
+
+.homeRR a:first-of-type .RRCarouselItemName {
+    font-size: 18px;
+}
+
+.homeRR a:first-of-type img {
+    width: 70%;
+}
+
+.homeRR a:first-of-type .newPrice {
+    font-size: 30px;
+}
+
+.homeRR a:nth-child(2) > div {
+    border: 1px solid #e6e6e6;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+}
+
+.homeRR a:nth-child(3) > div {
+    border-top: 1px solid #e6e6e6;
+}
+
+.homeRR img {
+    width: 55%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.homeXsBrands {
+    padding: 0 !important;
+}
+
+
+
+/*==================================================
+=            RR Media Queries             =
+==================================================*/
+
+/*==========  Mobile First Method  ==========*/
+
+/* Custom, iPhone Retina */ 
+@media only screen and (min-width : 320px) {
+
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (min-width : 480px) {
+
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+
+}
+
+/* Custom width for RR */
+@media only screen and (min-width : 1280px) {
+    .homeRR a {
+        display: block !important;
+    }
+    .homeRR a > div {
+        width: 17.5%;
+    }
+    .homeRR a:first-of-type > div {
+        width: 30%;
+    }
+    .homeRR a:nth-child(4) > div, .homeRR a:nth-child(5) > div {
+        border-top: 1px solid #e6e6e6;
+    }
+    .rrMore {
+        display: none;
+    }
+
+    .clearRR {
+        display: block;
+    }
+}
+
+@media only screen and (min-width : 1350px) {
+    .homeCategories img {
+        width: auto;
+    }
+}
+
+@media only screen and (min-width : 1400px) {
+    .homeRR a > div {
+        width: 18.75%;
+    }
+    .homeRR a:first-of-type > div {
+        width: 25%;
+    }
+}
+
+
+
+/*==========  Non-Mobile First Method  ==========*/
+
+/* Large Devices, Wide Screens */
+@media only screen and (max-width : 1200px) {
+
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (max-width : 992px) {
+
+}
+
+@media only screen and (max-width : 800px) {
+    .rrRating {
+        display: block;
+    }
+}
+
+/* Small Devices, Tablets */
+@media only screen and (max-width : 767px) {
+	.homeLarge {
+		background: linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3) ), url(/theme/img/hero.jpg) no-repeat center center;
+		height: 316px;
+		background-size: cover;
+	}
+	.homeContainer {
+		text-align: center;
+		background: transparent;
+		margin-right: auto;
+		margin-left: auto;
+        padding-top: 30px;
+	}
+	.homeLargeSmallText {
+		margin-right: auto;
+		margin-left: auto;
+	}
+    .homeContainer span:first-of-type {
+        font-size: 3em;
+    }
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (max-width : 545px) {
+    .homeCategories .cat-item {
+        width: 48% !important;
+        border: 0;
+    }
+    .homeCategories .cat-item:nth-of-type(2) {
+        border-left: 1px solid #e6e6e6;
+        border-bottom: 1px solid #e6e6e6;
+    }
+    .homeCategories .cat-item:nth-of-type(1) {
+        border-bottom: 1px solid #e6e6e6;
+    }
+    .homeCategories .cat-item:nth-of-type(4) {
+        border-left: 1px solid #e6e6e6;
+    }
+    
+    
+    .homeRR a > div {
+        width: 33.3%;
+    }
+
+    .homeRR a:first-of-type > div {
+        width: 66.6%;;
+    }
+    
+    
+    
+    .homeRR .RRCarouselItemName {
+        font-size: 12px;
+    }
+    
+    .homeRR a:first-of-type .RRCarouselItemName {
+        font-size: 14px;
+    }
+    
+    .homeRR a:nth-child(6) {
+        display: inline;
+    }
+    
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (max-width : 520px) {
+    .homeRR .rrViewItem {
+        font-size: 11px;
+        width: 80px;
+    }
+    
+    .homeRR .newPrice {
+        font-size: 16px;
+    }
+}
+
+/* Custom, iPhone Retina */ 
+@media only screen and (max-width : 320px) {
+
+}

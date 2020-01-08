@@ -1,0 +1,72 @@
+.ss_icon {
+    position: relative;
+    min-height: 46px;
+}
+
+.ss_icon > img {
+    width: 70px;
+}
+
+.ss_icon > div:first-of-type {
+    position: absolute;
+    top: 14px;
+    text-align: center;
+    left: 7px;
+    line-height: 7px;
+    width: 30px;
+    font-size: 18px;
+    color: #0155ab;
+}
+
+.ss_icon div:first-of-type span {
+    text-transform: uppercase;
+    font-size: 8px;
+}
+
+.ss_icon-text {
+    position: absolute;
+    top: 3px;
+    left: 82px;
+    font-weight: bold;
+}
+.ssModal, .ssModal:hover, .ssModal:focus {
+    color: #000 !important;
+}
+
+.ss-limited i {
+	color: #da0c16!important;
+}
+
+.ss_cart br {
+	display: none;
+}
+
+.ss_cart span {
+	margin-left: 5px;
+}
+
+.ss_cart i {
+	-moz-transform: scaleX(-1);
+	-o-transform: scaleX(-1);
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
+	filter: FlipH;
+	-ms-filter: "FlipH";
+	color: #1287ff;
+}
+	
+.stockState .ss_icon-text {
+	font-size: 11px;
+	top: -8px;
+}
+
+.ss_truck-text-small {
+	line-height: 8px!important;
+	font-size: 10px!important;
+	top: 15px!important;
+}
+
+.ss_truck-text-med {
+	line-height: 8px!important;
+	font-size: 13px!important;
+}

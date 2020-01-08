@@ -1,0 +1,157 @@
+/* RICH RELEVANCE */
+@media only screen and (max-width : 767px) {
+    #richWrapper,#sliders{
+        -webkit-overflow-scrolling: touch;
+    }
+}
+.richItem {
+    display: inline-block;
+    width: 245px;
+    margin: 10px 10px;
+    padding: 10px;
+    border: 1px solid #ffffff;
+    text-align: center;
+}
+.richItem:hover{
+    border-color: #009cff;
+}
+.richItem:hover .richView{
+    background-color: #009CFF !important;
+    color: #fff!important;
+    text-decoration: none;
+}
+#richSlider{
+    margin-left:-266px;
+    transition: all 0s ease;
+}
+.richItem a:hover{
+    text-decoration:none !important;
+}
+.richItem::selection  {
+    background: yellow;
+}
+.richItem a img::selection{
+    background: rgba(0,0,0,0);
+}
+#richContainer {
+    height: 350px;
+    overflow: hidden;
+    margin: 0 auto;
+    width: 1064px;
+}
+#RR-sliderPrev.richHome, #RR-sliderNext.richHome {
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #ffffff;
+    margin-left: 0;
+    background-color: #000000;
+    text-align: center;
+    height: 30px;
+    width: 45px;
+    cursor:pointer;
+    float: left;
+}
+#RR-sliderPrev.richPDP, #RR-sliderNext.richPDP {
+    font-size: 26px;
+    margin-top: 130PX;
+    color: #333333;
+    position: absolute;
+    margin-bottom: 12px;
+    margin-left: 0;
+    text-align: center;
+    cursor:pointer;
+}
+#richContainer.richPDP{
+    position:absolute;
+}
+
+#RR-sliderNext.richPDP {
+right:0;
+}
+#RR-sliderPrev.richPDP{
+    left:0;
+}
+#richWrapper.richPDP{
+    position: relative;
+}
+#RR-sliderPrev i, #RR-sliderNext i{
+    vertical-align: -webkit-baseline-middle;
+}
+#richWrapper {
+    height: 415px;
+}
+.richItem img {
+    padding-bottom: 20px;
+}
+.richItemTitle {
+      height:36px;
+      display: block;
+      color: #3f3f3f;
+      margin-top: 10px;
+    display: block;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.richItemDetails {
+    padding-top: 10px;
+    margin: 0 auto;
+}
+.richItemDetails:after{
+    visibility: hidden;
+     display: block;
+     font-size: 0;
+     content: " ";
+     clear: both;
+     height: 0;
+}
+.richItem a img{
+    height:175px;
+}
+.richProduct{
+    width:240px !important;
+}
+.richItemRating{
+    display: block;
+}
+.richItemPrice{
+    float:left;
+    display: block;
+}
+.richView{
+    width: 90%;
+    margin-top: 5px;
+    background-color: #ffffff!important;
+    color: #1756a5!important;
+    text-decoration: underline;
+}
+.richView:hover{
+    background-color: #009CFF !important;
+    color: #fff!important;
+    text-decoration: none;
+}
+#richCircles{
+    display:none;
+}
+#sliders{
+    border-top: 2px solid #000000;
+    margin-bottom:10px;
+}
+#sliders:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+#richWrapper h4 {
+    margin-left: -15px;
+}
+
+
+

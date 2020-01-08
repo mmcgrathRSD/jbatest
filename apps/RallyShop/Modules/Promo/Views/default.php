@@ -1,0 +1,2 @@
+<a href="<?php echo $module->model->{'promo_link'}  ?>" data-id="<?php echo $module->model->{'slug'}; ?>"   data-position="<?php echo $module->model->{'positions.0'}; ?>"  data-creative="<?php echo $module->model->{'promo_image'}; ?>"  data-title="<?php echo $module->model->{'title'}; ?>" class="iPromo">
+<img src="<?php echo \Shop\Models\Assets::render($module->model->{'promo_image'});?>" class="img-responsive center-block"></a>

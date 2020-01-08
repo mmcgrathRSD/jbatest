@@ -1,0 +1,36 @@
+
+.topMaster {
+	background-color: #fff;
+}
+
+.topMaster li {
+	color: #000;
+}
+
+.RSDSearchIcon {
+ 	color: #fff;
+ }
+
+.RSDSearch {
+	border-bottom: 1px solid #000;
+    color: #333333;
+    border-bottom: 1px solid #333333;
+}
+
+.desktopSearchIcon {
+	color: #000;
+}
+
+.topMaster > div > i {
+	background-image: url(/theme/img/spritesheet2.png);
+}
+
+.toggle-ymm, .topNav > li {
+    height: 65px;
+}
+
+@media only screen and (max-width : 768px) {
+	.topMaster .navBtn {
+		color: #000!important;
+	}
+}

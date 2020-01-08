@@ -1,0 +1,40 @@
+.gridTitle {
+    font-size: 15px;
+}
+
+.item-suffix {
+    font-size: 13px;
+    color: #000;
+}
+
+.lockup-item-title {
+    font-size: 24px;
+}
+
+.lockup-item-suffix {
+    font-size: 20px;
+}
+
+.ymmlist {
+    display: none;
+}
+
+.cartSticky{
+    .cc-font-price{
+        @include mq('md') {
+            font-size: 17px;
+        }
+    }
+}
+
+.secondary_button {
+    background-color: $primary;
+    border-color: $primary;
+    color: #fff;
+
+    &:hover {
+        background-color: $secondary;
+        border-color: $secondary;
+        color: #fff;
+    }
+}
