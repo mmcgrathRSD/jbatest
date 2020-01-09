@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class Address extends \Shop\Site\Controllers\Address
 {
@@ -12,7 +12,7 @@ class Address extends \Shop\Site\Controllers\Address
     
     protected function getModel()
     {
-        $model = new \RallyShop\Models\CustomerAddresses;
+        $model = new \JBAShop\Models\CustomerAddresses;
         return $model;
     }
     
@@ -210,7 +210,7 @@ class Address extends \Shop\Site\Controllers\Address
             return;
         }
     
-        $model = new \RallyShop\Models\CustomerAddresses;
+        $model = new \JBAShop\Models\CustomerAddresses;
         $model->emptyState()->populateState()
         ->setState('list.limit', 40 )
         ->setState('filter.user', (string) $identity->id );

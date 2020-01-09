@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Admin;
+namespace JBAShop\Admin;
 
 class Routes extends \Dsc\Routes\Group
 {

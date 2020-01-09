@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class Checkout extends \Shop\Site\Controllers\Checkout
 {
@@ -15,7 +15,7 @@ class Checkout extends \Shop\Site\Controllers\Checkout
         /*
          * Get the Customers Cart
         	*/
-        $cart = \RallyShop\Models\Carts::fetch();
+        $cart = \JBAShop\Models\Carts::fetch();
         
 
         // Update the cart with checkout data from the form submitted, shipping address, billing address
@@ -83,7 +83,7 @@ class Checkout extends \Shop\Site\Controllers\Checkout
                     'confirm_new_password' => $password
                 );
 
-                $identity = (new \RallyShop\Models\Customers)->bind($data);
+                $identity = (new \JBAShop\Models\Customers)->bind($data);
 
                 try
                 {
@@ -151,7 +151,7 @@ class Checkout extends \Shop\Site\Controllers\Checkout
             $this->app->reroute('/shop/checkout');
             return;
         }
-        $identity = (new \RallyShop\Models\Customers)->bind($identity->cast());
+        $identity = (new \JBAShop\Models\Customers)->bind($identity->cast());
         $identity->ensureValidCustomer();
         $identity->store();
         
@@ -240,7 +240,7 @@ class Checkout extends \Shop\Site\Controllers\Checkout
 
         // Get \Shop\Models\Checkout
         // Bind the cart and payment data to the checkout model
-        $checkout = \RallyShop\Models\Checkout::instance();
+        $checkout = \JBAShop\Models\Checkout::instance();
         $checkout->addCart($cart)->addPaymentData($f3->get('POST'));
 
         $data = $checkout->paymentData();

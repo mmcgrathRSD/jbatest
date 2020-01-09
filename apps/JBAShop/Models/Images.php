@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class Images 
 {
@@ -36,7 +36,7 @@ class Images
 		$part_number = str_replace('_', ' ', $tag);
 		
 		echo $part_number;
-		$product = (new \RallyShop\Models\Products)->setCondition('variants.model_number', $part_number)->getItem();
+		$product = (new \JBAShop\Models\Products)->setCondition('variants.model_number', $part_number)->getItem();
 		
 		
 		$results = static::getImagesByTag($tag);

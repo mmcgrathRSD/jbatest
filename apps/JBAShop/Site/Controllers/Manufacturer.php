@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class Manufacturer extends \Shop\Site\Controllers\Manufacturer
 {
@@ -11,11 +11,11 @@ class Manufacturer extends \Shop\Site\Controllers\Manufacturer
 		{
 			case "products":
 			case "product":
-				$model = new \RallyShop\Models\Products;
+				$model = new \JBAShop\Models\Products;
 				break;
 			case 'manufacturers':
 			default:
-				$model = new \RallyShop\Models\Manufacturers;
+				$model = new \JBAShop\Models\Manufacturers;
 				break;
 		}
 

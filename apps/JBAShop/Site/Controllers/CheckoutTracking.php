@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class CheckoutTracking extends \Dsc\Controller
 {
@@ -45,7 +45,7 @@ class CheckoutTracking extends \Dsc\Controller
 		
 		if (!empty($action))
 		{
-			\RallyShop\Models\CheckoutTracking::track($action, $properties);
+			\JBAShop\Models\CheckoutTracking::track($action, $properties);
 		}
 	}
 	

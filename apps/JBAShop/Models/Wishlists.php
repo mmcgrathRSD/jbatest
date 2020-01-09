@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class Wishlists extends \Shop\Models\Wishlists
 {
@@ -159,7 +159,7 @@ class Wishlists extends \Shop\Models\Wishlists
     public function addItem( $variant_id,\Shop\Models\Products $product, array $post )
     {
 
-    	$wishlistitem = \RallyShop\Models\Carts::createItem($variant_id, $product,  $post);
+    	$wishlistitem = \JBAShop\Models\Carts::createItem($variant_id, $product,  $post);
 
     	// Is the item already in the wishlist?
     	// if so, inc quantity

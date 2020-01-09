@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Modules\DisruptorEngine;
+namespace JBAShop\Modules\DisruptorEngine;
 
 class Module extends \Modules\Abstracts\Module 
 {

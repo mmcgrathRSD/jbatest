@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class Reports extends \Shop\Models\Reports
 {

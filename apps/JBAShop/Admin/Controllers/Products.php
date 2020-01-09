@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class Products extends \Shop\Admin\Controllers\Products
 {
@@ -10,7 +10,7 @@ class Products extends \Shop\Admin\Controllers\Products
 	
 	protected function getModel()
 	{
-		$model = new \RallyShop\Models\Products;
+		$model = new \JBAShop\Models\Products;
 		return $model;
 	}
 	

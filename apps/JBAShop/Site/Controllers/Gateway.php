@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class Gateway extends \Shop\Site\Controllers\Gateway
 {

@@ -1,11 +1,11 @@
 <?php
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class Dashboard extends \Shop\Models\Dashboard
 {
     public function fetchTotalSales($start=null, $end=null)
     {
-        $model = (new \RallyShop\Models\Orders)
+        $model = (new \JBAShop\Models\Orders)
             ->setState('filter.status_excludes', \Shop\Constants\OrderStatus::cancelled)
             ->setState('filter.financial_status', array( \Shop\Constants\OrderFinancialStatus::paid, \Shop\Constants\OrderFinancialStatus::authorized ) );
         
@@ -51,7 +51,7 @@ class Dashboard extends \Shop\Models\Dashboard
     
     public function fetchTopSellers($start=null, $end=null)
     {
-        $model = (new \RallyShop\Models\Orders)
+        $model = (new \JBAShop\Models\Orders)
         ->setState('filter.status_excludes', \Shop\Constants\OrderStatus::cancelled)
         ->setState('filter.financial_status', array( \Shop\Constants\OrderFinancialStatus::paid, \Shop\Constants\OrderFinancialStatus::authorized ) );
     
@@ -65,7 +65,7 @@ class Dashboard extends \Shop\Models\Dashboard
     
         $conditions = $model->conditions();
     
-        $agg = \RallyShop\Models\Orders::collection()->aggregate(array(
+        $agg = \JBAShop\Models\Orders::collection()->aggregate(array(
             array(
                 '$match' => $conditions
             ),
@@ -97,7 +97,7 @@ class Dashboard extends \Shop\Models\Dashboard
         {
             foreach ($agg['result'] as $result) 
             {
-                $product = (new \RallyShop\Models\Products)->setState('filter.id', $result['_id'])->getItem();
+                $product = (new \JBAShop\Models\Products)->setState('filter.id', $result['_id'])->getItem();
                 if (!empty($product->id)) 
                 {
                     $product->__total = $result['total'];
@@ -111,7 +111,7 @@ class Dashboard extends \Shop\Models\Dashboard
 
     public function fetchSalesData($start=null, $end=null)
     {
-        $model = (new \RallyShop\Models\Orders)
+        $model = (new \JBAShop\Models\Orders)
         ->setState('filter.status_excludes', \Shop\Constants\OrderStatus::cancelled)
         ->setState('filter.financial_status', array( \Shop\Constants\OrderFinancialStatus::paid, \Shop\Constants\OrderFinancialStatus::authorized ) );
     
@@ -125,7 +125,7 @@ class Dashboard extends \Shop\Models\Dashboard
     
         $conditions = $model->conditions();
     
-        $agg = \RallyShop\Models\Orders::collection()->aggregate(array(
+        $agg = \JBAShop\Models\Orders::collection()->aggregate(array(
             array(
                 '$match' => $conditions
             ),

@@ -1,7 +1,7 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
-class GroupItem extends \RallyShop\Admin\Controllers\Product
+class GroupItem extends \JBAShop\Admin\Controllers\Product
 {
    
    

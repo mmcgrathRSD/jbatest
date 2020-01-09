@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Site;
+namespace JBAShop\Site;
 
 /**
  * Group class is used to keep track of a group of routes with similar aspects (the same controller, the same f3-app and etc)
@@ -332,7 +332,7 @@ class Routes extends \Dsc\Routes\Group
         			if(!empty($_GET['order_number'])) {
         				$orderid = $_GET['order_number'];
         				
-        				$order = (new \RallyShop\Models\Orders)->setCondition('number', $orderid)->getItem();
+        				$order = (new \JBAShop\Models\Orders)->setCondition('number', $orderid)->getItem();
         				 
         				if($order->id) {
         					$this->app->reroute('/shop/order/updatepayment/'.$order->id);
@@ -576,7 +576,7 @@ class Routes extends \Dsc\Routes\Group
         $this->router->route('GET /shop/product-review/@oldid/@oldslug', function($app, $params) {
             // can't link directly to reviews yet
 
-            $product = (new \RallyShop\Models\Products())
+            $product = (new \JBAShop\Models\Products())
                 ->setCondition('old.slug', $params['oldslug'])
                 ->getItem()
             ;

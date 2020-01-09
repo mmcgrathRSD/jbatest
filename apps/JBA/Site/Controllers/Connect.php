@@ -1,5 +1,5 @@
 <?php 
-namespace RallySport\Site\Controllers;
+namespace JBA\Site\Controllers;
 
 class Connect extends \Dsc\Controller 
 {

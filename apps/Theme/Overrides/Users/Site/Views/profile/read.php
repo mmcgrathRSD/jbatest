@@ -52,7 +52,7 @@
     <div role="tabpanel" class="tab-pane" id="reviews">
     
 <?php
-			$reviews = (new \RallyShop\Models\UserContent())->setCondition('user_id', $user->id)->setCondition('type', 'review')->setCondition('publication.status', 'published')->getList();
+			$reviews = (new \JBAShop\Models\UserContent())->setCondition('user_id', $user->id)->setCondition('type', 'review')->setCondition('publication.status', 'published')->getList();
 			?>
 			<h3>Reviews</h3>
 			<?php	
@@ -61,7 +61,7 @@
 				<ul class="list-unstyled">
 								
 									<?php foreach($reviews as $review) : ?>
-									<div class="well ">	<?php echo \RallyShop\Models\UserContent::outputStars($review->rating); ?>
+									<div class="well ">	<?php echo \JBAShop\Models\UserContent::outputStars($review->rating); ?>
 
 														<br/>
 														<strong><?php echo $review->title; ?></strong>
@@ -104,7 +104,7 @@
     
  			<h3>Questions</h3>
 			<?php
-			$questions = (new \RallyShop\Models\UserContent())->setCondition('user_id', $user->id)->setCondition('type', 'question')->setCondition('publication.status', 'published')->getList();
+			$questions = (new \JBAShop\Models\UserContent())->setCondition('user_id', $user->id)->setCondition('type', 'question')->setCondition('publication.status', 'published')->getList();
 				
 			
 			
@@ -151,7 +151,7 @@
 			<?php endif;?>
 			<h3>Answers</h3>
 			<?php
-			$answers = (new \RallyShop\Models\UserContent())->setCondition('answers.user_id', $user->id)->setCondition('type', 'question')->setCondition('publication.status', 'published')->getList();
+			$answers = (new \JBAShop\Models\UserContent())->setCondition('answers.user_id', $user->id)->setCondition('type', 'question')->setCondition('publication.status', 'published')->getList();
 				
 			
 			
@@ -187,7 +187,7 @@
     
     <h3>Images</h3>
 			<?php
-			$images = (new \RallyShop\Models\UserContent())->setCondition('user_id', $user->id)->setCondition('publication.status', 'published')->getList();
+			$images = (new \JBAShop\Models\UserContent())->setCondition('user_id', $user->id)->setCondition('publication.status', 'published')->getList();
 				
 			
 			

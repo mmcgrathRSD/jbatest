@@ -1,11 +1,11 @@
 <?php 
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class YearMakeModel extends \Shop\Site\Controllers\YearMakeModel
 {	
 	protected function getModel()
 	{
-		$model = new \RallyShop\Models\YearMakeModels;
+		$model = new \JBAShop\Models\YearMakeModels;
 		return $model;
 	}
 	  

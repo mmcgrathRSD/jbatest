@@ -1,6 +1,6 @@
 <?php 
 
-namespace RallyShop\Site;
+namespace JBAShop\Site;
 
 
 class Listener extends \Prefab
@@ -337,7 +337,7 @@ class Listener extends \Prefab
              */
              
             $categoryRoutes = [];
-            $categories = (new \RallyShop\Models\Categories)->collection()->find([
+            $categories = (new \JBAShop\Models\Categories)->collection()->find([
                 'publication.status' => 'published'
             ], [
                 'projection' => [

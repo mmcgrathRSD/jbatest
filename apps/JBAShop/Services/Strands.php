@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Services;
+namespace JBAShop\Services;
 
 class Strands
 {
@@ -87,8 +87,8 @@ class Strands
 			}
 
 			foreach ($products as $data) {
-				/** @var \RallyShop\Models\Products $product */
-				$product = (new \RallyShop\Models\Products())->bind($data);
+				/** @var \JBAShop\Models\Products $product */
+				$product = (new \JBAShop\Models\Products())->bind($data);
 
 				$productId = (string) $product->id;
 				if (in_array($productId, $productIds)) {

@@ -6,7 +6,7 @@ switch ($global_app_name)
 {
     case "admin":
         // register event listener
-        \Dsc\System::instance()->getDispatcher()->addListener(\RallyShop\Modules\Promo\Listeners\Admin::instance());
+        \Dsc\System::instance()->getDispatcher()->addListener(\JBAShop\Modules\Promo\Listeners\Admin::instance());
         
         break;
     case "site":

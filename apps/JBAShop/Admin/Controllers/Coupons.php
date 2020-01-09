@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class Coupons extends \Shop\Admin\Controllers\Coupons
 {

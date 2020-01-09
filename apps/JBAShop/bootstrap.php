@@ -28,15 +28,15 @@ class RallyShopBootstrap extends \Dsc\Bootstrap
     * */
      protected function runSite()
     { 
-    	\Dsc\System::instance()->get('router')->mount( new \RallyShop\Site\Routes, $this->namespace );
+    	\Dsc\System::instance()->get('router')->mount( new \JBAShop\Site\Routes, $this->namespace );
   		
     	//if no YMM is selected check the cookie, set active is session
     	if(empty(\Dsc\System::instance()->get('session')->get('activeVehicle'))) {
     		if($id = \Dsc\Cookie::get('activeVehicle')) {
     			if(\Dsc\Mongo\Helper::isValidId($id)) {
-    				$ymm = (new \RallyShop\Models\YearMakeModels)->collection()->findOne(array('_id' => new \MongoDB\BSON\ObjectID($id)));
+    				$ymm = (new \JBAShop\Models\YearMakeModels)->collection()->findOne(array('_id' => new \MongoDB\BSON\ObjectID($id)));
     			} else {
-    				$ymm = (new \RallyShop\Models\YearMakeModels)->collection()->findOne(array('slug' => $id));
+    				$ymm = (new \JBAShop\Models\YearMakeModels)->collection()->findOne(array('slug' => $id));
     			}
     		
     			if(!empty($ymm)) {
@@ -54,7 +54,7 @@ class RallyShopBootstrap extends \Dsc\Bootstrap
     protected function runCli()
     {    	     	
     	
-    	\Dsc\System::instance()->getDispatcher()->addListener(\RallyShop\Site\Listener::instance());
+    	\Dsc\System::instance()->getDispatcher()->addListener(\JBAShop\Site\Listener::instance());
     
     	
     	parent::runCli();
@@ -67,7 +67,7 @@ class RallyShopBootstrap extends \Dsc\Bootstrap
     	// register the modules path
     	\Modules\Factory::registerPath( \Base::instance()->get('PATH_ROOT') . "apps/RallyShop/Modules/" );
     	 
-        \Dsc\System::instance()->get('router')->mount( new \RallyShop\Admin\Routes, $this->namespace );
+        \Dsc\System::instance()->get('router')->mount( new \JBAShop\Admin\Routes, $this->namespace );
      
         \Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Admin/Views/', 'RallyShop/Admin/Views' );
    		 

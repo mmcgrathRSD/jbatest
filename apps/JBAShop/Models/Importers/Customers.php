@@ -1,7 +1,7 @@
 <?php
-namespace RallyShop\Models\Importers;
+namespace JBAShop\Models\Importers;
 
-class Customers extends \RallyShop\Models\Customers {
+class Customers extends \JBAShop\Models\Customers {
 	
 	const PRIMARYKEY = 'gp.customer_number';
 	const DEFAULTCREATEACTION = 'none';
@@ -135,7 +135,7 @@ class Customers extends \RallyShop\Models\Customers {
 
 			if(empty($item->id)) {
 				//CHECK TO SEE IF THIS IS A DUPLICATED ACCOUNT BY EMAIL
-				$user = (new \RallyShop\Models\Customers);
+				$user = (new \JBAShop\Models\Customers);
 				
 				if(!empty($data['email'])) {
 					$data['email'] = trim(strtolower($data['email']));

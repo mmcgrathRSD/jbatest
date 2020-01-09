@@ -1,5 +1,5 @@
 <?php 
-namespace RallySport\Admin\Controllers;
+namespace JBA\Admin\Controllers;
 
 class Testing extends \Admin\Controllers\BaseAuth 
 {
@@ -13,7 +13,7 @@ class Testing extends \Admin\Controllers\BaseAuth
 	//	$product = (new \RallyShop\Models\Products)->setState('filter.slug', 'cobb-lightweight-crank-pulley-blue')->getItem()->updateReviewCounts();
 		
 	
-		$docs = (new \RallyShop\Models\Products)->collection()->find( array('review_rating_counts' => array('$exists' => false) ) );
+		$docs = (new \JBAShop\Models\Products)->collection()->find( array('review_rating_counts' => array('$exists' => false) ) );
 		 foreach($docs as $doc) {
 		 \Dsc\Queue::task('\RallyShop\Models\Products::doUpdateReviewCounts', array('id' => $doc['_id'] ));
 		 } 

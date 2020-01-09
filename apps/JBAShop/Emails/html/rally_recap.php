@@ -24,7 +24,7 @@
     <tr>
         <td width="75px" >
             <?php if (\Dsc\ArrayHelper::get($item, 'featured_image.slug')) { ?>
-            <img width="75px" style="width: 75px;" src="<?php echo  \RallyShop\Models\Products::product_thumb(\Dsc\ArrayHelper::get($item, 'featured_image.slug'));?>" alt="" />
+            <img width="75px" style="width: 75px;" src="<?php echo  \JBAShop\Models\Products::product_thumb(\Dsc\ArrayHelper::get($item, 'featured_image.slug'));?>" alt="" />
             <?php } ?>
         </td>
         
@@ -113,9 +113,9 @@ $sec = time() - (date('G') * 3600 + date('i') * 60);
 <h3>Orders from Yesterday</h3>
 <table width="610px">
 <tr>
-<td style="text-align: center;">Desktop  Orders<br><?php $desktop =  \RallyShop\Models\CheckoutGoals::collection()->count([ 'timestamp' => array( '$gt' =>$sec ), 'complete_payment_form' => ['$exists' => true],'device_type' => 'desktop-tablet']); echo $desktop; ?></td>
+<td style="text-align: center;">Desktop  Orders<br><?php $desktop =  \JBAShop\Models\CheckoutGoals::collection()->count([ 'timestamp' => array( '$gt' =>$sec ), 'complete_payment_form' => ['$exists' => true],'device_type' => 'desktop-tablet']); echo $desktop; ?></td>
 <td style="text-align: center;">
-Mobile  Orders <br><?php $mobile =  \RallyShop\Models\CheckoutGoals::collection()->count([ 'timestamp' => array( '$gt' =>$sec ), 'complete_payment_form' => ['$exists' => true], 'device_type' => 'mobile']); echo $mobile; ?>
+Mobile  Orders <br><?php $mobile =  \JBAShop\Models\CheckoutGoals::collection()->count([ 'timestamp' => array( '$gt' =>$sec ), 'complete_payment_form' => ['$exists' => true], 'device_type' => 'mobile']); echo $mobile; ?>
 </td>
 </tr>
 </table>

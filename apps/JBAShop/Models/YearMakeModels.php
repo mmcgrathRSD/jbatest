@@ -1,6 +1,6 @@
 <?php
 
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class YearMakeModels extends \Shop\Models\YearMakeModels
 {
@@ -120,7 +120,7 @@ class YearMakeModels extends \Shop\Models\YearMakeModels
     
     public static function forSelectionDistinct($field, array $query=array(), $sorted = true )
     {
-        $data = \RallyShop\Models\YearMakeModels::distinctValues( $field, $sorted, $query);
+        $data = \JBAShop\Models\YearMakeModels::distinctValues( $field, $sorted, $query);
 
         $result = array();
         foreach ($data as $item) {
@@ -167,7 +167,7 @@ class YearMakeModels extends \Shop\Models\YearMakeModels
 		foreach ($ymms as $ymm) {
 
 			$ymm = (new static)->bind($ymm);
-			$products = new \RallyShop\Models\Products;
+			$products = new \JBAShop\Models\Products;
 			$count = $products->setCondition('ymms.slug', $ymm->slug)->getCount();
 			$ymm->set('products_count', $count);
 			if($count > 0) {

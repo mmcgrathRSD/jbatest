@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class OrderedGiftCard extends \Shop\Site\Controllers\OrderedGiftCard
 {
@@ -9,7 +9,7 @@ class OrderedGiftCard extends \Shop\Site\Controllers\OrderedGiftCard
         
         switch($type) {
             case 'giftcard':
-                $model = new \RallyShop\Models\OrderedGiftCards();
+                $model = new \JBAShop\Models\OrderedGiftCards();
                 break;
         }    
         return $model;    

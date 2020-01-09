@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class Followups extends \Dsc\Controller
 {

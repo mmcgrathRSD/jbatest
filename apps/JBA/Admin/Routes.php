@@ -1,6 +1,6 @@
 <?php
 
-namespace RallySport\Admin;
+namespace JBA\Admin;
 
 /**
  * Group class is used to keep track of a group of routes with similar aspects (the same controller, the same f3-app and etc)

@@ -1,5 +1,5 @@
 <?php
-namespace RallySport\Admin\Controllers;
+namespace JBA\Admin\Controllers;
 
 class Login extends \Admin\Controllers\Login
 {

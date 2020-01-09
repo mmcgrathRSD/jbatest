@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Modules\HomepageProducts\Listeners;
+namespace JBAShop\Modules\HomepageProducts\Listeners;
 
 class Admin extends \Prefab 
 {

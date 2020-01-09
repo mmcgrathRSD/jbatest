@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class CheckoutGoals extends \Dsc\Mongo\Collection
 {
@@ -43,7 +43,7 @@ class CheckoutGoals extends \Dsc\Mongo\Collection
     		
     		$checkout_id = \Dsc\System::instance()->get('session')->get('checkout_id');
     		if(empty($checkout_id)) {
-    			$cart =  \RallyShop\Models\Carts::fetch();
+    			$cart =  \JBAShop\Models\Carts::fetch();
     			$tracking = (new static)
     			->set('cart_id', $cart->id)
     			->set('user_email', @$cart->user_email)

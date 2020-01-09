@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class UserContent extends \Dsc\Mongo\Collections\Nodes
 {
@@ -150,7 +150,7 @@ class UserContent extends \Dsc\Mongo\Collections\Nodes
      * @param \Shop\Models\Products $product
      * @return string|boolean
      */
-    public static function canUserReview( \Users\Models\Users $user, \RallyShop\Models\Products $product ) 
+    public static function canUserReview( \Users\Models\Users $user, \JBAShop\Models\Products $product )
     {
         if (empty($user->id))
         {
@@ -178,7 +178,7 @@ class UserContent extends \Dsc\Mongo\Collections\Nodes
             default:
                 
                 // has the user purchased this item?
-                if (\RallyShop\Models\Customers::hasUserPurchasedProduct( $user, $product ))
+                if (\JBAShop\Models\Customers::hasUserPurchasedProduct( $user, $product ))
                 {
                     // has the user already reviewed it?
                     $has_reviewed = static::collection()->count(array(
@@ -229,7 +229,7 @@ class UserContent extends \Dsc\Mongo\Collections\Nodes
      * @param \Shop\Models\Products $product
      * @return multitype:
      */
-    public static function forProduct( \RallyShop\Models\Products $product, $return_type='paginated' )
+    public static function forProduct(\JBAShop\Models\Products $product, $return_type='paginated' )
     {
         $return = null;
         
@@ -580,7 +580,7 @@ class UserContent extends \Dsc\Mongo\Collections\Nodes
     {
         if (empty($this->__product)) 
         {
-            $this->__product = (new \RallyShop\Models\Products)->load(array('_id'=>$this->product_id));
+            $this->__product = (new \JBAShop\Models\Products)->load(array('_id'=>$this->product_id));
         }
     
         return $this->__product;
@@ -631,7 +631,7 @@ class UserContent extends \Dsc\Mongo\Collections\Nodes
         }
     
         // load the order
-        $order = (new \RallyShop\Models\Orders)->setState('filter.id', $order_id)->getItem();
+        $order = (new \JBAShop\Models\Orders)->setState('filter.id', $order_id)->getItem();
         if (empty($order->id))
         {
             return;
@@ -976,9 +976,9 @@ class UserContent extends \Dsc\Mongo\Collections\Nodes
     public function updateUser() {
 
         if(!empty($this->customer_number)) {
-            $user = (new \RallyShop\Models\Customers)->setState('filter.customer_number', $this->customer_number)->getItem();
+            $user = (new \JBAShop\Models\Customers)->setState('filter.customer_number', $this->customer_number)->getItem();
         } else {
-            $user = (new \RallyShop\Models\Customers)->setState('filter.id', $this->user_id)->getItem();
+            $user = (new \JBAShop\Models\Customers)->setState('filter.id', $this->user_id)->getItem();
         }
 
 
@@ -1001,9 +1001,9 @@ class UserContent extends \Dsc\Mongo\Collections\Nodes
             foreach ($this->answers as $key => $answer) {
 
                 if(!empty($answer['customer_number'])) {
-                    $user = (new \RallyShop\Models\Customers)->setState('filter.customer_number', $answer['customer_number'])->getItem();
+                    $user = (new \JBAShop\Models\Customers)->setState('filter.customer_number', $answer['customer_number'])->getItem();
                 } else {
-                    $user = (new \RallyShop\Models\Customers)->setState('filter.id', $answer['user_id'])->getItem();
+                    $user = (new \JBAShop\Models\Customers)->setState('filter.id', $answer['user_id'])->getItem();
                 }
 
                 if(!empty($user->id)) {

@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class Packages extends \Admin\Controllers\BaseAuth 
 {
@@ -9,7 +9,7 @@ class Packages extends \Admin\Controllers\BaseAuth
 
     protected function getModel()
     {
-        $model = new \RallyShop\Models\Packages;
+        $model = new \JBAShop\Models\Packages;
         return $model;
     }
     

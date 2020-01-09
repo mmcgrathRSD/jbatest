@@ -1,7 +1,7 @@
 <?php
-namespace RallyShop\Models\Importers;
+namespace JBAShop\Models\Importers;
 
-class Orders extends \RallyShop\Models\Orders   {
+class Orders extends \JBAShop\Models\Orders   {
 
 	const PRIMARYKEY = 'gp.customer_number';
 	const DEFAULTCREATEACTION = 'none';
@@ -137,7 +137,7 @@ class Orders extends \RallyShop\Models\Orders   {
 	    /*
 	     * CHECK FOR CUSTOMER
 	     */
-	        $customer = (new \RallyShop\Models\Customers)->setState('filter.customer_number', $customerData['customerNumber'])->getItem();
+	        $customer = (new \JBAShop\Models\Customers)->setState('filter.customer_number', $customerData['customerNumber'])->getItem();
 
 	        
 	        
@@ -148,7 +148,7 @@ class Orders extends \RallyShop\Models\Orders   {
 
 	    if(empty($customer->id)) {
 	      //IF THE CUSTOMER IS EMPTY CREATE IT
-	      $customer = \RallyShop\Models\Importers\Customers::sync($customerData);
+	      $customer = \JBAShop\Models\Importers\Customers::sync($customerData);
 
 	      if(empty($customer)) {
 	          throw new \Exception('Customer Not Created');
@@ -163,10 +163,10 @@ class Orders extends \RallyShop\Models\Orders   {
 	    /*
 	     * FIND THE ORDER BY ID
 	     */
-	    $order = (new \RallyShop\Models\Orders)->setCondition('number', $orderFields['number'])->getItem();
+	    $order = (new \JBAShop\Models\Orders)->setCondition('number', $orderFields['number'])->getItem();
 
 
-	    $customer = (new \RallyShop\Models\Customers)->setState('filter.customer_number', $customerData['customerNumber'])->getItem();
+	    $customer = (new \JBAShop\Models\Customers)->setState('filter.customer_number', $customerData['customerNumber'])->getItem();
 
 
 	    if(!empty($order->id)) {
@@ -189,7 +189,7 @@ class Orders extends \RallyShop\Models\Orders   {
 	/*
 	 * UPDATE A SALES ORDER
 	 */
-	protected static function updateSalesOrder( \RallyShop\Models\Customers $customer, \RallyShop\Models\Orders $order, array $orderFields, array $items, array $tracking) {
+	protected static function updateSalesOrder(\JBAShop\Models\Customers $customer, \JBAShop\Models\Orders $order, array $orderFields, array $items, array $tracking) {
 
 	    /*
 	     * First lets update all the headers feilds most likely all the fields didn't change, but for now I think it is simplier to just update them to make sure we don't miss them
@@ -229,7 +229,7 @@ class Orders extends \RallyShop\Models\Orders   {
 	protected static  function makeCartItem($item, $number = '') {
 		$modelNumber = strtoupper($item['modelNumber']);
 
-	    $product = (new \RallyShop\Models\Products)->setCondition('tracking.model_number', $modelNumber)->getItem();
+	    $product = (new \JBAShop\Models\Products)->setCondition('tracking.model_number', $modelNumber)->getItem();
 
 		$variant_id = null;
 
@@ -238,7 +238,7 @@ class Orders extends \RallyShop\Models\Orders   {
 		}
 
 	    if (!empty($variant_id)) {
-			$cartItem = \RallyShop\Models\Carts::createItem( $variant_id, $product);
+			$cartItem = \JBAShop\Models\Carts::createItem( $variant_id, $product);
 			$cartItem->price = $item['unitPrice'];
 			$cartItem->quantity = $item['quantity'];
 
@@ -253,11 +253,11 @@ class Orders extends \RallyShop\Models\Orders   {
 	    return $cartItem->cast();
 	}
 
-	protected static function createSalesOrder(\RallyShop\Models\Customers $customer, array $orderFields, array $items, array $tracking) {
+	protected static function createSalesOrder(\JBAShop\Models\Customers $customer, array $orderFields, array $items, array $tracking) {
 
 	    //TODO SHOULD WE FAIL IF ORDERNUMBER
 
-	    $order = (new \RallyShop\Models\Orders);
+	    $order = (new \JBAShop\Models\Orders);
 
 	    $customer = $customer->ensureValidCustomer()->reload();
 	    static::log('5: Validating Customer');
@@ -318,13 +318,13 @@ class Orders extends \RallyShop\Models\Orders   {
 	        /*
 	         * CHECK FOR CUSTOMER
 	         */
-	        $customer = (new \RallyShop\Models\Customers)->setState('filter.customer_number', $customerData['customerNumber'])->getItem();
+	        $customer = (new \JBAShop\Models\Customers)->setState('filter.customer_number', $customerData['customerNumber'])->getItem();
 
 	        static::log('1: Customer Check for ID :'. $customerData['customerNumber']);
 
 	        if(empty($customer->id)) {
 	            //IF THE CUSTOMER IS EMPTY CREATE IT
-	            $customer = \RallyShop\Models\Importers\Customers::sync($customerData);
+	            $customer = \JBAShop\Models\Importers\Customers::sync($customerData);
 
 	            if(empty($customer)) {
 	                throw new \Exception('Customer Not Created');
@@ -337,9 +337,9 @@ class Orders extends \RallyShop\Models\Orders   {
 
 
 	        //avoid class conflicts
-	        if($customer instanceof \RallyShop\Models\Customers) {
+	        if($customer instanceof \JBAShop\Models\Customers) {
 	        } else {
-	        	$customer = (new \RallyShop\Models\Customers)->setCondition('_id', $customer->id)->getItem();
+	        	$customer = (new \JBAShop\Models\Customers)->setCondition('_id', $customer->id)->getItem();
 	        }
 
 
@@ -363,7 +363,7 @@ class Orders extends \RallyShop\Models\Orders   {
 
 
 
-	        $order = (new \RallyShop\Models\Orders)->setCondition('number', $searchOrderId)->getItem();
+	        $order = (new \JBAShop\Models\Orders)->setCondition('number', $searchOrderId)->getItem();
 
 
 
@@ -395,7 +395,7 @@ class Orders extends \RallyShop\Models\Orders   {
 		return $document;
 	}
 
-	protected static function updateSalesOrderToInvoice( \RallyShop\Models\Customers $customer, \RallyShop\Models\Orders $order, array $orderFields, array $items, array $tracking) {
+	protected static function updateSalesOrderToInvoice(\JBAShop\Models\Customers $customer, \JBAShop\Models\Orders $order, array $orderFields, array $items, array $tracking) {
 		//if how GP has already synced this invoice, we can just clearn it out sine we are updating a sales order to this invoice number
 		$document = static::deleteExistingInvoice($orderFields['number']);
 
@@ -455,13 +455,13 @@ class Orders extends \RallyShop\Models\Orders   {
 	 * A Historical Invoice is a order that is imported aleady to the most complete state allowing a user to see user history
 	 */
 
-	protected static function createHistoricalInvoice(\RallyShop\Models\Customers $customer, array $orderFields, array $items, array $tracking) {
+	protected static function createHistoricalInvoice(\JBAShop\Models\Customers $customer, array $orderFields, array $items, array $tracking) {
 
 	   // $document = static::deleteExistingInvoice($orderFields['number']);
 
-	    $order = (new \RallyShop\Models\Orders)->setCondition('number',$orderFields['number'])->getItem();
+	    $order = (new \JBAShop\Models\Orders)->setCondition('number',$orderFields['number'])->getItem();
         if(empty($order->id)) {
-            $order = (new \RallyShop\Models\Orders);
+            $order = (new \JBAShop\Models\Orders);
         }
 
 	    $customer = $customer->ensureValidCustomer()->reload();
@@ -542,13 +542,13 @@ class Orders extends \RallyShop\Models\Orders   {
 	        /*
 	         * CHECK FOR CUSTOMER
 	         */
-	        $customer = (new \RallyShop\Models\Customers)->setState('filter.customer_number', $customerData['customerNumber'])->getItem();
+	        $customer = (new \JBAShop\Models\Customers)->setState('filter.customer_number', $customerData['customerNumber'])->getItem();
 
 	        static::log('1: Customer Check for ID :'. $customerData['customerNumber']);
 
 	        if(empty($customer->id)) {
 	            //IF THE CUSTOMER IS EMPTY CREATE IT
-	            $customer = \RallyShop\Models\Importers\Customers::sync($customerData);
+	            $customer = \JBAShop\Models\Importers\Customers::sync($customerData);
 
 	            if(empty($customer)) {
 	                throw new \Exception('Customer Not Created');
@@ -560,10 +560,10 @@ class Orders extends \RallyShop\Models\Orders   {
 	        $orderFields = static::mapDataToMongoKeys($order);
 
 
-	        if($customer instanceof \RallyShop\Models\Customers) {
+	        if($customer instanceof \JBAShop\Models\Customers) {
 
 	        } else {
-	        	$customer = (new \RallyShop\Models\Customers)->setCondition('_id', $customer->id)->getItem();
+	        	$customer = (new \JBAShop\Models\Customers)->setCondition('_id', $customer->id)->getItem();
 	        }
 
 
@@ -571,7 +571,7 @@ class Orders extends \RallyShop\Models\Orders   {
 	        /*
 	         * FIND THE ORDER BY ID
 	        */
-	        $return = (new \RallyShop\Models\Returns)->setCondition('number', $orderFields['number'])->getItem();
+	        $return = (new \JBAShop\Models\Returns)->setCondition('number', $orderFields['number'])->getItem();
 
 	        if(!empty($return->id)) {
 	            static::log('4: UPDATING ORDER TO INVOICE');
@@ -590,10 +590,10 @@ class Orders extends \RallyShop\Models\Orders   {
 
 	}
 
-	protected static function createHistoricalReturn(\RallyShop\Models\Customers $customer, array $orderFields, array $items) {
+	protected static function createHistoricalReturn(\JBAShop\Models\Customers $customer, array $orderFields, array $items) {
 
 
-	    $return = (new \RallyShop\Models\Returns);
+	    $return = (new \JBAShop\Models\Returns);
 
 	    $customer = $customer->ensureValidCustomer()->reload();
 

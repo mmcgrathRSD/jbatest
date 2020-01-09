@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class OrderFailures extends \Shop\Admin\Controllers\OrderFailures 
 {

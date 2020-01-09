@@ -1,5 +1,5 @@
 <?php
-namespace RallySport\Admin;
+namespace JBA\Admin;
 
 class Listener extends \Prefab
 {

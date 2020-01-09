@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Services;
+namespace JBAShop\Services;
 
 class Cloudinary
 {

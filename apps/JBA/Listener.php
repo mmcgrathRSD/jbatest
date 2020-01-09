@@ -1,5 +1,5 @@
 <?php
-namespace RallySport;
+namespace JBA;
 
 class Listener extends \Prefab
 {   
@@ -50,7 +50,7 @@ class Listener extends \Prefab
 
     public function onGetCheckoutModel($event)
     {
-        $event->setArgument('checkout', \RallyShop\Models\Checkout::instance());
+        $event->setArgument('checkout', \JBAShop\Models\Checkout::instance());
     }
 
     public function onAlgoliaGetOrder($event)

@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class Cart extends \Shop\Site\Controllers\Cart
 {

@@ -1,5 +1,5 @@
 <?php 
-namespace RallySport\Site\Controllers;
+namespace JBA\Site\Controllers;
 
 class Products extends \Dsc\Controller
 {
@@ -7,7 +7,7 @@ class Products extends \Dsc\Controller
     {
         $url = '/';
         if (!empty($_GET['pn'])) {
-            $product = (new \RallyShop\Models\Products())
+            $product = (new \JBAShop\Models\Products())
                 ->setCondition('tracking.model_number', $_GET['pn'])
                 ->getItem()
             ;

@@ -20,7 +20,7 @@ class RallySportBootstrap extends \Dsc\Bootstrap
     protected function runCli()
     {
     	//Register the views file with the theme so it can render the passed namespaces
-    	\Dsc\System::instance()->get('router')->mount( new \RallySport\Site\Routes\Cli, $this->namespace );
+    	\Dsc\System::instance()->get('router')->mount( new \JBA\Site\Routes\Cli, $this->namespace );
     
     	parent::runSite();
     }
@@ -34,8 +34,8 @@ class RallySportBootstrap extends \Dsc\Bootstrap
     {  
     	//Register the views file with the theme so it can render the passed namespaces
     	\Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Site/Views/', 'RallySport/Site/Views' );
-    	\Dsc\System::instance()->get('router')->mount( new \RallySport\Site\Routes, $this->namespace );
-    	\Dsc\System::instance()->get('router')->mount( new \RallySport\Site\Routes\Users, $this->namespace );
+    	\Dsc\System::instance()->get('router')->mount( new \JBA\Site\Routes, $this->namespace );
+    	\Dsc\System::instance()->get('router')->mount( new \JBA\Site\Routes\Users, $this->namespace );
   
         parent::runSite();
     }
@@ -86,7 +86,7 @@ class RallySportBootstrap extends \Dsc\Bootstrap
     	// register the modules path
     	\Modules\Factory::registerPath( \Base::instance()->get('PATH_ROOT') . "apps/RallySport/Modules/" );
     	
-        \Dsc\System::instance()->get('router')->mount( new \RallySport\Admin\Routes, $this->namespace );
+        \Dsc\System::instance()->get('router')->mount( new \JBA\Admin\Routes, $this->namespace );
 
         \Base::instance()->route( 'GET /admin/login', '\RallySport\Admin\Controllers\Login->login' );
         \Base::instance()->route( 'POST /admin/login', '\RallySport\Admin\Controllers\Login->auth' );
@@ -120,7 +120,7 @@ class RallySportBootstrap extends \Dsc\Bootstrap
 
     protected function preWholesale()
     {
-        \Dsc\System::instance()->getDispatcher()->addListener(\RallySport\Listener::instance());
+        \Dsc\System::instance()->getDispatcher()->addListener(\JBA\Listener::instance());
     }
     
 }

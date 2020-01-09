@@ -1,6 +1,6 @@
 <?php
 
-namespace RallyShop\Services\Google;
+namespace JBAShop\Services\Google;
 
 abstract class ShoppingBase {
 	
@@ -11,7 +11,7 @@ abstract class ShoppingBase {
 
   public function __construct () {
   	
-    $config_file = \RallyShop\Models\Settings::fetch();
+    $config_file = \JBAShop\Models\Settings::fetch();
 
     if (file_exists($config_file)) {
       $config = json_decode(file_get_contents($config_file));

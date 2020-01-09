@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class Order extends \Shop\Admin\Controllers\Order
 {
@@ -12,7 +12,7 @@ class Order extends \Shop\Admin\Controllers\Order
     
     protected function getModel() 
     {
-        $model = new \RallyShop\Models\Orders;
+        $model = new \JBAShop\Models\Orders;
         return $model; 
     }
     
@@ -41,7 +41,7 @@ class Order extends \Shop\Admin\Controllers\Order
     	
     	try {
     	
-    		\RallyShop\Models\Orders::buildShippingPackages($id);
+    		\JBAShop\Models\Orders::buildShippingPackages($id);
     		\Dsc\System::instance()->addMessage( "Items Repacked", 'success');
     	} catch (\Exception $e) {
     		echo $e->getMessage(); die();

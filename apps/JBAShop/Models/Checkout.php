@@ -1,6 +1,6 @@
 <?php
-namespace RallyShop\Models;
-use RallyShop\Payment\Braintree;
+namespace JBAShop\Models;
+use JBAShop\Payment\Braintree;
 
 /**
  * Process a checkout and mark it as completed if successful.
@@ -35,7 +35,7 @@ class Checkout extends \Shop\Models\Checkout
         $cart = $this->completeShippingMethods();
 
         // Convert the cart to an Order object
-        $this->__order = \RallyShop\Models\Orders::fromCart($cart);
+        $this->__order = \JBAShop\Models\Orders::fromCart($cart);
 
         // Add payment details if applicable
         // Don't add the credit card number form the PaymentData to the cart, it shouldn't be stored in the order object in the DB
@@ -163,7 +163,7 @@ class Checkout extends \Shop\Models\Checkout
             throw new \Exception('Missing payment method');
         }
 
-        $pm = (new \RallyShop\Models\PaymentMethods)->setState('filter.identifier', $payment_method)->setState('filter.enabled', true)->getItem();
+        $pm = (new \JBAShop\Models\PaymentMethods)->setState('filter.identifier', $payment_method)->setState('filter.enabled', true)->getItem();
 
         if (empty($pm->id))
         {

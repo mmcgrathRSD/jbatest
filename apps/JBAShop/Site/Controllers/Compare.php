@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class Compare extends \Dsc\Controller
 {    
@@ -9,10 +9,10 @@ class Compare extends \Dsc\Controller
         {
         	case "products":
         	case "product":
-        	    $model = new \RallyShop\Models\Products;
+        	    $model = new \JBAShop\Models\Products;
         	    break;
         	default:
-        	    $model = new \RallyShop\Models\Categories;
+        	    $model = new \JBAShop\Models\Categories;
         	    break;
         }
         

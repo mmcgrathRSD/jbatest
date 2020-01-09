@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class YearMakeModel extends \Admin\Controllers\BaseAuth 
 {
@@ -15,10 +15,10 @@ class YearMakeModel extends \Admin\Controllers\BaseAuth
         $model = null;
         switch( $type){
             case 'ymm' :
-                $model = new \RallyShop\Models\YearMakeModels;
+                $model = new \JBAShop\Models\YearMakeModels;
                 break;
             case 'products':
-                $model = new \RallyShop\Models\Products;
+                $model = new \JBAShop\Models\Products;
                 break;
         }
         return $model;

@@ -1,5 +1,5 @@
 <?php
-namespace RallySport\Site\Controllers;
+namespace JBA\Site\Controllers;
 
 class Home extends \Dsc\Controller
 {
@@ -33,7 +33,7 @@ class Home extends \Dsc\Controller
 
     public function version()
     {
-        $settings = \RallySport\Models\Settings::fetch();
+        $settings = \JBA\Models\Settings::fetch();
         $this->app->set('settings', $settings);
 
         $title = $settings->{'site_home.page_title'} ? $settings->{'site_home.page_title'} : 'RallySportDirect.com - Performance Car Parts Online';

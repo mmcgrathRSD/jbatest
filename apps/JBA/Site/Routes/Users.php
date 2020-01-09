@@ -1,5 +1,5 @@
 <?php
-namespace RallySport\Site\Routes;
+namespace JBA\Site\Routes;
 
 class Users extends \Dsc\Routes\Group
 {

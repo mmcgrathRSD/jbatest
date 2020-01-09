@@ -13,7 +13,7 @@ foreach($filters as $key => $value) {
 					$link = $_REQUEST;
 					if(is_array(@$link['filter']['categories']) ) {
 					//look up category name from id;
-					$name = (new \RallyShop\Models\Categories)->collection()->findOne(array('_id' => new \MongoDB\BSON\ObjectID($catId)), [
+					$name = (new \JBAShop\Models\Categories)->collection()->findOne(array('_id' => new \MongoDB\BSON\ObjectID($catId)), [
                         'projection' => [
                             'title' => true,
                             '_id' => false

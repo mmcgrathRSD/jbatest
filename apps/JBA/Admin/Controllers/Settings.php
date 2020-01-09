@@ -1,5 +1,5 @@
 <?php 
-namespace RallySport\Admin\Controllers;
+namespace JBA\Admin\Controllers;
 
 class Settings extends \Admin\Controllers\BaseAuth 
 {
@@ -10,7 +10,7 @@ class Settings extends \Admin\Controllers\BaseAuth
     
     protected function getModel()
     {
-        $model = new \RallySport\Models\Settings;
+        $model = new \JBA\Models\Settings;
         return $model;
     }
     
@@ -30,7 +30,7 @@ class Settings extends \Admin\Controllers\BaseAuth
         $flash = \Dsc\Flash::instance();
         $f3->set('flash', $flash );
     
-        $settings = \RallySport\Models\Settings::fetch();
+        $settings = \JBA\Models\Settings::fetch();
         $flash->store( $settings->cast() );
         
         $this->app->set('meta.title', 'Homepage | Amrita');
@@ -55,7 +55,7 @@ class Settings extends \Admin\Controllers\BaseAuth
         $flash = \Dsc\Flash::instance();
         $f3->set('flash', $flash );
         
-        $settings = \RallySport\Models\Settings::fetch();
+        $settings = \JBA\Models\Settings::fetch();
         $flash->store( $settings->cast() );        
         
         $this->app->set('meta.title', 'Shop Home | Amrita');

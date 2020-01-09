@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Reports\BestSellers;
+namespace JBAShop\Reports\BestSellers;
 
 class Report extends \Shop\Abstracts\Report 
 {

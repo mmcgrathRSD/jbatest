@@ -1,5 +1,5 @@
 <?php 
-namespace RallySport\Models;
+namespace JBA\Models;
 
 class Settings extends \Dsc\Mongo\Collections\Settings
 {

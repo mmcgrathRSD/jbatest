@@ -1,5 +1,5 @@
 <?php
-namespace RallySport\Site\Controllers;
+namespace JBA\Site\Controllers;
 
 class Diagnostics extends \Dsc\Controller
 {
@@ -55,7 +55,7 @@ class Diagnostics extends \Dsc\Controller
         $this->setNewRelicReporting(__METHOD__);
 
         try {
-            (new \RallyShop\Services\RichRevelance())->generateFeeds()->compressFeeds();
+            (new \JBAShop\Services\RichRevelance())->generateFeeds()->compressFeeds();
         } catch (\Exception $e) {
             $this->sendNewRelicError('Error Creating Rich Relevance Feed', $e);
         }
@@ -70,13 +70,13 @@ class Diagnostics extends \Dsc\Controller
         $this->setNewRelicReporting(__METHOD__);
         try {
 
-            (new \RallyShop\Services\GoogleProductsFeed())->generateFeeds();
+            (new \JBAShop\Services\GoogleProductsFeed())->generateFeeds();
             $feeds = [
                 '/var/www/static.rallysportdirect.com/google/rsd_products.xml',
                 '/var/www/static.rallysportdirect.com/google/rsd_products_extended.xml'
             ];
 
-            (new \RallyShop\Services\GoogleProductsFeed())->compressFeeds($feeds);
+            (new \JBAShop\Services\GoogleProductsFeed())->compressFeeds($feeds);
         } catch (\Exception $e) {
             $this->sendNewRelicError('Error Creating Google Product Feed', $e);
         }
@@ -344,16 +344,16 @@ class Diagnostics extends \Dsc\Controller
             $midnight = $dateTime->setTime(0, 0, 0)->getTimestamp();
             $JustBeforeMidnight = $dateTime->setTime(23, 59, 59)->getTimestamp();
 
-            $important_products = (new \RallyShop\Models\Products())->setCondition('policies.include_in_recap', '1')->getList();
+            $important_products = (new \JBAShop\Models\Products())->setCondition('policies.include_in_recap', '1')->getList();
 
-            $new_products = (new \RallyShop\Models\Products())->setCondition('first_publication_time', array(
+            $new_products = (new \JBAShop\Models\Products())->setCondition('first_publication_time', array(
                 '$gt' => $midnight,
                 '$lt' => $JustBeforeMidnight
             ))->getList();
 
-            $settings = \RallyShop\Models\Settings::fetch();
+            $settings = \JBAShop\Models\Settings::fetch();
 
-            $cursor = (new \RallyShop\Models\YearMakeModels())->collection()->find([
+            $cursor = (new \JBAShop\Models\YearMakeModels())->collection()->find([
                 'metadata.created.time' => array(
                     '$gt' => $midnight,
                     '$lt' => $JustBeforeMidnight
@@ -365,7 +365,7 @@ class Diagnostics extends \Dsc\Controller
                 $ymms[] = $doc;
             }
 
-            $cursor = (new \RallyShop\Models\Manufacturers())->collection()->find([
+            $cursor = (new \JBAShop\Models\Manufacturers())->collection()->find([
                 'metadata.created.time' => array(
                     '$gt' => $midnight,
                     '$lt' => $JustBeforeMidnight
@@ -376,7 +376,7 @@ class Diagnostics extends \Dsc\Controller
                 $brands[] = $doc;
             }
 
-            $cursor = (new \RallyShop\Models\UserContent())->collection()->find([
+            $cursor = (new \JBAShop\Models\UserContent())->collection()->find([
                 'metadata.created.time' => array(
                     '$gt' => $midnight,
                     '$lt' => $JustBeforeMidnight

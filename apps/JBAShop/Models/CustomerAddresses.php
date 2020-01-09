@@ -1,12 +1,12 @@
 <?php
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class CustomerAddresses extends \Shop\Models\CustomerAddresses
 {
     /**
      * Get the current user's addresses
      *
-     * @return array<\RallyShop\Models\CustomerAddresses>
+     * @return array<\JBAShop\Models\CustomerAddresses>
      */
     public static function fetch()
     {
@@ -28,7 +28,7 @@ class CustomerAddresses extends \Shop\Models\CustomerAddresses
     /**
      * Get the addresses for a specified user id
      *
-     * @return array<\RallyShop\Models\CustomerAddresses>
+     * @return array<\JBAShop\Models\CustomerAddresses>
      */
     public static function fetchForId($id)
     {

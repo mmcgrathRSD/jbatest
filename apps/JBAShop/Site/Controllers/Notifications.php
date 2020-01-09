@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class Notifications extends \Dsc\Controller
 {    
@@ -8,11 +8,11 @@ class Notifications extends \Dsc\Controller
         $model = null;
         switch( $type ){
            case 'products' :
-               $model = new \RallyShop\Models\Products;
+               $model = new \JBAShop\Models\Products;
                break;
            default:
            case 'notifications':
-               $model = new \RallyShop\Models\Notifications;
+               $model = new \JBAShop\Models\Notifications;
                break;
         }
     

@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class Tags extends \Shop\Models\Tags
 {
@@ -17,7 +17,7 @@ class Tags extends \Shop\Models\Tags
      */
     public static function productsForSelection( $tag )
     {
-        return \RallyShop\Models\Products::forSelection( array(
+        return \JBAShop\Models\Products::forSelection( array(
             'tags' => $tag 
         ) );
     }
@@ -36,7 +36,7 @@ class Tags extends \Shop\Models\Tags
             return $result;
         }
         
-        $cursor = (new \RallyShop\Models\Products())->collection()->find([
+        $cursor = (new \JBAShop\Models\Products())->collection()->find([
             'tags' => $tag 
         ], [
             'projection' => [
@@ -66,7 +66,7 @@ class Tags extends \Shop\Models\Tags
             return $result;
         }
         
-        $result = (new \RallyShop\Models\Products())->collection()->count( array(
+        $result = (new \JBAShop\Models\Products())->collection()->count( array(
             '$or' => array(
                 array( 'tags' => $tag ),
                 array( 'variants.tags' => $tag )
@@ -82,7 +82,7 @@ class Tags extends \Shop\Models\Tags
     {
         if (empty( $this->__associated_products ))
         {
-            $this->__associated_products = (new \RallyShop\Models\Products())->setState( 'filter.tag', $this->title )->getItems();
+            $this->__associated_products = (new \JBAShop\Models\Products())->setState( 'filter.tag', $this->title )->getItems();
         }
         
         return $this->__associated_products;
@@ -190,7 +190,7 @@ class Tags extends \Shop\Models\Tags
             
             // OK, we have an array of product \MongoDB\BSON\ObjectIDs. Now make two queries:
             // 1. Add this tag to all products whose ID is in this array
-            $add_result = (new \RallyShop\Models\Products())->collection()->update( array(
+            $add_result = (new \JBAShop\Models\Products())->collection()->update( array(
                 '_id' => array(
                     '$in' => $product_ids 
                 ) 
@@ -205,7 +205,7 @@ class Tags extends \Shop\Models\Tags
             if (! empty( $remove ))
             {
                 // 2. Remove this tag from all products whose ID is not in this array
-                $remove_result = (new \RallyShop\Models\Products())->collection()->update( array(
+                $remove_result = (new \JBAShop\Models\Products())->collection()->update( array(
                     '_id' => array(
                         '$nin' => $product_ids 
                     ),
@@ -230,7 +230,7 @@ class Tags extends \Shop\Models\Tags
     {
         $tag = strtolower( $this->title );
         
-        $remove_result = (new \RallyShop\Models\Products())->collection()->update( array(
+        $remove_result = (new \JBAShop\Models\Products())->collection()->update( array(
             'tags' => $tag 
         ), array(
             '$pull' => array(

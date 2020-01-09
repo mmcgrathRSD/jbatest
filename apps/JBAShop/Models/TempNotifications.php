@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 use Dsc\Traits\Models\Publishable;
 

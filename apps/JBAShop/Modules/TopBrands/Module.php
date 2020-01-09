@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Modules\TopBrands;
+namespace JBAShop\Modules\TopBrands;
 
 class Module extends \Modules\Abstracts\Module 
 {

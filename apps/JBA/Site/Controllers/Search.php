@@ -1,5 +1,5 @@
 <?php 
-namespace RallySport\Site\Controllers;
+namespace JBA\Site\Controllers;
 
 class Search extends \Dsc\Controller
 { 
@@ -10,10 +10,10 @@ class Search extends \Dsc\Controller
         {
         	case "products":
         	case "product":
-        	    $model = new \RallyShop\Models\Products;
+        	    $model = new \JBAShop\Models\Products;
         	    break;
         	default:
-        	    $model = new \RallyShop\Models\Categories;
+        	    $model = new \JBAShop\Models\Categories;
         	    break;
         }
         
@@ -109,7 +109,7 @@ class Search extends \Dsc\Controller
     	$conditions = $products_model->conditions();
   		if(!empty(trim($q))) {
   		//LIMIT DIRECT PART NUMBER SEARCHES TO JUST REDIRECT
-    	$findone = (new \RallyShop\Models\Products)
+    	$findone = (new \JBAShop\Models\Products)
     		->setCondition('publication.status', ['$in' => ['published', 'discontinued']])
     		->setCondition('tracking.model_number', strtoupper($q))
     		->getItem();

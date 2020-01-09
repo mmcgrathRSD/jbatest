@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class ProductReviews extends \Shop\Admin\Controllers\ProductReviews
 {

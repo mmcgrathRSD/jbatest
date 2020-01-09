@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop;
+namespace JBAShop;
 
 use Money\Currencies\ISOCurrencies;
 use Money\Formatter\DecimalMoneyFormatter;
@@ -159,7 +159,7 @@ class Listener extends \Shop\Listener
     {
        $identity =  $event->getArgument('identity');
         
-       $identity = (new \RallyShop\Models\Customers)->bind($identity->cast());
+       $identity = (new \JBAShop\Models\Customers)->bind($identity->cast());
        $identity->ensureValidCustomer();
        $identity->store();
        
@@ -167,7 +167,7 @@ class Listener extends \Shop\Listener
     }
     public function onAffirmBeginCheckout($event)
     {
-        $event->setArgument('checkout', \RallyShop\Models\Checkout::instance());
+        $event->setArgument('checkout', \JBAShop\Models\Checkout::instance());
     }
 
     protected function checkForFreeGiftcards($cart) {

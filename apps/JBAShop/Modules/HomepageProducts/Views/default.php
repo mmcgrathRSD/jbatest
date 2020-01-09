@@ -5,7 +5,7 @@ $collection->products = array_filter(explode(',', $collection->products));
 $conditions = \Shop\Models\Collections::getProductQueryConditions($collection);
 
 
-$products = (new \RallyShop\Models\Products)->setParam('conditions', $conditions)->setParam('limit', 4)->getItems();
+$products = (new \JBAShop\Models\Products)->setParam('conditions', $conditions)->setParam('limit', 4)->getItems();
 
 if(!empty($products)) : 
 ?>

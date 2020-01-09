@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class Export extends \Shop\Admin\Controllers\Export
 {
@@ -85,7 +85,7 @@ class Export extends \Shop\Admin\Controllers\Export
     	));
     
     	// write items
-    	$cursor = (new \RallyShop\Models\Products)->collection()->find(array(
+    	$cursor = (new \JBAShop\Models\Products)->collection()->find(array(
     			'ymms.0' => array( '$exists' => false )
     	), ['sort' => ['inventory_count' => -1]]);
     

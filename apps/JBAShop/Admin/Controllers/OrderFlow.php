@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class OrderFlow extends \Shop\Admin\Controllers\Order
 {
@@ -33,7 +33,7 @@ class OrderFlow extends \Shop\Admin\Controllers\Order
 		
 		
 		try {
-			$class = new \RallyShop\Admin\Controllers\OrderFlow;
+			$class = new \JBAShop\Admin\Controllers\OrderFlow;
 			if(method_exists($class, $step )) {
 		
 				$class->$step(); 
@@ -82,7 +82,7 @@ class OrderFlow extends \Shop\Admin\Controllers\Order
 		
 		if($email = $this->inputfilter->clean( $this->app->get('POST.email'), 'string' ) ) {
 			
-			$customer = (new \RallyShop\Models\Customers)->setCondition('email', $email)->getItem();
+			$customer = (new \JBAShop\Models\Customers)->setCondition('email', $email)->getItem();
 			
 			$wishlists = $customer->getWishlists();
 			
@@ -118,7 +118,7 @@ class OrderFlow extends \Shop\Admin\Controllers\Order
 	
 		$email = $this->inputfilter->clean( $this->app->get('POST.email'), 'string');
 	
-		$customer = (new \RallyShop\Models\Customers)->setCondition('email', $email)->getItem();
+		$customer = (new \JBAShop\Models\Customers)->setCondition('email', $email)->getItem();
 	
 		$wishlists = $customer->getWishlists();
 	

@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Admin;
+namespace JBAShop\Admin;
 
 class Listener extends \Prefab
 {
@@ -149,7 +149,7 @@ class Listener extends \Prefab
 	
 	    $options = [];
 	
-	    $order = (new \RallyShop\Models\Orders)->setCondition('tracking_numbers.0', ['$exists' => true])->getItem();
+	    $order = (new \JBAShop\Models\Orders)->setCondition('tracking_numbers.0', ['$exists' => true])->getItem();
 	    $options['order'] = $order;
 	
 	    $provider = $order->getShippingProvider();
@@ -186,7 +186,7 @@ class Listener extends \Prefab
 	
 		$options = [];
 	
-		$order = (new \RallyShop\Models\Orders)->setCondition('tracking_numbers.0', ['$exists' => true])->getItem();
+		$order = (new \JBAShop\Models\Orders)->setCondition('tracking_numbers.0', ['$exists' => true])->getItem();
 		$options['order'] = $order;
 		
 		$provider = $order->getShippingProvider();
@@ -223,7 +223,7 @@ class Listener extends \Prefab
 	
 		$options = [];
 	
-		$options['question'] = (new \RallyShop\Models\UserContent)->setCondition('type', 'question')->setCondition('product_id', ['$exists' => true])->getItem();
+		$options['question'] = (new \JBAShop\Models\UserContent)->setCondition('type', 'question')->setCondition('product_id', ['$exists' => true])->getItem();
 	
 		$event->setArgument('variables', $options);
 	}
@@ -232,7 +232,7 @@ class Listener extends \Prefab
 	
 		$options = [];
 	
-		$options['return'] = (new \RallyShop\Models\Returns)->getItem();
+		$options['return'] = (new \JBAShop\Models\Returns)->getItem();
 	
 		$event->setArgument('variables', $options);
 	}
@@ -241,7 +241,7 @@ class Listener extends \Prefab
 	
 		$options = [];
 	
-		$options['return'] = (new \RallyShop\Models\Returns)->getItem();
+		$options['return'] = (new \JBAShop\Models\Returns)->getItem();
 	
 		$event->setArgument('variables', $options);
 	}
@@ -250,7 +250,7 @@ class Listener extends \Prefab
 	
 		$options = [];
 	
-		$options['product'] = (new \RallyShop\Models\Products)->setState('filter.stock_status', 'in_stock')->getItem();
+		$options['product'] = (new \JBAShop\Models\Products)->setState('filter.stock_status', 'in_stock')->getItem();
 	
 		$event->setArgument('variables', $options);
 	}
@@ -259,12 +259,12 @@ class Listener extends \Prefab
 	
 		$options = [];
 	
-		$order = (new \RallyShop\Models\Orders)->setCondition('_id', new \MongoDB\BSON\ObjectID('55c543e8caae52c1228b821b'))->getItem();
+		$order = (new \JBAShop\Models\Orders)->setCondition('_id', new \MongoDB\BSON\ObjectID('55c543e8caae52c1228b821b'))->getItem();
 		$options['order'] = $order;	
 		$options['user'] = $order->user();
 		
 		$ids = \Dsc\ArrayHelper::getColumn($order->items, 'product_id');
-		$model = new \RallyShop\Models\Products();
+		$model = new \JBAShop\Models\Products();
 		$options['products'] = $model->setState('filter.ids', $ids)->getList();
 		
 		$event->setArgument('variables', $options);
@@ -275,12 +275,12 @@ class Listener extends \Prefab
 	
 		$options = [];
 	
-		$order = (new \RallyShop\Models\Orders)->setCondition('_id', new \MongoDB\BSON\ObjectID('55c543e8caae52c1228b821b'))->getItem();
+		$order = (new \JBAShop\Models\Orders)->setCondition('_id', new \MongoDB\BSON\ObjectID('55c543e8caae52c1228b821b'))->getItem();
 		$options['order'] = $order;
 		$options['user'] = $order->user();
 	
 		$ids = \Dsc\ArrayHelper::getColumn($order->items, 'product_id');
-		$model = new \RallyShop\Models\Products();
+		$model = new \JBAShop\Models\Products();
 		$options['products'] = $model->setState('filter.ids', $ids)->getList();
 	
 		$event->setArgument('variables', $options);
@@ -364,7 +364,7 @@ class Listener extends \Prefab
 	public function mailerPreviewRallyshopAbandoned_cart_first_attempt($event) {
 	
 		$options = [];
-		$cart = (new \RallyShop\Models\CartsAbandoned())->setState('filter.abandoned', '1')
+		$cart = (new \JBAShop\Models\CartsAbandoned())->setState('filter.abandoned', '1')
 		->getItem();
 		$user = $cart->user();
 		$token = \Dsc\System::instance()->get('auth')->getAutoLoginToken($user, true);
@@ -374,7 +374,7 @@ class Listener extends \Prefab
 		$options['token'] = $token;
 		
 			$ids = \Dsc\ArrayHelper::getColumn($cart->items, 'product_id');
-			$model = new \RallyShop\Models\Products();
+			$model = new \JBAShop\Models\Products();
 			$docs = $model->setState('filter.ids', $ids)->getList();
 			$options['items'] = $docs;
 		
@@ -410,7 +410,7 @@ class Listener extends \Prefab
 	    $now = $dateTime->format('l F jS Y');
 	
 	    $options['user'] = $user;
-	    $options['product'] = (new \RallyShop\Models\Products)->setCondition('publication.status', 'published')->getItem();
+	    $options['product'] = (new \JBAShop\Models\Products)->setCondition('publication.status', 'published')->getItem();
 	    $options['date'] = $now;
 	
 	
@@ -436,7 +436,7 @@ class Listener extends \Prefab
 	    
 
 	    
-	    $options = (new \RallySport\Site\Controllers\Diagnostics)->sendRallyRecap(true);
+	    $options = (new \JBA\Site\Controllers\Diagnostics)->sendRallyRecap(true);
 
 	    $event->setArgument('variables', $options);
 	    

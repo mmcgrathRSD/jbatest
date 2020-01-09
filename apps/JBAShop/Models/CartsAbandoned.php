@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class CartsAbandoned extends \Shop\Models\CartsAbandoned
 {
@@ -99,7 +99,7 @@ class CartsAbandoned extends \Shop\Models\CartsAbandoned
                     
                     if (count($cart->items)) {
                     	$ids = \Dsc\ArrayHelper::getColumn($cart->items, 'product_id');
-                    	$model = new \RallyShop\Models\Products();
+                    	$model = new \JBAShop\Models\Products();
 						$docs = $model->setState('filter.ids', $ids)->getList();
 						foreach($docs as $doc) {
 							if($doc->inventory_count <= 0) {
@@ -154,7 +154,7 @@ class CartsAbandoned extends \Shop\Models\CartsAbandoned
     	try {
     		
     	
-        $settings = \RallyShop\Models\Settings::fetch();
+        $settings = \JBAShop\Models\Settings::fetch();
         if (empty($settings->abandoned_cart_emails_enabled))
         {
             throw  new \Exception('Abandoned Emails are Turned Off in settings');
@@ -217,7 +217,7 @@ class CartsAbandoned extends \Shop\Models\CartsAbandoned
                
         if (count($cart->items)) {
         	$ids = \Dsc\ArrayHelper::getColumn($cart->items, 'product_id');
-        	$model = new \RallyShop\Models\Products();
+        	$model = new \JBAShop\Models\Products();
         	$docs = $model->setState('filter.ids', $ids)->getList();
         	foreach($docs as $doc) {
         		if($doc->inventory_count <= 0) {

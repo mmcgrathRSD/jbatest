@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class Product extends \Shop\Admin\Controllers\Product
 {
@@ -15,11 +15,11 @@ class Product extends \Shop\Admin\Controllers\Product
     {
         switch( $type){
             case 'usercontent':
-                $model = new \RallyShop\Models\UserContent;
+                $model = new \JBAShop\Models\UserContent;
                 break;                
             default:
             case 'products:':
-                $model = new \RallyShop\Models\Products;
+                $model = new \JBAShop\Models\Products;
                 break;
         }
         return $model; 
@@ -62,7 +62,7 @@ class Product extends \Shop\Admin\Controllers\Product
     
     protected function displayCreate() 
     {
-        $model = new \RallyShop\Models\Categories;
+        $model = new \JBAShop\Models\Categories;
         $categories = $model->getList();
         $this->app->set('categories', $categories );
         $this->app->set('selected', 'null' );

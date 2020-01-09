@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class Order extends \Shop\Site\Controllers\Order 
 {
@@ -111,9 +111,9 @@ class Order extends \Shop\Site\Controllers\Order
     
     	    
     		if(\Dsc\Mongo\Helper::isValidId ($id)) {
-    			$item = (new \RallyShop\Models\Orders)->setState('filter.id', $id)->getItem();
+    			$item = (new \JBAShop\Models\Orders)->setState('filter.id', $id)->getItem();
     		} else {
-    			$item = (new \RallyShop\Models\Orders)->setCondition('number', $id)->getItem();
+    			$item = (new \JBAShop\Models\Orders)->setCondition('number', $id)->getItem();
     		}
     		
     		if (empty($item->id)) {
@@ -172,7 +172,7 @@ class Order extends \Shop\Site\Controllers\Order
     	}
     
     	try {
-    		$item = (new \RallyShop\Models\Orders)->setState('filter.id', $id)->getItem();
+    		$item = (new \JBAShop\Models\Orders)->setState('filter.id', $id)->getItem();
     		if (empty($item->id)) {
     			throw new \Exception;
     		}
@@ -268,7 +268,7 @@ class Order extends \Shop\Site\Controllers\Order
 				$braintreeAddress['locality'] =  $billing_address['city'];
 			}
 
-			$braintree = new \RallyShop\Payment\Braintree;
+			$braintree = new \JBAShop\Payment\Braintree;
 
 			try {
 				$token = $braintree->getTokenFromNonce($data['payment_method_nonce'], $braintreeId, ['billing' => $braintreeAddress, 'deviceData' => $data['device_data']]);

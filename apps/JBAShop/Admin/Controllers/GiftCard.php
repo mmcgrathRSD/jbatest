@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class GiftCard extends \Shop\Admin\Controllers\GiftCard 
 {

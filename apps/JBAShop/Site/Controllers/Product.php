@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class Product extends \Shop\Site\Controllers\Product
 {
@@ -11,10 +11,10 @@ class Product extends \Shop\Site\Controllers\Product
         {
         	case "products":
         	case "product":
-        	    $model = new \RallyShop\Models\Products;
+        	    $model = new \JBAShop\Models\Products;
         	    break;
         	default:
-        	    $model = new \RallyShop\Models\Categories;
+        	    $model = new \JBAShop\Models\Categories;
         	    break;
         }
         
@@ -27,9 +27,9 @@ class Product extends \Shop\Site\Controllers\Product
     	
     	$variant_id = $this->inputfilter->clean( $this->app->get('PARAMS.variant_id'), 'string' );
     	
-    	$item = \RallyShop\Models\Variants::getById($variant_id);
+    	$item = \JBAShop\Models\Variants::getById($variant_id);
     	
-    	$stock = \RallyShop\Models\Variants::quantity($variant_id);
+    	$stock = \JBAShop\Models\Variants::quantity($variant_id);
     	 
     	if($stock) {
     		$stockStatus = 'instock';

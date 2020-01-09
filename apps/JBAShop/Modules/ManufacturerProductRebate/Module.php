@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Modules\HomepageProducts;
+namespace JBAShop\Modules\HomepageProducts;
 
 class Module extends \Modules\Abstracts\Module 
 {

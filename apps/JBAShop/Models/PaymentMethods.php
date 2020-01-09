@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class PaymentMethods extends \Shop\Models\PaymentMethods
 {
@@ -257,7 +257,7 @@ class PaymentMethods extends \Shop\Models\PaymentMethods
      * 
      * @return \Shop\Models\PaymentMethods
      */
-    public function addCart(\RallyShop\Models\Carts &$cart)
+    public function addCart(\JBAShop\Models\Carts &$cart)
     {
         $this->__cart = $cart;
     
@@ -301,7 +301,7 @@ class PaymentMethods extends \Shop\Models\PaymentMethods
      *
      * @return \Shop\Models\PaymentMethods
      */
-    public function addOrder(\RallyShop\Models\Orders &$order)
+    public function addOrder(\JBAShop\Models\Orders &$order)
     {
         $this->__order = $order;
     
@@ -323,7 +323,7 @@ class PaymentMethods extends \Shop\Models\PaymentMethods
      *
      * @return \Shop\Models\PaymentMethods
      */
-    public function addCheckout(\RallyShop\Models\Checkout &$checkout)
+    public function addCheckout(\JBAShop\Models\Checkout &$checkout)
     {
         $this->__checkout = $checkout;
     

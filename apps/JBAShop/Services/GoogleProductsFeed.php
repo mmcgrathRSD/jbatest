@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Services;
+namespace JBAShop\Services;
 use League\CLImate\CLImate;
 class GoogleProductsFeed
 {
@@ -112,8 +112,8 @@ class GoogleProductsFeed
 			];
 			$saleExcludedBrands = array_map('strtolower', $saleExcludedBrands);
 			foreach ($products as $data) {
-				/** @var \RallyShop\Models\Products $product */
-				$product = (new \RallyShop\Models\Products())->bind($data);
+				/** @var \JBAShop\Models\Products $product */
+				$product = (new \JBAShop\Models\Products())->bind($data);
 				$additionalItemInfo = [];
 				
 				if(!empty($product->specs)){//if the item has specs then we will try and attach apparel data.

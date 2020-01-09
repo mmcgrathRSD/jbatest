@@ -1,5 +1,5 @@
 <?php
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 class OrderedGiftCards extends \Shop\Models\OrderedGiftCards
 {
@@ -46,7 +46,7 @@ class OrderedGiftCards extends \Shop\Models\OrderedGiftCards
 
     }
 
-    public function redeemForOrderAmount( $amount, \RallyShop\Models\Orders $order )
+    public function redeemForOrderAmount( $amount, \JBAShop\Models\Orders $order )
     {
     	// Deduct the amount from the balance
     	$balance_before = $this->balance();

@@ -36,12 +36,12 @@ class Error extends \Dsc\Singleton
         	}
 
         	if (!empty($oldYmmSlug) && !empty($oldCategorySlug)) {
-        		$ymm = (new \RallyShop\Models\YearMakeModels())
+        		$ymm = (new \JBAShop\Models\YearMakeModels())
         		->setCondition('old.slug', $oldYmmSlug)
         		->getItem();
 
         		if (!empty($ymm)) {
-        			$category = (new \RallyShop\Models\Categories())
+        			$category = (new \JBAShop\Models\Categories())
         			->setCondition('old.slug', $oldCategorySlug)
         			->getItem();
 

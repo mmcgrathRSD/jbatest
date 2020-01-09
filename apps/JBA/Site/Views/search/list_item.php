@@ -53,7 +53,7 @@
 					<meta itemprop="ratingValue" content="<?php echo $stars; ?>">
 					<meta itemprop="reviewCount" content="<?php echo $count; ?>">
 					<div class="paddingTopMd product-rating">
-						<?php echo \RallyShop\Models\UserContent::outputStars($stars); ?>
+						<?php echo \JBAShop\Models\UserContent::outputStars($stars); ?>
 						<small>(<?php echo $count; ?>)</small>
 					</div>
 				</div>

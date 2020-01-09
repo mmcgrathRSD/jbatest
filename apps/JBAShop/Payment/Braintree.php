@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Payment;
+namespace JBAShop\Payment;
 
 /*Just a simple class for handling Braintree operations*/
 
@@ -388,8 +388,8 @@ Class Braintree {
 	
 	public function chargeOrder($order, $generatePaymentXML = false, $amount = null, $token = null) {
 			try {
-				if ($order instanceof \RallyShop\Models\Orders == false) {
-					$order = (new \RallyShop\Models\Orders)->setState('filter.id', $order)->getItem();
+				if ($order instanceof \JBAShop\Models\Orders == false) {
+					$order = (new \JBAShop\Models\Orders)->setState('filter.id', $order)->getItem();
 				}
 				
 				if(empty($order)) {
@@ -642,7 +642,7 @@ Class Braintree {
 				//IF THERE IS NO GP NUMBER LETS ASSIGN ONE
 				if(empty($user->{'gp.customer_number'})) {
 					
-					$number = (new \RallyShop\Models\Customers)->createCustomerNumber();
+					$number = (new \JBAShop\Models\Customers)->createCustomerNumber();
 					$user->set('number', $number);
 					$user->set('gp.customer_number', $number);
 					$user->clear('braintree');

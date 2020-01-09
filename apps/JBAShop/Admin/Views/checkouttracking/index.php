@@ -15,7 +15,7 @@
 
 <?php 
 $path = '/shop/checkout';
-$checkout_users = \RallyShop\Models\CheckoutGoals::collection()->find([
+$checkout_users = \JBAShop\Models\CheckoutGoals::collection()->find([
     'timestamp' => array( '$gt' => time() - 1000 ),
 ], [
     'sort' => [
@@ -68,23 +68,23 @@ $checkout_users_count = $checkout_users->count();
 <div class="row">
     <div class="col-md-3">
     <div class ="well text-center">
-    <h1> Total Started <br><br><?php echo \RallyShop\Models\CheckoutGoals::collection()->count(); ?></h1>
+    <h1> Total Started <br><br><?php echo \JBAShop\Models\CheckoutGoals::collection()->count(); ?></h1>
       </div>      
     </div>
     
     <div class="col-md-3">
     <div class ="well text-center">
-    <h1>Shipping Form  <br><br><?php echo \RallyShop\Models\CheckoutGoals::collection()->count(['complete_shipping_form' => ['$exists' => true]]); ?></h1>
+    <h1>Shipping Form  <br><br><?php echo \JBAShop\Models\CheckoutGoals::collection()->count(['complete_shipping_form' => ['$exists' => true]]); ?></h1>
     </div>        
     </div>
      <div class="col-md-3">
     <div class ="well text-center">
-    <h1>Shipping Method  <br><br><?php echo \RallyShop\Models\CheckoutGoals::collection()->count(['complete_shipping_method' => ['$exists' => true]]); ?></h1>
+    <h1>Shipping Method  <br><br><?php echo \JBAShop\Models\CheckoutGoals::collection()->count(['complete_shipping_method' => ['$exists' => true]]); ?></h1>
          </div>   
     </div>
     <div class="col-md-3">
     <div class ="well text-center">
-    <h1>  Completed  <br><br><?php echo \RallyShop\Models\CheckoutGoals::collection()->count(['complete_payment_form' => ['$exists' => true]]); ?></h1>
+    <h1>  Completed  <br><br><?php echo \JBAShop\Models\CheckoutGoals::collection()->count(['complete_payment_form' => ['$exists' => true]]); ?></h1>
        </div>     
     </div>
 </div>

@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Models;
+namespace JBAShop\Models;
 
 /**
  * UNFINISHED Class ultimately intended to simplify Variant management 
@@ -46,7 +46,7 @@ class Variants extends \Shop\Models\Variants
      */
     public static function getById( $id )
     {
-        $return = (new \RallyShop\Models\Products)->load( array('variants.id' => $id ) );
+        $return = (new \JBAShop\Models\Products)->load( array('variants.id' => $id ) );
         
         if (empty($return->id)) {
         	throw new \Exception('Invalid Variant ID');
@@ -68,7 +68,7 @@ class Variants extends \Shop\Models\Variants
     {
         $attributes = sort($attributes);
         
-        $return = (new \RallyShop\Models\Products)->load( array( '_id' => new \MongoDB\BSON\ObjectID( (string) $product_id ),  'variants.attributes' => $attributes ) );
+        $return = (new \JBAShop\Models\Products)->load( array( '_id' => new \MongoDB\BSON\ObjectID( (string) $product_id ),  'variants.attributes' => $attributes ) );
     
         if (empty($return->id)) {
             throw new \Exception('Invalid Variant Attributes');

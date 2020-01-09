@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Admin\Controllers;
+namespace JBAShop\Admin\Controllers;
 
 class Categories extends \Shop\Admin\Controllers\Categories 
 {
@@ -10,7 +10,7 @@ class Categories extends \Shop\Admin\Controllers\Categories
 
     protected function getModel()
     {
-        $model = new \RallyShop\Models\Categories;
+        $model = new \JBAShop\Models\Categories;
         return $model;
     }
     

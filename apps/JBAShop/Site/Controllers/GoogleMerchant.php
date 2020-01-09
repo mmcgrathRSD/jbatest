@@ -1,5 +1,5 @@
 <?php 
-namespace RallyShop\Site\Controllers;
+namespace JBAShop\Site\Controllers;
 
 class GoogleMerchant extends \Shop\Site\Controllers\GoogleMerchant
 {
