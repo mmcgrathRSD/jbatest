@@ -138,11 +138,11 @@ class Search extends \Dsc\Controller
         	/*return $this->outputJson( $this->getJsonResponse( array(
         			'html'=> $view->renderLayout('Shop/Site/Views::category/grid.php')
         	) ) );*/
-        	echo $view->renderLayout('RallySport/Site/Views::search/index.php');
+        	echo $view->renderLayout('JBA/Site/Views::search/index.php');
         }
         else
         {
-	    	echo $view->renderTheme('RallySport/Site/Views::search/index.php');
+	    	echo $view->renderTheme('JBA/Site/Views::search/index.php');
         }
         return;
     

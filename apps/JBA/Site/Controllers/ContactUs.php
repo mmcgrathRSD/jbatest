@@ -8,9 +8,9 @@ class ContactUs extends \Dsc\Controller
 
 
         $this->app->set('meta.title', 'Contact Us');
-        $this->app->set('meta.description', 'Contact RallySport Direct');
+        $this->app->set('meta.description', 'Contact JBA');
         
-        echo $this->theme->render('RallySport\Site\Views::contactus/default.php');
+        echo $this->theme->render('JBA\Site\Views::contactus/default.php');
     }
     
     
@@ -57,7 +57,7 @@ class ContactUs extends \Dsc\Controller
 	   				) ) );
 	   		
 	   		} else {
-	   			\Dsc\System::addMessage('Thank you for contacting RallySport Direct. A customer service representative will contact you shortly.','success');
+	   			\Dsc\System::addMessage('Thank you for contacting JBA. A customer service representative will contact you shortly.','success');
 	   			$this->app->reroute('/contact-us');
 	   		}
 

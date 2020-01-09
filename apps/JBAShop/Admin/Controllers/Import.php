@@ -22,7 +22,7 @@ class Import extends \Shop\Admin\Controllers\Export
     	 
     	 
     	 if(!empty($importer)) {
-    	 	$namespace = '\RallyShop\Models\Importers';
+    	 	$namespace = '\JBAShop\Models\Importers';
     	 	$class = $namespace . '\\' . ucfirst($importer);
     	 	
     	 	if(class_exists($class)) {

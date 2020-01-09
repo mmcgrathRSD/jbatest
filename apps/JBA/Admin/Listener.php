@@ -67,9 +67,9 @@ class Listener extends \Prefab
     
         \Base::instance()->set('item', $event->getArgument('item'));
         $view = \Dsc\System::instance()->get('theme');
-        $html = $view->renderLayout('RallySport/Admin/Views::shop_customer/read.php');
+        $html = $view->renderLayout('JBA/Admin/Views::shop_customer/read.php');
     
-        $tabs[] = 'RallySport';
+        $tabs[] = 'JBA';
         $content[] = $html;
     
         $event->setArgument('tabs', $tabs);
@@ -85,8 +85,8 @@ class Listener extends \Prefab
         \Base::instance()->set('item', $item);
         $view = \Dsc\System::instance()->get('theme');
     
-        $tabs['rallysport'] = 'RallySport';
-        $content['rallysport'] = $view->renderLayout('RallySport/Admin/Views::users/tab.php');
+        $tabs['rallysport'] = 'JBA';
+        $content['rallysport'] = $view->renderLayout('JBA/Admin/Views::users/tab.php');
     
         $event->setArgument('tabs', $tabs);
         $event->setArgument('content', $content);

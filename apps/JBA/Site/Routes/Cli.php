@@ -9,7 +9,7 @@ class Cli extends \Dsc\Routes\Group
         $f3 = \Base::instance();
 
         $this->setDefaults(array(
-            'namespace' => '\RallySport\Site\Controllers',
+            'namespace' => '\JBA\Site\Controllers',
             'url_prefix' => ''
         ));
 

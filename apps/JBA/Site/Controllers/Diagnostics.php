@@ -6,7 +6,7 @@ class Diagnostics extends \Dsc\Controller
 
     public function run()
     {
-        echo 'French broke these out into individual jobs you need to run them directly see the RallySport/Site/Routes/Cli.php file for the routes';
+        echo 'French broke these out into individual jobs you need to run them directly see the JBA/Site/Routes/Cli.php file for the routes';
     }
 
     /**

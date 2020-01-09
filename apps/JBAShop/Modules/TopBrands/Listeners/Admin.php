@@ -7,7 +7,7 @@ class Admin extends \Prefab
     {
         $module = $event->getArgument('module');
    
-        if ($module != "shop.topbrands::\RallyShop\Modules\TopBrands\Module") {
+        if ($module != "shop.topbrands::\JBAShop\Modules\TopBrands\Module") {
             return;
         }
 
@@ -22,8 +22,8 @@ class Admin extends \Prefab
         \Base::instance()->set('item', $item);
         
         $content[] = \Dsc\System::instance()->get('theme')
-        ->registerViewPath( $temp_ui, 'RallyShop/Modules/TopBrands/Admin/Views' )
-        ->renderView('RallyShop/Modules/TopBrands/Admin/Views::form.php');
+        ->registerViewPath( $temp_ui, 'JBAShop/Modules/TopBrands/Admin/Views' )
+        ->renderView('JBAShop/Modules/TopBrands/Admin/Views::form.php');
         
         $event->setArgument('tabs', $tabs);
         $event->setArgument('content', $content);

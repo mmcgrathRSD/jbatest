@@ -65,14 +65,14 @@ jQuery(document).ready(function(){
 
         <div class="tab-pane active" id="tab-basics">
         
-            <?php echo $this->renderLayout('RallyShop/Admin/Views::usercontents/fields_basics.php'); ?>
+            <?php echo $this->renderLayout('JBAShop/Admin/Views::usercontents/fields_basics.php'); ?>
         
         </div>
         <!-- /.tab-pane -->
         
         <div class="tab-pane" id="tab-assets">
 
-            <?php echo $this->renderLayout('RallyShop/Admin/Views::usercontents/fields_images.php'); ?>
+            <?php echo $this->renderLayout('JBAShop/Admin/Views::usercontents/fields_images.php'); ?>
                                 
         </div>
         <!-- /.tab-pane -->

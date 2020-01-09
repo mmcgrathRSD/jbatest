@@ -228,7 +228,7 @@ class Listener extends \Shop\Listener
     public function newItemsFlagChanged()
     {
         if (\Base::instance()->get('SITE_TYPE') != 'wholesale') {
-            \Dsc\Queue::task('\RallyShop\Models\Collections::updateNewItems');
+            \Dsc\Queue::task('\JBAShop\Models\Collections::updateNewItems');
         }
     }
     
@@ -242,7 +242,7 @@ class Listener extends \Shop\Listener
         $model->save();
      }
     
-     public function afterCreateRallyShopModelsProducts($event) {
+     public function afterCreateJBAShopModelsProducts($event) {
          $model = $event->getArgument('model');
          $model->sales_channel_ids = ['596e669a7fdd985d47d24488'];
          $model->set('publication.status','published');

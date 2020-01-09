@@ -5,7 +5,7 @@ class Settings extends \Admin\Controllers\BaseAuth
 {
 	use \Dsc\Traits\Controllers\Settings;
 	
-	protected $layout_link = 'RallySport/Admin/Views::settings/default.php';
+	protected $layout_link = 'JBA/Admin/Views::settings/default.php';
 	protected $settings_route = '/admin/rallysport/settings';
     
     protected function getModel()
@@ -36,7 +36,7 @@ class Settings extends \Admin\Controllers\BaseAuth
         $this->app->set('meta.title', 'Homepage | Amrita');
     
         $view = \Dsc\System::instance()->get('theme');
-        echo $view->renderTheme('RallySport/Admin/Views::settings/site_home.php');
+        echo $view->renderTheme('JBA/Admin/Views::settings/site_home.php');
     }
     
     public function shopHome()
@@ -61,6 +61,6 @@ class Settings extends \Admin\Controllers\BaseAuth
         $this->app->set('meta.title', 'Shop Home | Amrita');
         
         $view = \Dsc\System::instance()->get('theme');
-        echo $view->renderTheme('RallySport/Admin/Views::settings/shop_home.php');
+        echo $view->renderTheme('JBA/Admin/Views::settings/shop_home.php');
     }
 }

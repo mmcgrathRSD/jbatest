@@ -6,11 +6,11 @@
  * This allows for custom controls but shared views. 
  *  
  */
-class RallyShopBootstrap extends \Dsc\Bootstrap
+class JBAShopBootstrap extends \Dsc\Bootstrap
 {
     protected $dir = __DIR__;
     protected $base = __DIR__;
-    protected $namespace = 'RallyShop';
+    protected $namespace = 'JBAShop';
 	
     /*
      * preSite runs before the runSite methods, each bootstrap will run its down preSite/runSite/postSite 
@@ -45,7 +45,7 @@ class RallyShopBootstrap extends \Dsc\Bootstrap
     		}
     	}
 		
-    	\Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Services/RichRelevance/Views', 'RallyShop/Services/RichRelevance/Views' );
+    	\Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Services/RichRelevance/Views', 'JBAShop/Services/RichRelevance/Views' );
     		
         parent::runSite();
     }
@@ -65,14 +65,14 @@ class RallyShopBootstrap extends \Dsc\Bootstrap
 
     	
     	// register the modules path
-    	\Modules\Factory::registerPath( \Base::instance()->get('PATH_ROOT') . "apps/RallyShop/Modules/" );
+    	\Modules\Factory::registerPath( \Base::instance()->get('PATH_ROOT') . "apps/JBAShop/Modules/" );
     	 
         \Dsc\System::instance()->get('router')->mount( new \JBAShop\Admin\Routes, $this->namespace );
      
-        \Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Admin/Views/', 'RallyShop/Admin/Views' );
+        \Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Admin/Views/', 'JBAShop/Admin/Views' );
    		 
         
-       /* \Shop\Models\Reports::register('\RallyShop\Reports\BestSellers', array(
+       /* \Shop\Models\Reports::register('\JBAShop\Reports\BestSellers', array(
         		'title'=>'Best Sellers',
         		'icon'=>'fa fa-shopping-cart',
         		'type'=>'products',
@@ -83,4 +83,4 @@ class RallyShopBootstrap extends \Dsc\Bootstrap
     }
 }
 
-$app = new RallyShopBootstrap();
+$app = new JBAShopBootstrap();

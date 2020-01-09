@@ -7,7 +7,7 @@ class Nav extends \Dsc\Controller
     {
      
         
-        echo $this->theme->render('RallySport\Site\Views::nav/index.php');
+        echo $this->theme->render('JBA\Site\Views::nav/index.php');
     }
     
    

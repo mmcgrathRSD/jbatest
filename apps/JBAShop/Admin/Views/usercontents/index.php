@@ -200,7 +200,7 @@ color:#000;
       		
       	
       		?>
-      			<?php echo $this->renderLayout("RallyShop/Admin/Views::usercontents/types/{$item->type}.php"); ?>
+      			<?php echo $this->renderLayout("JBAShop/Admin/Views::usercontents/types/{$item->type}.php"); ?>
             
             
             

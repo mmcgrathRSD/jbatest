@@ -12,7 +12,7 @@
         
         <div class="position-<?php echo $position; ?>   productItem paddingBottom noCompare col-xs-12 col-lg-4 col-md-4 col-sm-12">
         <?php $this->item = $item; ?> 
-        <?php echo $this->renderLayout('RallySport/Site/Views::search/list_item.php'); ?> 
+        <?php echo $this->renderLayout('JBA/Site/Views::search/list_item.php'); ?> 
         </div>
        
     <?php endforeach; ?>

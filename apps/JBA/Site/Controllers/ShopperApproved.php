@@ -12,7 +12,7 @@ class ShopperApproved extends \Dsc\Controller
 
         $this->app->set('meta.description', 'Over 18000 positive reviews from our great customers');
 
-        echo $this->theme->render('RallySport\Site\Views::shopperapproved/default.php');
+        echo $this->theme->render('JBA\Site\Views::shopperapproved/default.php');
     }
 
 

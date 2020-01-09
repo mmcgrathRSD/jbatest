@@ -7,7 +7,7 @@ class Admin extends \Prefab
     {
         $module = $event->getArgument('module');
    	
-        if ($module != "shop.homepageproducts::\RallyShop\Modules\ManufacturerProductRebate\Module") {
+        if ($module != "shop.homepageproducts::\JBAShop\Modules\ManufacturerProductRebate\Module") {
             return;
         }
 
@@ -22,8 +22,8 @@ class Admin extends \Prefab
         \Base::instance()->set('item', $item);
         
         $content[] = \Dsc\System::instance()->get('theme')
-        ->registerViewPath( $temp_ui, 'RallyShop/Modules/ManufacturerProductRebate/Admin/Views' )
-        ->renderView('RallyShop/Modules/ManufacturerProductRebate/Admin/Views::form.php');
+        ->registerViewPath( $temp_ui, 'JBAShop/Modules/ManufacturerProductRebate/Admin/Views' )
+        ->renderView('JBAShop/Modules/ManufacturerProductRebate/Admin/Views::form.php');
         
         $event->setArgument('tabs', $tabs);
         $event->setArgument('content', $content);

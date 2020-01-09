@@ -39,5 +39,5 @@
 
 <hr />
 
-<?php echo $this->renderLayout('RallyShop/Admin/Views::usercontents/fields_basics_publication.php'); ?>
+<?php echo $this->renderLayout('JBAShop/Admin/Views::usercontents/fields_basics_publication.php'); ?>
 

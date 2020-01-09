@@ -1,10 +1,10 @@
 <?php
 
-class RallySportBootstrap extends \Dsc\Bootstrap
+class JBABootstrap extends \Dsc\Bootstrap
 {
     protected $dir = __DIR__;
     protected $base = __DIR__;
-    protected $namespace = 'RallySport';
+    protected $namespace = 'JBA';
 	
     /*
      * preSite runs before the runSite methods, each bootstrap will run its down preSite/runSite/postSite 
@@ -33,7 +33,7 @@ class RallySportBootstrap extends \Dsc\Bootstrap
      protected function runSite()
     {  
     	//Register the views file with the theme so it can render the passed namespaces
-    	\Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Site/Views/', 'RallySport/Site/Views' );
+    	\Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Site/Views/', 'JBA/Site/Views' );
     	\Dsc\System::instance()->get('router')->mount( new \JBA\Site\Routes, $this->namespace );
     	\Dsc\System::instance()->get('router')->mount( new \JBA\Site\Routes\Users, $this->namespace );
   
@@ -84,14 +84,14 @@ class RallySportBootstrap extends \Dsc\Bootstrap
     {  
     	
     	// register the modules path
-    	\Modules\Factory::registerPath( \Base::instance()->get('PATH_ROOT') . "apps/RallySport/Modules/" );
+    	\Modules\Factory::registerPath( \Base::instance()->get('PATH_ROOT') . "apps/JBA/Modules/" );
     	
         \Dsc\System::instance()->get('router')->mount( new \JBA\Admin\Routes, $this->namespace );
 
-        \Base::instance()->route( 'GET /admin/login', '\RallySport\Admin\Controllers\Login->login' );
-        \Base::instance()->route( 'POST /admin/login', '\RallySport\Admin\Controllers\Login->auth' );
+        \Base::instance()->route( 'GET /admin/login', '\JBA\Admin\Controllers\Login->login' );
+        \Base::instance()->route( 'POST /admin/login', '\JBA\Admin\Controllers\Login->auth' );
        
-        \Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Admin/Views/', 'RallySport/Admin/Views' );
+        \Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Admin/Views/', 'JBA/Admin/Views' );
    		 
         
         parent::runAdmin();
@@ -100,8 +100,8 @@ class RallySportBootstrap extends \Dsc\Bootstrap
     {
     	 
     
-    	\Base::instance()->route( 'GET /admin/login', '\RallySport\Admin\Controllers\Login->login' );
-    	\Base::instance()->route( 'POST /admin/login', '\RallySport\Admin\Controllers\Login->auth' );
+    	\Base::instance()->route( 'GET /admin/login', '\JBA\Admin\Controllers\Login->login' );
+    	\Base::instance()->route( 'POST /admin/login', '\JBA\Admin\Controllers\Login->auth' );
     	 
    
     	parent::postAdmin();
@@ -124,4 +124,4 @@ class RallySportBootstrap extends \Dsc\Bootstrap
     }
     
 }
-$app = new RallySportBootstrap();
+$app = new JBABootstrap();

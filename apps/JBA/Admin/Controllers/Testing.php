@@ -78,7 +78,7 @@ class Testing extends \Admin\Controllers\BaseAuth
    
    public function ymm() {
        $view = \Dsc\System::instance()->get('theme');
-       echo $view->renderTheme('RallySport/Admin/Views::test/ymm.php');
+       echo $view->renderTheme('JBA/Admin/Views::test/ymm.php');
    }
    
    

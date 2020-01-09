@@ -23,7 +23,7 @@
             
                 <div class="tab-pane fade in active" id="tab-general">
                 
-                    <?php echo $this->renderLayout('RallySport/Admin/Views::settings/tab_general.php'); ?>
+                    <?php echo $this->renderLayout('JBA/Admin/Views::settings/tab_general.php'); ?>
 
                 </div>
 

@@ -28,7 +28,7 @@ class Home extends \Dsc\Controller
     	}
 
     	$this->app->set('isHome', true);
-        echo $this->theme->render('RallySport\Site\Views::home/default.php');
+        echo $this->theme->render('JBA\Site\Views::home/default.php');
     }
 
     public function version()
@@ -36,7 +36,7 @@ class Home extends \Dsc\Controller
         $settings = \JBA\Models\Settings::fetch();
         $this->app->set('settings', $settings);
 
-        $title = $settings->{'site_home.page_title'} ? $settings->{'site_home.page_title'} : 'RallySportDirect.com - Performance Car Parts Online';
+        $title = $settings->{'site_home.page_title'} ? $settings->{'site_home.page_title'} : 'jbautosports.com - Performance Car Parts Online';
         $this->app->set('meta.title', $title);
 
         $desc = $settings->{'site_home.page_description'};
@@ -45,13 +45,13 @@ class Home extends \Dsc\Controller
         $version_number = (int) \Base::instance()->get('PARAMS.version_number');
 
         // If the file doesn't exist, just use the default
-        if (!$this->theme->findViewFile( 'RallySport\Site\Views::home/version_' . $version_number . '.php' ))
+        if (!$this->theme->findViewFile( 'JBA\Site\Views::home/version_' . $version_number . '.php' ))
         {
-            echo $this->theme->render('RallySport\Site\Views::home/default.php');
+            echo $this->theme->render('JBA\Site\Views::home/default.php');
             return;
         }
 
-        echo $this->theme->render('RallySport\Site\Views::home/version_' . $version_number . '.php');
+        echo $this->theme->render('JBA\Site\Views::home/version_' . $version_number . '.php');
     }
 
     public function loginAsUser() {

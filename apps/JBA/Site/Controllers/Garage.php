@@ -8,13 +8,13 @@ class Garage extends \Dsc\Controller
         $settings = \JBA\Models\Settings::fetch();
         $this->app->set('settings', $settings);
         
-        $title = $settings->{'site_home.page_title'} ? $settings->{'site_home.page_title'} : 'RallySportDirect.com - Performance Car Parts Online';
+        $title = $settings->{'site_home.page_title'} ? $settings->{'site_home.page_title'} : 'jbautosports.com - Performance Car Parts Online';
         $this->app->set('meta.title', $title);
         
         $desc = $settings->{'site_home.page_description'};
         $this->app->set('meta.description', $desc);
         
-        echo $this->theme->render('RallySport\Site\Views::home/default.php');
+        echo $this->theme->render('JBA\Site\Views::home/default.php');
     }
     
     

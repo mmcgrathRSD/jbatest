@@ -9,7 +9,7 @@ class Routes extends \Dsc\Routes\Group
         $f3 = \Base::instance();
         
         $this->setDefaults(array(
-            'namespace' => '\RallyShop\Admin\Controllers',
+            'namespace' => '\JBAShop\Admin\Controllers',
             'url_prefix' => '/admin/shop'
         ));
         

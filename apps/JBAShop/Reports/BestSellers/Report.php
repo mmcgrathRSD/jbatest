@@ -5,7 +5,7 @@ class Report extends \Shop\Abstracts\Report
 {
     public function bootstrap()
     {
-        $this->theme->registerViewPath( __dir__ . '/Views/', 'RallyShop/Reports/BestSellers/Views' );
+        $this->theme->registerViewPath( __dir__ . '/Views/', 'JBAShop/Reports/BestSellers/Views' );
         
         return parent::bootstrap();
     }
@@ -29,6 +29,6 @@ class Report extends \Shop\Abstracts\Report
         $this->app->set('state', $model->getState());
         $this->app->set('paginated', $paginated);
         
-        echo $this->theme->render('RallyShop/Reports/BestSellers/Views::index.php');
+        echo $this->theme->render('JBAShop/Reports/BestSellers/Views::index.php');
     }
 }

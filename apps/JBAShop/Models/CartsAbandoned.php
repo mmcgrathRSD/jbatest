@@ -118,7 +118,7 @@ class CartsAbandoned extends \Shop\Models\CartsAbandoned
                     
                  /*  $time = $abandoned_time + time();
                     
-                    $task = \Dsc\Queue::task('\RallyShop\Models\CartsAbandoned::sendAbandonedEmailNotification', array(
+                    $task = \Dsc\Queue::task('\JBAShop\Models\CartsAbandoned::sendAbandonedEmailNotification', array(
                     		(string) $cart->id, 
                     		'first'
                     ), array(

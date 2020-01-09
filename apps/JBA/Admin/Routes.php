@@ -20,7 +20,7 @@ class Routes extends \Dsc\Routes\Group{
 
 		$this->setDefaults(
 				array(
-					'namespace' => '\RallySport\Admin\Controllers',
+					'namespace' => '\JBA\Admin\Controllers',
 					'url_prefix' => '/admin/rallysport'
 				)
 		);
@@ -39,11 +39,11 @@ class Routes extends \Dsc\Routes\Group{
 				'action' => 'testing'
 		));
 		
-		$this->app->route( 'GET /admin/rallysport/testing/@task', '\RallySport\Admin\Controllers\Testing->@task' );
-		$this->app->route( 'GET /admin/rallysport/testing/@task/page/@page', '\RallySport\Admin\Controllers\Testing->@task' );
+		$this->app->route( 'GET /admin/rallysport/testing/@task', '\JBA\Admin\Controllers\Testing->@task' );
+		$this->app->route( 'GET /admin/rallysport/testing/@task/page/@page', '\JBA\Admin\Controllers\Testing->@task' );
 		
-		$this->app->route( 'GET /admin/login', '\RallySport\Admin\Controllers\Login->login' );
-		$this->app->route( 'POST /admin/login/rsd', '\RallySport\Admin\Controllers\Login->auth' );
+		$this->app->route( 'GET /admin/login', '\JBA\Admin\Controllers\Login->login' );
+		$this->app->route( 'POST /admin/login/rsd', '\JBA\Admin\Controllers\Login->auth' );
 		
 		
 		$this->addSettingsRoutes();

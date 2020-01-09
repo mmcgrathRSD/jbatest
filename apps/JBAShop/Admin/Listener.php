@@ -80,7 +80,7 @@ class Listener extends \Prefab
 
 		\Base::instance()->set('item', $event->getArgument('item'));
 		$view = \Dsc\System::instance()->get('theme');
-		$html = $view->renderLayout('RallyShop/Admin/Views::shop_customer/read.php');
+		$html = $view->renderLayout('JBAShop/Admin/Views::shop_customer/read.php');
 
 		$tabs[] = 'Shop';
 		$content[] = $html;
@@ -99,10 +99,10 @@ class Listener extends \Prefab
 		$view = \Dsc\System::instance()->get('theme');
 
 		$tabs['shop'] = 'Shop';
-		$content['shop'] = $view->renderLayout('RallyShop/Admin/Views::users/tab.php');
+		$content['shop'] = $view->renderLayout('JBAShop/Admin/Views::users/tab.php');
 
 		$tabs['shop'] = 'User Social Profile';
-		$content['shop'] = $view->renderLayout('RallyShop/Admin/Views::users/profile.php');
+		$content['shop'] = $view->renderLayout('JBAShop/Admin/Views::users/profile.php');
 		
 		$event->setArgument('tabs', $tabs);
 		$event->setArgument('content', $content);
@@ -428,7 +428,7 @@ class Listener extends \Prefab
 		
 		$model = $event->getArgument('model');
 		
-		\Dsc\Queue::task('\RallyShop\Models\UserContent::updateForUser', [$model->id], ['batch' => 'usercontent']);
+		\Dsc\Queue::task('\JBAShop\Models\UserContent::updateForUser', [$model->id], ['batch' => 'usercontent']);
 		
 	}
 	

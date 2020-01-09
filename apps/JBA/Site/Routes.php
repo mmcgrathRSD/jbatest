@@ -22,7 +22,7 @@ class Routes extends \Dsc\Routes\Group{
 
 		$this->setDefaults(
 				array(
-					'namespace' => '\RallySport\Site\Controllers',
+					'namespace' => '\JBA\Site\Controllers',
 					'url_prefix' => ''
 				)
 		);

@@ -7,7 +7,7 @@ class Admin extends \Prefab
     {
         $module = $event->getArgument('module');
    
-        if ($module != "shop.disruptorengine::\RallyShop\Modules\DisruptorEngine\Module") {
+        if ($module != "shop.disruptorengine::\JBAShop\Modules\DisruptorEngine\Module") {
             return;
         }
 
@@ -22,8 +22,8 @@ class Admin extends \Prefab
         \Base::instance()->set('item', $item);
         
         $content[] = \Dsc\System::instance()->get('theme')
-        ->registerViewPath( $temp_ui, 'RallyShop/Modules/DisruptorEngine/Admin/Views' )
-        ->renderView('RallyShop/Modules/DisruptorEngine/Admin/Views::form.php');
+        ->registerViewPath( $temp_ui, 'JBAShop/Modules/DisruptorEngine/Admin/Views' )
+        ->renderView('JBAShop/Modules/DisruptorEngine/Admin/Views::form.php');
         
         $event->setArgument('tabs', $tabs);
         $event->setArgument('content', $content);

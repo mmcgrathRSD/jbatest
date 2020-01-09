@@ -26,8 +26,8 @@ class Module extends \Modules\Abstracts\Module
         
         $f3->set('module', $this);
 
-        \Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Views/', 'RallyShop/Modules/HomepageProducts/Views' );
-        $string = \Dsc\System::instance()->get('theme')->renderLayout('RallyShop/Modules/HomepageProducts/Views::default.php');
+        \Dsc\System::instance()->get('theme')->registerViewPath( __dir__ . '/Views/', 'JBAShop/Modules/HomepageProducts/Views' );
+        $string = \Dsc\System::instance()->get('theme')->renderLayout('JBAShop/Modules/HomepageProducts/Views::default.php');
         
         $f3->set('UI', $old_ui);
         

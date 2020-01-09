@@ -7,7 +7,7 @@ class Admin extends \Prefab
     {
         $module = $event->getArgument('module');
    
-        if ($module != "shop.promo::\RallyShop\Modules\Promo\Module") {
+        if ($module != "shop.promo::\JBAShop\Modules\Promo\Module") {
             return;
         }
 
@@ -22,8 +22,8 @@ class Admin extends \Prefab
         \Base::instance()->set('item', $item);
         
         $content[] = \Dsc\System::instance()->get('theme')
-        ->registerViewPath( $temp_ui, 'RallyShop/Modules/Promo/Admin/Views' )
-        ->renderView('RallyShop/Modules/Promo/Admin/Views::form.php');
+        ->registerViewPath( $temp_ui, 'JBAShop/Modules/Promo/Admin/Views' )
+        ->renderView('JBAShop/Modules/Promo/Admin/Views::form.php');
         
         $event->setArgument('tabs', $tabs);
         $event->setArgument('content', $content);
@@ -44,8 +44,8 @@ class Admin extends \Prefab
         $temp_ui = dirname( __FILE__ ) . "/../Admin/Views/";        
         
         $content[] = \Dsc\System::instance()->get('theme')
-        ->registerViewPath( $temp_ui, 'RallyShop/Modules/Promo/Admin/Views' )
-        ->renderView('RallyShop/Modules/Promo/Admin/Views::menuitem.php');
+        ->registerViewPath( $temp_ui, 'JBAShop/Modules/Promo/Admin/Views' )
+        ->renderView('JBAShop/Modules/Promo/Admin/Views::menuitem.php');
     
         $event->setArgument('tabs', $tabs);
         $event->setArgument('content', $content);

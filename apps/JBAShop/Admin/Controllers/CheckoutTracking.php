@@ -19,7 +19,7 @@ class CheckoutTracking extends \Admin\Controllers\BaseAuth
 
 		
 		$view = \Dsc\System::instance()->get('theme');
-		echo $view->render('RallyShop\Admin\Views::checkouttracking/index.php');
+		echo $view->render('JBAShop\Admin\Views::checkouttracking/index.php');
 	}
 	
    public function single() {
@@ -40,7 +40,7 @@ class CheckoutTracking extends \Admin\Controllers\BaseAuth
    	$this->app->set('actions',$list);
    	
    	$view = \Dsc\System::instance()->get('theme');
-   	echo $view->render('RallyShop\Admin\Views::checkouttracking/single.php');
+   	echo $view->render('JBAShop\Admin\Views::checkouttracking/single.php');
    	
    }
     
@@ -63,7 +63,7 @@ class CheckoutTracking extends \Admin\Controllers\BaseAuth
    	$this->app->set('actions',$list);
    
    	$view = \Dsc\System::instance()->get('theme');
-   	echo $view->renderView('RallyShop\Admin\Views::checkouttracking/single.php');
+   	echo $view->renderView('JBAShop\Admin\Views::checkouttracking/single.php');
    
    }
     
