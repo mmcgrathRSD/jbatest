@@ -33,7 +33,7 @@ $html = 'ERROR: '. $app->get('ERROR.text') . '| ' . $app->get('ERROR.status');
 		        
         $html .= \Dsc\Debug::dump($trace);
 
-        $emailSent = \Dsc\System::instance()->get('mailer')->send('chris.french@rallysportdirect.com', 'QUEUE PROCESS ERROR' . $app->get('ERROR.code'), array($html) );
+        $emailSent = \Dsc\System::instance()->get('mailer')->send('christopher.west@rallysportdirect.com', 'QUEUE PROCESS ERROR' . $app->get('ERROR.code'), array($html) );
 
 });
 
