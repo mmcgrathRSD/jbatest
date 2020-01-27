@@ -15,6 +15,7 @@ composer.lock
 .idea
 .classpath
 .vagrant
+.vscode
 deployment.properties
 /public/*Assets
 /public/shop-assets

@@ -1,0 +1,94 @@
+{
+	"folders": [
+		{
+			"name": "JBAutoSports",
+			"path": "."
+		},
+		{
+			"name": "Admin",
+			"path": "vendor/premierperformance/admin"
+		},
+		{
+			"name": "Assets",
+			"path": "vendor/premierperformance/assets"
+		},
+		{
+			"name": "CustomerService",
+			"path": "vendor/premierperformance/customerservice"
+		},
+		{
+			"name": "Data",
+			"path": "vendor/premierperformance/data"
+		},
+		{
+			"name": "DealerPortal",
+			"path": "vendor/premierperformance/dealerportal"
+		},
+		{
+			"name": "DealerPortalTheme",
+			"path": "vendor/premierperformance/dealerportaltheme"
+		},
+		{
+			"name": "Library",
+			"path": "vendor/premierperformance/library"
+		},
+		{
+			"name": "Mailer",
+			"path": "vendor/premierperformance/mailer"
+		},
+		{
+			"name": "Minify",
+			"path": "vendor/premierperformance/minify"
+		},
+		{
+			"name": "Modules",
+			"path": "vendor/premierperformance/modules"
+		},
+		{
+			"name": "Netsuite",
+			"path": "vendor/premierperformance/netsuite"
+		},
+		{
+			"name": "Pages",
+			"path": "vendor/premierperformance/pages"
+		},
+		{
+			"name": "Redirect",
+			"path": "vendor/premierperformance/redirect"
+		},
+		{
+			"name": "Search",
+			"path": "vendor/premierperformance/search"
+		},
+		{
+			"name": "Shop",
+			"path": "vendor/premierperformance/shop"
+		},
+		{
+			"name": "Toolbox",
+			"path": "vendor/premierperformance/toolbox"
+		},
+		{
+			"name": "Users",
+			"path": "vendor/premierperformance/users"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+			"**/.idea": true,
+			"vendor": true
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"felixfbecker.php-pack",
+			"felixfbecker.php-debug",
+			"mutantdino.resourcemonitor"
+		]
+	}
+}
