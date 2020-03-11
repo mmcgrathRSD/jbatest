@@ -33,6 +33,10 @@ $app->route('GET /sync-product-info', function() {
     (new JBAShop\Services\Magento)->syncProductInfo();
 });
 
+$app->route('GET /sync-magento-users-to-mongo', function(){
+	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo();
+});
+
 /**************************/
 
 
@@ -44,8 +48,6 @@ $app->route('GET /sync-product-info', function() {
 
 // trigger the preflight event PreSite, PostSite etc
 \Dsc\System::instance()->preflight();
-
-
 
 //excute everything.
 $app->run();

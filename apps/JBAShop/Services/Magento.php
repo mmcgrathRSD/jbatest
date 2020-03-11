@@ -36,6 +36,42 @@ class Magento
         return $db;
     }
 
+    public function syncMagentoUsersToMongo($entityId = null){
+        //eav_attribute.attribute_id -> customer_entity_varchar.entity_id; 
+        
+        $sql = "
+            SELECT
+                ce.entity_id,
+                cevf.VALUE as firstname,
+                cevl.VALUE as lastname, 
+                cevp.VALUE as password_hash,
+                ce.email 
+            FROM
+                customer_entity ce
+                INNER JOIN customer_entity_varchar cevf ON ce.entity_id = cevf.entity_id
+                INNER JOIN eav_attribute eaf ON eaf.attribute_id = cevf.attribute_id
+                INNER JOIN customer_entity_varchar cevl ON ce.entity_id = cevl.entity_id
+                INNER JOIN eav_attribute eal ON eal.attribute_id = cevl.attribute_id
+                INNER JOIN customer_entity_varchar cevp ON ce.entity_id = cevp.entity_id
+                INNER JOIN eav_attribute eaph ON eaph.attribute_id = cevp.attribute_id
+                INNER JOIN eav_entity_type eet ON eet.entity_type_id = eal.entity_type_id = eaf.entity_type_id 
+            WHERE
+                eet.entity_type_code = 'customer' 
+                AND eaf.attribute_code = 'firstname' 
+                AND eal.attribute_code = 'lastname' 
+                AND eaph.attribute_code = 'password_hash'
+            ORDER BY
+                ce.entity_id
+        ";
+
+        //Execute the PDO statement
+        $select = $this->db->prepare($sql);
+        $select->execute();
+        $rows = $select->fetch();
+        var_dump($rows);
+
+    }
+
     public function syncCategories()
     {
         // TODO: category enabled?
