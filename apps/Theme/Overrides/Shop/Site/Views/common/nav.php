@@ -1,98 +1,141 @@
-<?php
-$topNav = (new \Admin\Models\Navigation)->setCondition('title', 'Top Nav')->getItem();
-$menuId = (string) $topNav->id;
-$url = \Base::instance()->get('PARAMS.0');
-$cache = \Cache::instance();
-$time_start = microtime(true);
-if (!$cache->exists('mobile_display_menu.' . $menuId, $menu ) || !$cache->exists('tops_display_menu.' . $menuId, $topsMenu )) {
-    $topsMenu = '<div class="navTops"><div class="container"><ul class="topNav">';
-    $menu = '';
-    $tops = (new \Admin\Models\Navigation)->setState('filter.parent', $menuId)->setState('order_clause', array( 'tree'=> 1, 'lft' => 1 ))->getList();
-    foreach($tops as $top):
-        $secondary = $top->getChildren();
-        $topsMenu .= "<a data-id=\"slave-".urlencode($top->slug)."\" href=\"".$top->get('details.url')."\"><li data-id=\"slave-".urlencode($top->slug)."\">".$top->title."<i class='visible-xs pull-right glyphicon glyphicon-chevron-right'></i></li></a>\n<div class='divider_pipe'></div>\n";
-        $menu .= '<div data-id="slave-'.urlencode($top->slug).'" class="navSlave"><div class="container"><div>';
-		$newRow = 0;
-        foreach($secondary as $key => $subcat) :
-			if(substr($subcat->get('details.url'), 5, 13) == 'package-deals') {
-				if($subcat->get('published')) {
-					if(!empty($subcat->get('image.slug'))) {
-						$menu .= '<div class="packageDealsDiv"><a href="'.$subcat->get('details.url').'" class="hidden-xs packageDeals"><img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="'.cloudinary_url($subcat->get('image.slug')).'"></img></a></div>';
-					} else {
-						$menu .= '<a href="'.$subcat->get('details.url').'" class="hidden-xs packageDeals "><div style="background: url('.cloudinary_url('package_deals_banner_d5klmn.jpg').') no-repeat center;"></div></a>';
-					}
-					$menu .= '<ul class="visible-xs"><li class="packageDeals"><a href="'.$subcat->get('details.url').'">Package Deals<i class="visible-xs pull-right glyphicon glyphicon-chevron-right"></i></a></li>';
-					$menu .= '<li><a href="'.$subcat->get('details.url').'">Shop All</a></li></ul>';
-				}
-				$newRow--;
-			} else {
-				$third = $subcat->getChildren();
-				if($newRow % 5 == 0) {
-					$menu .= '</div><div class="row">';
-				}
-				$menu .= '<ul>';
-				if(!empty($subcat->get('image.slug'))) :
-					$menu .= '<a href="'.$subcat->get('details.url').'"><img src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" data-src="'.\Shop\Models\Products::product_thumb($subcat->get('image.slug')).'" class="nav-img hidden-xs"></a>';
-				endif;
-				$menu .= '<li><a href="'.$subcat->get('details.url').'">'.ucwords(strtolower($subcat->get('title'))).'<i class="visible-xs pull-right glyphicon glyphicon-chevron-right"></i></a></li>';
-				foreach($third as $key => $last) :
-					if($key < 5) {
-						$menu .= '<li><a href="'.$last->get('details.url').'">'.ucwords(strtolower($last->title)).'</a></li>';
-					}
-				endforeach;
-				$menu .= '<li><a href="'.$subcat->get('details.url').'">Shop All</a></li></ul>';
-			}
-			$newRow++;
-        endforeach;
-        $menu .= '</div></div></div>';
-    endforeach;
+<div class="header-container full-header">
+   <div class="header header-2 site-width">
+      <div class="table-container">
+         <div class="table-cell v-align-cell logo-container">
+            <a href="/" title="SubiSpeed - 2015 WRX / STI Parts and Accessories" class="logo">
+            <strong>SubiSpeed - 2015 WRX / STI Parts and Accessories</strong>
+            <img class="retina" width="240" height="42" src="https://www.subispeed.com/media/olegnax/athlete/subispeed_logo.png" alt="SubiSpeed - Your source for Subaru WRX / STI parts!">
+            </a>
+         </div>
+         <div class="table-cell header-info-container">
+            <div class="relative">
+               <div class="top-links-container ">
+                  <!-- cart BOF -->
+                  <div class="header-switch header-cart">
+                     <a class="header-switch-trigger summary icon-white" href="/shop/cart/">
+                     <span>My Cart</span><span class="qty">1</span>	</a>
+                     <div class="header-dropdown" style="display: none; opacity: 0;">
+                        <div class="cart-promotion"><strong>Shopping Cart</strong></div>
+                        <p class="block-subtitle text-recently">Recently added item(s)</p>
+                        <ol id="cart-sidebar" class="mini-products-list">
+                           <li class="item clearfix">
+                              <a href="https://www.subispeed.com/olm-retical-style-led-fog-lights-2013-2016-fr-s-2015-wrx-2014-forester-2013-crosstrek-15500" title="OLM Retical Style LED Fog Lights - 15+ WRX / 15-17 STI / 13-16 BRZ / 13+ Crosstrek / 14+ Forester " class="product-image">
+                              <img src="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/120x120/85e4522595efc69f496374d01ef2bf13/o/l/olm_retical_style_led_fog_lights_-_13-16_fr-s_15_wrx_15_sti-1_1.jpg" data-srcx2="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/120x120/85e4522595efc69f496374d01ef2bf13/o/l/olm_retical_style_led_fog_lights_-_13-16_fr-s_15_wrx_15_sti-1_1.jpg" width="60" height="60" alt="OLM Retical Style LED Fog Lights - 15+ WRX / 15-17 STI / 13-16 BRZ / 13+ Crosstrek / 14+ Forester ">		</a>
+                              <div class="product-details">
+                                 <a href="https://www.subispeed.com/checkout/cart/delete/id/6986151/form_key/Omzpe1e7evRvCiGh/uenc/aHR0cHM6Ly93d3cuc3ViaXNwZWVkLmNvbS8yMDE0LXN1YmFydS1mb3Jlc3Rlci9kZXRhaWxpbmctcHJvZHVjdHM_ZGV0YWlsaW5nPTE0MTQ,/" title="Remove This Item" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" class="btn-remove icon-white">Remove This Item</a>
+                                 <a href="https://www.subispeed.com/checkout/cart/configure/id/6986151/" title="Edit item" class="btn-edit icon-white">Edit item</a>
+                                 <p class="product-name"><a href="https://www.subispeed.com/olm-retical-style-led-fog-lights-2013-2016-fr-s-2015-wrx-2014-forester-2013-crosstrek-15500">OLM Retical Style LED Fog Lights - 15+ WRX / 15-17 STI / 13-16 BRZ / 13+ Crosstrek / 14+ Forester </a>		</p>
+                                 <strong>1</strong> x
+                                 <span class="price">$149.95</span>											
+                              </div>
+                           </li>
+                        </ol>
+                        <div class="subtotal">
+                           <span class="label">Total:</span> <span class="price">$149.95</span>												
+                        </div>
+                        <div class="buttons clearfix">
+                           <button type="button" title="View Cart" class="button inverted btn-continue" onclick="setLocation('https://www.subispeed.com/checkout/cart/')"><span><span>View Cart</span></span></button>
+                           <button type="button" title="Checkout" class="button btn-checkout" onclick="setLocation('https://www.subispeed.com/checkout/onepage/')"><span><span>Checkout</span></span></button>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- cart EOF -->						
+                  <div class="top-links">
+                     <ul class="links">
+                        <li class="first"><a href="/shop/account" title="My Account">My Account</a></li>
+                        <li><a href="/shop/wishlist" title="My Wishlist">My Wishlist</a></li>
+                        <li><a href="/shop/checkout" title="Checkout" class="top-link-checkout">Checkout</a></li>
+                        <?php if($this->auth->getIdentity()->id) : ?>
+                        <li class=" last"><a href="/logout" title="Log Out">Log Out</a></li>
+                        <?php else : ?>
+                        <li class=" last"><a href="/sign-in" title="Log In">Log In</a></li>
+                        <?php endif; ?>
+                        
+                     </ul>
+                  </div>
+                  <div class="clear"></div>
+               </div>
+               <div class="nav-search-container search-visible">
+                  <form class="searchautocomplete UI-SEARCHAUTOCOMPLETE" action="https://www.subispeed.com/catalogsearch/result/" method="get" data-tip="" data-url="//www.subispeed.com/searchautocomplete/ajax/get/" data-minchars="6" data-delay="600">
+                     <label for="search">Search</label>
+                     <div class="nav">
+                        <div class="nav-search-in">
+                           <span class="category-fake UI-CATEGORY-TEXT">All</span>
+                           <span class="nav-down-arrow"></span>
+                           <select name="cat" class="category UI-CATEGORY" style="width: 47.2344px;">
+                              <option value="0">All</option>
+                              <option value="3">
+                                 13+ BRZ                
+                              </option>
+                              <option value="5">
+                                 15+ WRX                 
+                              </option>
+                              <option value="6">
+                                 15+ STI                 
+                              </option>
+                              <option value="955">
+                                 14-18 Forester                
+                              </option>
+                              <option value="1222">
+                                 13-17 Crosstrek                
+                              </option>
+                              <option value="1320">
+                                 17+ Impreza                
+                              </option>
+                              <option value="1369">
+                                 18+ Crosstrek                
+                              </option>
+                           </select>
+                        </div>
+                        <div class="nav-input UI-NAV-INPUT" style="padding-left: 47.2344px;">
+                           <input class="input-text UI-SEARCH" type="text" autocomplete="off" name="q" value="" maxlength="50" id="search-box">
+                           <input class="input-text UI-SEARCH" type="text" autocomplete="off" name="q" value="" maxlength="50" id="search-box-mobile">
+                        </div>
+                        <div class="searchautocomplete-loader UI-LOADER" style="display:none;"></div>
+                     </div>
+                     <div class="nav-submit-button">
+                        <button type="submit" title="Go" class="button">Go</button>
+                     </div>
+                     <div style="display:none" class="searchautocomplete-placeholder UI-PLACEHOLDER"></div>
+                  </form>
+                  <div class="nav-container header-nav-txt std">
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="header-nav-wide">
+         <div class="nav-container olegnaxmegamenu icons-black">
+            <div class="nav-top-title">
+               <div class="icon"><span></span><span></span><span></span></div>
+               <a href="#">Navigation</a>
+            </div>
+            <ul id="nav">
+            <?php
+            $topNav = (new \Admin\Models\Navigation)->setCondition('title', 'Top Nav')->getItem();
+            $menuId = (string) $topNav->id;
+            $tops = (new \Admin\Models\Navigation)->setState('filter.parent', $menuId)->setState('order_clause', array( 'tree'=> 1, 'lft' => 1 ))->getList();
 
-    $cache->set('mobile_display_menu.' . $menuId, $menu, 1800);
-	$cache->set('tops_display_menu.' . $menuId, $topsMenu, 1800);
-}
+            foreach($tops as $key => $top):
+                echo '<li class="level0 nav-' . ($key + 1) . ' first  level-top ';
+                
+                if(!empty($top->display_type) && $top->display_type == 'title') {
+                    echo 'default';
+                } else {
+                     echo 'wide';
+                } 
+                 
+                echo ' parent parent-fake parent"><a href="' . urlencode($top->slug) . '" class=""><span>' . $top->title . '</span></a>';
 
-if($car = $this->session->get('activeVehicle')) {
-	$topsMenu .= '<li class="toggle-ymm hidden-xs"><div>'.$car['vehicle_year'].' '.$car['vehicle_make'].'<br />'.$car['vehicle_model'];
-	$topsMenu .= ' ';
-	$topsMenu .= $car['vehicle_sub_model'];
-	$topsMenu .= '</div></li>';
-}
-else {
-	$topsMenu .= '<li class="toggle-ymm hidden-xs"><div>';
-	$topsMenu .= '<i class="glyphicon glyphicon-car"></i>&nbsp;Set Your Car</div></li>';
-}
-$topsMenu .= '<span class="stretcher"></span><div class="mobilePhone visible-xs"><button type="submit" class="btn btn-md navPhone">';
-$topsMenu .= '<a href="tel:+18884572559" id="navPhone">1-888-45-RALLY</a></button></div></ul></div></div>';
-
-$menu = $topsMenu.$menu;
-
-$time_end = microtime(true);
-$time = $time_end - $time_start; ?>
-
-<div class="topMaster">
-	<?php echo $this->renderView('Theme/Views::common/desktop/nav.php'); ?>
-	<?php echo $this->renderView('Theme/Views::common/mobile/nav.php'); ?>
-</div>
-<?php if($checkoutmode == 0) : ?>
-	<?php if($car = $this->session->get('activeVehicle')) : ?>
-		<div class="toggle-ymm visible-xs">
-			<small class="xsYmm"><strong><?php echo $car['vehicle_year'];?> <?php  echo $car['vehicle_make'];?> <?php echo $car['vehicle_model'];?></strong>
-				<?php  echo $car['vehicle_sub_model'];?> <?php  echo $car['vehicle_engine_size'];?></small>
-
-		</div>
-	<?php else :?>
-        <div class="toggle-ymm visible-xs">
-            <i class="glyphicon glyphicon-car"></i>&nbsp;SET YOUR CAR
-        </div>
-	<?php endif;?>
-	<div class="header-promo-wrapper">
-		<tmpl type="modules" name="header-promo" />
-	</div>
-	<div class="navMaster">
-		<?php echo $menu; ?>
-	</div>
-<?php endif; ?>
-<?php echo $this->renderView ( 'Shop/Site/Views::common/navymm.php' ); ?>
-<div class="mobileNavColumn">
-	<div class="mobileNavColumn2"></div>
+               if(!empty($top->details['content'])) {
+                  echo '<div class="megamenu-dropdown">' . $top->details['content'] . '</div>';
+               }
+                  
+                  echo '</li>';
+            endforeach;
+            ?>
+            </ul>
+         </div>
+      </div>
+   </div>
 </div>
