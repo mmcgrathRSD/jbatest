@@ -64,7 +64,7 @@
     
     <script>
     jQuery(document).ready(function(){
-        window.new_images = <?php echo count( $flash->old('images') ); ?>;
+        window.new_images = <?php echo count((array) $flash->old('images') ); ?>;
         jQuery('#add-image').click(function(){
             var container = jQuery('#new-images');
             var template = jQuery('#add-image-template').html();
