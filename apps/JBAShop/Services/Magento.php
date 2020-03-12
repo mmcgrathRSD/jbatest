@@ -13,8 +13,10 @@ class Magento
 
 
     public function __construct()
-    {
+    {   
+        //Magento Connection
         $this->db = self::getDB();
+        //CLImate local object
         $this->CLImate = new CLImate();
     }
 
@@ -36,9 +38,8 @@ class Magento
         return $db;
     }
 
-    public function syncMagentoUsersToMongo($entityId = null){
-        //eav_attribute.attribute_id -> customer_entity_varchar.entity_id; 
-        
+    public function syncMagentoUsersToMongo($magentoEntityId = null){
+        //eav_attribute.attribute_id -> customer_entity_varchar.entity_id;         
         $sql = "
             SELECT
                 ce.entity_id,
@@ -60,16 +61,36 @@ class Magento
                 AND eaf.attribute_code = 'firstname' 
                 AND eal.attribute_code = 'lastname' 
                 AND eaph.attribute_code = 'password_hash'
+                AND ce.entity_id = $magentoEntityId
             ORDER BY
                 ce.entity_id
         ";
 
+        
         //Execute the PDO statement
         $select = $this->db->prepare($sql);
         $select->execute();
-        $rows = $select->fetch();
-        var_dump($rows);
+        $user = $select->fetch();
+        
+        try{
+            $userData = [
+                'email' => $user['email'],
+                'username' => $user['email'],
+                'first_name' => $user['firstname'],
+                'password' => '',
+                'last_name' => $user['lastname'],
+                'old' => [
+                    'password' => $user['password_hash'],
+                ],
+            ]; 
+        
+            $newUser = \Users\Models\Users::createNewUser( $userData, $registration_action );
 
+            $this->CLImate->dump($newUser);
+        
+        }catch(Exception $e){
+            $this->CLImate->to('error')->red($e->getMessage());
+        }
     }
 
     public function syncCategories()

@@ -33,8 +33,8 @@ $app->route('GET /sync-product-info', function() {
     (new JBAShop\Services\Magento)->syncProductInfo();
 });
 
-$app->route('GET /sync-magento-users-to-mongo', function(){
-	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo();
+$app->route('GET /sync-magento-users-to-mongo/@magentoid', function($f3){
+	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo($f3->get('PARAMS.magentoid'));
 });
 
 /**************************/
