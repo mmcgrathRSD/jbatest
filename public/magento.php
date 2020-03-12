@@ -33,8 +33,13 @@ $app->route('GET /sync-product-info', function() {
     (new JBAShop\Services\Magento)->syncProductInfo();
 });
 
-$app->route('GET /sync-magento-users-to-mongo/@magentoid', function($f3){
-	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo($f3->get('PARAMS.magentoid'));
+/**
+ * This method syncs all users from magento to mongo
+ * @param int $magentoId - the user primary key from magento database (customer_entity.entity_id)
+ * @return void
+ */
+$app->route('GET /sync-magento-users-to-mongo', function($f3){
+	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo();
 });
 
 /**************************/

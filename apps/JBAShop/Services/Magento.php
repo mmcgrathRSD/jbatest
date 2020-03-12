@@ -39,7 +39,6 @@ class Magento
     }
 
     public function syncMagentoUsersToMongo($magentoEntityId = null){
-        //eav_attribute.attribute_id -> customer_entity_varchar.entity_id;         
         $sql = "
             SELECT
                 ce.entity_id,
@@ -61,35 +60,75 @@ class Magento
                 AND eaf.attribute_code = 'firstname' 
                 AND eal.attribute_code = 'lastname' 
                 AND eaph.attribute_code = 'password_hash'
-                AND ce.entity_id = $magentoEntityId
-            ORDER BY
-                ce.entity_id
+            LIMIT 3
         ";
 
-        
-        //Execute the PDO statement
+        //Get all the users from the magento database
         $select = $this->db->prepare($sql);
         $select->execute();
-        $user = $select->fetch();
-        
-        try{
-            $userData = [
-                'email' => $user['email'],
-                'username' => $user['email'],
-                'first_name' => $user['firstname'],
-                'password' => '',
-                'last_name' => $user['lastname'],
-                'old' => [
-                    'password' => $user['password_hash'],
-                ],
-            ]; 
-        
-            $newUser = \Users\Models\Users::createNewUser( $userData, $registration_action );
+        $users = $select->fetchall();
 
-            $this->CLImate->dump($newUser);
         
-        }catch(Exception $e){
-            $this->CLImate->to('error')->red($e->getMessage());
+        foreach($users as $user){
+            //Temp variable for our cli table
+            $data = [];
+            
+            try{
+                //The user data structure for transforming a Magento user to a Mongo User
+                $userData = [
+                    'email' => $user['email'],
+                    'first_name' => $user['firstname'],
+                    'password' => '',
+                    'role' => 'identified',
+                    'active' => true,
+                    'last_name' => $user['lastname'],
+                    'old' => [
+                        'password' => $user['password_hash'],
+                    ],
+                    'price_level' => 'Retail-JBA',
+                    'netsuite' => [
+                        'entityId' => null,
+                        'externalId' => null,
+                        'internalId' => null,
+                    ],
+                    'number' => null,
+                ]; 
+                //Create the new user in mongo
+                $newUser = \Users\Models\Users::createNewUser( $userData, $registration_action );
+                
+                if($newUser){
+                    //New user was successfully transwered from Magento to Mongo
+                    array_push($data, ['New Mongo User Created From Magento!', $newUser['email'], ✅]);
+                    
+                    //See if we have an existing netsuite user for this email and division
+                    $netsuiteUser = \Netsuite\Models\Customer::getCustomerFromEmail($newUser['email']);
+                    
+                    //If we found a valid netsuite user, update the netsuite object on the corresponding mongo user
+                    if($netsuiteUser){
+                        array_push($data, ['Netsuite User Found!', $netsuiteUser['email'], ✅]);
+                        
+                        //Try to update the mongo user we just created with the netsuite data we need
+                        try{
+                            $updateUser = \Users\Models\Users::findAndUpdateUser($email, [
+                                'netsuite_external_id' => $netsuiteUser['externalId'],
+                                'netsuite_internal_id' => $netsuiteUser['internalId'],
+                                'netsuite_entity_id' => $netsuiteUser['entityId'],
+                            ]);
+                            array_push($data, ['Netsuite User Found!', $newUser['email'], ✅]);
+                        }catch(Exception $e){
+                            $this->CLImate->to('error')->red($e->getMessage());
+                        }
+                    }else{
+                        //No netsuite user was found for this Magento customer
+                        array_push($data, ['No Netsuite User Found!', $netsuiteUser['email'], ❌]);
+                    }
+                }
+            }catch(Exception $e){
+                $this->CLImate->to('error')->red($e->getMessage());
+            }
+            
+            //Write our output for this iteration of the loop
+            $this->CLImate->table($data);
         }
     }
 
