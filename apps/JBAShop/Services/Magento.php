@@ -109,7 +109,7 @@ class Magento
                         
                         //Try to update the mongo user we just created with the netsuite data we need
                         try{
-                            $updateUser = \Users\Models\Users::findAndUpdateUser($email, [
+                            $updateUser = \Users\Models\Users::updateUserNetsuiteFields($email, [
                                 'netsuite_external_id' => $netsuiteUser['externalId'],
                                 'netsuite_internal_id' => $netsuiteUser['internalId'],
                                 'netsuite_entity_id' => $netsuiteUser['entityId'],
