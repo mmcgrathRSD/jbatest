@@ -1,15 +1,16 @@
 @import "theme/scss/variables";
+@import "theme/scss/custom/jba/footer";
 /* Shop */
-@import "shop-assets/scss/shop_master";
+// @import "shop-assets/scss/shop_master";
 
 /* Modules */
 @import "theme/scss/modules/custom_mixins";
 
-/* Custom */
-@import "theme/scss/custom/base";
-@import "theme/scss/custom/category";
-@import "theme/scss/custom/listrak_sliders";
-@import "theme/scss/custom/nav";
+// /* Custom */
+// @import "theme/scss/custom/base";
+// @import "theme/scss/custom/category";
+// @import "theme/scss/custom/listrak_sliders";
+// @import "theme/scss/custom/nav";
 
-/* Vendor */
-@import "theme/scss/vendor/custom_vendor";
+// /* Vendor */
+// @import "theme/scss/vendor/custom_vendor";
