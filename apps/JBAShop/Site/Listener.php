@@ -159,6 +159,7 @@ class Listener extends \Prefab
         $product_category_counts = 0;
         $brand_counts = 0;
         $brand_category_counts = 0;
+        $sales_channel = \Base::instance()->get('sales_channel');
         
         $ymm_counts = 0;
         $ymm_category_counts = 0;
@@ -170,7 +171,7 @@ class Listener extends \Prefab
          
         $products = (new \Shop\Models\Products)->collection()->find([
             'publication.status' => 'published',
-            'publication.sales_channels.slug' => 'rallysport-usa'
+            'publication.sales_channels.slug' => $sales_channel
         ], [
             'sort' => [
                 'metadata.last_modified.time' => -1
@@ -338,7 +339,15 @@ class Listener extends \Prefab
              
             $categoryRoutes = [];
             $categories = (new \JBAShop\Models\Categories)->collection()->find([
-                'publication.status' => 'published'
+                '$and' => [
+                    'publication.status' => 'published',
+                    [
+                        '$or' => [
+                            ['sales_channels.slug' => $sales_channel],
+                            ['sales_channels' => ['$exists' => false]]
+                        ]
+                    ]
+                ]
             ], [
                 'projection' => [
                     'slug' => 1,
