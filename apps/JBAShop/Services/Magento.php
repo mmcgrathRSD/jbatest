@@ -114,7 +114,7 @@ class Magento
                                 'netsuite_internal_id' => $netsuiteUser['internalId'],
                                 'netsuite_entity_id' => $netsuiteUser['entityId'],
                             ]);
-                            array_push($data, ['Netsuite User Found!', $newUser['email'], ✅]);
+                            array_push($data, ['Mongo User Netsuite Data Updated!', $newUser['email'], ✅]);
                         }catch(Exception $e){
                             $this->CLImate->to('error')->red($e->getMessage());
                         }
