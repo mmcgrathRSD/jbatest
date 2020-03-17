@@ -86,12 +86,6 @@ class Magento
                         'password' => $user['password_hash'],
                     ],
                     'price_level' => 'Retail-JBA',
-                    'netsuite' => [
-                        'entityId' => null,
-                        'externalId' => null,
-                        'internalId' => null,
-                    ],
-                    'number' => null,
                 ]; 
                 //Create the new user in mongo
                 $newUser = \Users\Models\Users::createNewUser( $userData, $registration_action );
