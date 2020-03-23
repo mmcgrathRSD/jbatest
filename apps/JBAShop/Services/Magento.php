@@ -45,14 +45,17 @@ class Magento
                 cc.entity_id AS id,
                 cc.`value` AS `name`,
                 cc1.`value` AS url_path,
-                IF (cce.parent_id IN (1, 2, 652, 333, 515, 757, 1060, 1425), NULL, cce.parent_id) AS parent_id,
-                position AS sort_order
+            IF
+                ( cce.parent_id IN ( 1, 2, 652, 333, 515, 757, 1060, 1425 ), NULL, cce.parent_id ) AS parent_id,
+                position AS sort_order,
+                ccdesc.description AS description 
             FROM
                 catalog_category_entity_varchar cc
                 JOIN catalog_category_entity_varchar cc1 ON cc.entity_id = cc1.entity_id
                 JOIN catalog_category_entity_int cc_int ON cc1.entity_id = cc_int.entity_id
                 JOIN eav_entity_type ee ON cc.entity_type_id = ee.entity_type_id
-                JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id 
+                JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id
+                JOIN ( SELECT entity_id, description FROM catalog_category_flat_store_1 UNION SELECT entity_id, description FROM catalog_category_flat_store_4 UNION SELECT entity_id, description FROM catalog_category_flat_store_5 ) AS ccdesc ON ccdesc.entity_id = cc.entity_id 
             WHERE
                 cc.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'name' ) 
                 AND cc1.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'url_path' ) 
@@ -60,7 +63,8 @@ class Magento
                 AND cc_int.`value` = 1 
                 AND (( cce.parent_id = 2 AND cce.children_count > 1 ) OR cce.parent_id > 2 ) 
                 AND ee.entity_model = 'catalog/category' 
-            GROUP BY id
+            GROUP BY
+                id 
             ORDER BY
                 cce.parent_id ASC,
                 cce.position ASC
@@ -68,27 +72,29 @@ class Magento
 
         $exclude = [];
         $categoryIds = [null => null];
+        
         do {
             $incomplete = false;
             $select = $this->db->prepare($sql);
             $select->execute();
-
+            
             while ($row = $select->fetch()) {
                 if (in_array($row['id'], array_keys($categoryIds))) {
                     continue;
                 }
-                // TODO: description, images, etc
+                // TODO: images, etc
                 // TODO: assign products to categories
 
                 $category = new \Shop\Models\Categories([
                     'title'   => $row['name'],
+                    'description' => $row['description'],
                     // 'slug'    => $row['url_path'],
                     'magento' => [
                         'id'        => $row['id'],
                         'parent_id' => $row['parent_id']
                     ]
                 ]);
-                
+                die;
                 if (in_array($row['parent_id'], array_keys($categoryIds))) {
                     $category->set('parent', $categoryIds[$row['parent_id']]);
                 } else {
