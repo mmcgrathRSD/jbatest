@@ -77,6 +77,8 @@ class Magento
             $incomplete = false;
             $select = $this->db->prepare($sql);
             $select->execute();
+            //CLI Progress bar
+            $progress = $this->CLImate->progress()->total($select->rowCount());
             
             while ($row = $select->fetch()) {
                 if (in_array($row['id'], array_keys($categoryIds))) {
@@ -103,6 +105,9 @@ class Magento
                     continue;
                 }
                 
+                //Advance the progress bar, output the cat title
+                $progress->advance(1, $category['title']);
+
                 $category->save();
                 $categoryIds[$row['id']] = $category->id;
 
