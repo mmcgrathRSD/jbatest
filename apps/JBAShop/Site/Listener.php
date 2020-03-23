@@ -292,7 +292,7 @@ class Listener extends \Prefab
             $categories = (new  \Shop\Models\Categories)->collection()->find([
                 '_id' => ['$in' => $catids],
                 '$or' => [
-                    ['sales_channels.0' => ['$exists' => true]],
+                    ['sales_channels.0' => ['$exists' => false]],
                     ['sales_channels.slug' => \Base::instance()->get('sales_channel')]
                 ]
             ],
@@ -332,7 +332,7 @@ class Listener extends \Prefab
         $categoryRoutes = [];
         $categories = (new \JBAShop\Models\Categories)->collection()->find([
             '$or' => [
-                ['sales_channels.0' => ['$exists' => true]],
+                ['sales_channels.0' => ['$exists' => false]],
                 ['sales_channels.slug' => \Base::instance()->get('sales_channel')]
             ]
         ], [
