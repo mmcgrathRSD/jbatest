@@ -94,7 +94,7 @@ class Magento
                         'parent_id' => $row['parent_id']
                     ]
                 ]);
-                die;
+
                 if (in_array($row['parent_id'], array_keys($categoryIds))) {
                     $category->set('parent', $categoryIds[$row['parent_id']]);
                 } else {
