@@ -159,8 +159,6 @@ class Listener extends \Prefab
         $product_category_counts = 0;
         $brand_counts = 0;
         $brand_category_counts = 0;
-        $sales_channel = \Base::instance()->get('sales_channel');
-        
         $ymm_counts = 0;
         $ymm_category_counts = 0;
         $ymm_category_product_counts = 0;
@@ -171,50 +169,44 @@ class Listener extends \Prefab
          
         $products = (new \Shop\Models\Products)->collection()->find([
             'publication.status' => 'published',
-            'publication.sales_channels.slug' => $sales_channel
+            'publication.sales_channels.slug' => 'rallysport-usa'
         ], [
             'sort' => [
                 'metadata.last_modified.time' => -1
             ]
         ]);
-        
-            $productRoutes = [];
-            $questions = [];
-            $reviews = [];
-        
-            foreach($products as $product) {
-                
-                $climate->blue(time() - $time . ' adding product ' . $product['slug']);
-                $product_counts++;
-                $modelInstance = (new \Shop\Models\Products)->bind($product);
-        
-                $created = @$product['metadata']['created']['time'];
-                $lastMod = @$product['metadata']['last_modified']['time'];
-                $sitemap->addItem(
-                    $modelInstance->generateStandardURL(),
-                    \Dsc\Sitemap::priority($lastMod, $created),
-                    'daily',
-                    @$product['metadata']['last_modified']['time']
-                );
-                
-                $sitemap->addItem(
-                    $modelInstance->generateStandardURL().'/questions',
-                    \Dsc\Sitemap::priority($lastMod, $created),
-                    'daily',
-                    @$product['metadata']['last_modified']['time']
-                );
-        
-                $sitemap->addItem(
-                    $modelInstance->generateStandardURL().'/reviews',
-                    \Dsc\Sitemap::priority($lastMod, $created),
-                    'daily',
-                    @$product['metadata']['last_modified']['time']
-                );
-            }
-
-            /*
-             * GET ALL THE STANDARD BRAND LINKS AND THE SUB CATEGORIES
-             */
+        $productRoutes = [];
+        $questions = [];
+        $reviews = [];
+    
+        foreach($products as $product) {  
+            $climate->blue(time() - $time . ' adding product ' . $product['slug']);
+            $product_counts++;
+            $modelInstance = (new \Shop\Models\Products)->bind($product);
+            $created = @$product['metadata']['created']['time'];
+            $lastMod = @$product['metadata']['last_modified']['time'];
+            $sitemap->addItem(
+                $modelInstance->generateStandardURL(),
+                \Dsc\Sitemap::priority($lastMod, $created),
+                'daily',
+                @$product['metadata']['last_modified']['time']
+            );
+            $sitemap->addItem(
+                $modelInstance->generateStandardURL().'/questions',
+                \Dsc\Sitemap::priority($lastMod, $created),
+                'daily',
+                @$product['metadata']['last_modified']['time']
+            );
+            $sitemap->addItem(
+                $modelInstance->generateStandardURL().'/reviews',
+                \Dsc\Sitemap::priority($lastMod, $created),
+                'daily',
+                @$product['metadata']['last_modified']['time']
+            );
+        }
+        /*
+        * GET ALL THE STANDARD BRAND LINKS AND THE SUB CATEGORIES
+        */
         $brandRoutes  = [];
         $brands = (new \Shop\Models\Manufacturers)->collection()->find([],
             [
@@ -227,51 +219,52 @@ class Listener extends \Prefab
                     'metadata.last_modified.time'=> -1
                 ]
             ]);
-        
-            foreach($brands as $brand) {
-                $climate->blue(time() - $time . ' adding brand ' . $brand['slug']);
-                $brand_counts++;
-                $created = @$brand['metadata']['created']['time'];
-                $lastMod = @$brand['metadata']['last_modified']['time'];
+        foreach($brands as $brand) {
+            $climate->blue(time() - $time . ' adding brand ' . $brand['slug']);
+            $brand_counts++;
+            $created = @$brand['metadata']['created']['time'];
+            $lastMod = @$brand['metadata']['last_modified']['time'];
+            
+            $sitemap->addItem(
+                '/brand/'.$brand['slug'],
+                \Dsc\Sitemap::priority($lastMod, $created),
+                'daily',
+                $brand['metadata']['last_modified']['time']
+            );
+            
+            /* Lets build the brand pages by category */
+            $products_model = (new \Shop\Models\Products);
+            $products_model->setState('filter.publication_status',  'published');
+            $products_model->setState('filter.manufacturer',  $brand['slug']);
+            
+            $conditions = $products_model->conditions();
+            $catids = $products_model->collection()->distinct('categories.id', $conditions);
+            $categories = (new  \Shop\Models\Categories)->collection()->find([
+                    '_id' => ['$in' => $catids],
+                    '$or' => [
+                        ['sales_channels.0' => ['$exists' => false]],
+                        ['sales_channels.slug' => \Base::instance()->get('sales_channel')]
+                    ]
+                ],
+                ['sort' => ['title' => 1]]);
+            foreach ($categories as $brandCat) {
+                $brand_category_counts++;
+                $created = @$brandCat['metadata']['created']['time'];
+                $lastMod = @$brandCat['metadata']['last_modified']['time'];
                 
                 $sitemap->addItem(
-                    '/brand/'.$brand['slug'],
+                    '/brand/'.$brand['slug'].'/'.$brandCat['slug'],
                     \Dsc\Sitemap::priority($lastMod, $created),
                     'daily',
-                    $brand['metadata']['last_modified']['time']
+                    @$ymmCat['metadata']['last_modified']['time']
                 );
                 
-                /* Lets build the brand pages by category */
-                $products_model = (new \Shop\Models\Products);
-                $products_model->setState('filter.publication_status',  'published');
-                $products_model->setState('filter.manufacturer',  $brand['slug']);
-                
-                $conditions = $products_model->conditions();
-                $catids = $products_model->collection()->distinct('categories.id', $conditions);
-                $categories = (new  \Shop\Models\Categories)->collection()->find(['_id' => ['$in' => $catids]], ['sort' => ['title' => 1]]);
-                
-                foreach ($categories as $brandCat) {
-                    $brand_category_counts++;
-                    $created = @$brandCat['metadata']['created']['time'];
-                    $lastMod = @$brandCat['metadata']['last_modified']['time'];
-                    
-                    $sitemap->addItem(
-                        '/brand/'.$brand['slug'].'/'.$brandCat['slug'],
-                        \Dsc\Sitemap::priority($lastMod, $created),
-                        'daily',
-                        @$ymmCat['metadata']['last_modified']['time']
-                    );
-                    
-                }
-                   
             }
-         
-           
-            
-             /*
-             * FITS ROUTES /FITS/@SLUG, /FITS/@SLUG/@CAT/, /FITS/@SLUG/@CAT/@PRODUCT
-             */
-        
+                
+        }
+        /*
+        * FITS ROUTES /FITS/@SLUG, /FITS/@SLUG/@CAT/, /FITS/@SLUG/@CAT/@PRODUCT
+        */
         $ymmRoutes = [];
         // ymms
         $ymms = (new \Shop\Models\YearMakeModels)->collection()->find(
@@ -279,94 +272,87 @@ class Listener extends \Prefab
             ['sort' => ['metadata.last_modified_time' => -1]]
         );
         
-            foreach($ymms as $vehicle) {
-                $climate->blue(time() - $time . ' adding vehicle ' . $vehicle['slug']);
-                $ymm_counts++;
-                $created = @$vehicle['metadata']['created']['time'];
-                $lastMod = @$vehicle['metadata']['last_modified']['time'];
-                
+        foreach($ymms as $vehicle) {
+            $climate->blue(time() - $time . ' adding vehicle ' . $vehicle['slug']);
+            $ymm_counts++;
+            $created = @$vehicle['metadata']['created']['time'];
+            $lastMod = @$vehicle['metadata']['last_modified']['time'];
+            $sitemap->addItem(
+                '/fits/'.$vehicle['slug'].'',
+                '1.0',
+                'daily',
+                @$vehicle['metadata']['last_modified']['time']
+            );
+            /* Lets build the vehicle pages by category */
+            $products_model = (new \Shop\Models\Products);
+            $products_model->setState('filter.publication_status',  'published');
+            $products_model->setState('filter.ymm.slug',  $vehicle['slug']);
+            $conditions = $products_model->conditions();          
+            $catids = $products_model->collection()->distinct('categories.id', $conditions);           		
+            $categories = (new  \Shop\Models\Categories)->collection()->find([
+                '_id' => ['$in' => $catids],
+                '$or' => [
+                    ['sales_channels.0' => ['$exists' => true]],
+                    ['sales_channels.slug' => \Base::instance()->get('sales_channel')]
+                ]
+            ],
+            ['sort' => ['title' => 1]]);
+
+            foreach ($categories as $ymmCat) {
+                $ymm_category_counts++;
+                $created = @$ymmCat['metadata']['created']['time'];
+                $lastMod = @$ymmCat['metadata']['last_modified']['time'];
                 $sitemap->addItem(
-                    '/fits/'.$vehicle['slug'].'',
+                    '/fits/'.$vehicle['slug'].'/'.$ymmCat['slug'],
                     '1.0',
                     'daily',
-                    @$vehicle['metadata']['last_modified']['time']
+                    @$ymmCat['metadata']['last_modified']['time']
                 );
-               
-                /* Lets build the vehicle pages by category */
-                $products_model = (new \Shop\Models\Products);
+                $products_model = (new \Shop\Models\Products);    
                 $products_model->setState('filter.publication_status',  'published');
                 $products_model->setState('filter.ymm.slug',  $vehicle['slug']);
+                $products_model->setState('filter.category.slug',  $ymmCat['slug']);
+                /*   $lists = $products_model->getItems();
                 
-                $conditions = $products_model->conditions();          
-                $catids = $products_model->collection()->distinct('categories.id', $conditions);           		
-                $categories = (new  \Shop\Models\Categories)->collection()->find(['_id' => ['$in' => $catids]], ['sort' => ['title' => 1]]);
-                foreach ($categories as $ymmCat) {
-                    $ymm_category_counts++;
-                    $created = @$ymmCat['metadata']['created']['time'];
-                    $lastMod = @$ymmCat['metadata']['last_modified']['time'];
-                    
-                    $sitemap->addItem(
-                        '/fits/'.$vehicle['slug'].'/'.$ymmCat['slug'],
-                        '1.0',
-                        'daily',
-                        @$ymmCat['metadata']['last_modified']['time']
-                    );
-                    
-                    $products_model = (new \Shop\Models\Products);
-                     
-                    $products_model->setState('filter.publication_status',  'published');
-                    $products_model->setState('filter.ymm.slug',  $vehicle['slug']);
-                    $products_model->setState('filter.category.slug',  $ymmCat['slug']);
-                    
-                 /*   $lists = $products_model->getItems();
-                    
-                    foreach($lists as $item) {
-                        $ymm_category_product_counts++;
-                        $ymmRoutes[] = [
-                            'loc' => '/fits/'.$vehicle['slug'].'/'.$ymmCat['slug'].'/'.$item->slug,
-                            'pri' => '1.0',
-                            'change' => 'daily',
-                            'mod' => @$item->get('metadata.last_modified.time')
-                        ];
-                    }*/
-                    
-                }
+                foreach($lists as $item) {
+                    $ymm_category_product_counts++;
+                    $ymmRoutes[] = [
+                        'loc' => '/fits/'.$vehicle['slug'].'/'.$ymmCat['slug'].'/'.$item->slug,
+                        'pri' => '1.0',
+                        'change' => 'daily',
+                        'mod' => @$item->get('metadata.last_modified.time')
+                    ];
+                }*/
             }
-        
-            /*
-             * CATEGORY PAGES
-             */
-             
-            $categoryRoutes = [];
-            $categories = (new \JBAShop\Models\Categories)->collection()->find([
-                '$and' => [
-                    'publication.status' => 'published',
-                    [
-                        '$or' => [
-                            ['sales_channels.slug' => $sales_channel],
-                            ['sales_channels' => ['$exists' => false]]
-                        ]
-                    ]
-                ]
-            ], [
-                'projection' => [
-                    'slug' => 1,
-                    'metadata.last_modified.time' => 1,
-                    'metadata.created.time' => 1
-                ],
-                'sort' => ['metadata.last_modified.time' => -1]
-            ]);
-        
-                foreach($categories as $category) {
-                    $climate->blue(time() - $time . ' adding category ' . $category['slug']);
-                    $product_category_counts++;
-                    $sitemap->addItem(
-                        '/scp/'.$category['slug'],
-                        \Dsc\Sitemap::priority($lastMod, $created),
-                        'daily',
-                        $category['metadata']['last_modified']['time']
-                    );
-                }
+        }
+    
+        /*
+        * CATEGORY PAGES
+        */
+        $categoryRoutes = [];
+        $categories = (new \JBAShop\Models\Categories)->collection()->find([
+            '$or' => [
+                ['sales_channels.0' => ['$exists' => true]],
+                ['sales_channels.slug' => \Base::instance()->get('sales_channel')]
+            ]
+        ], [
+            'projection' => [
+                'slug' => 1,
+                'metadata.last_modified.time' => 1,
+                'metadata.created.time' => 1
+            ],
+            'sort' => ['metadata.last_modified.time' => -1]
+        ]);
+        foreach($categories as $category) {
+            $climate->blue(time() - $time . ' adding category ' . $category['slug']);
+            $product_category_counts++;
+            $sitemap->addItem(
+                '/scp/'.$category['slug'],
+                \Dsc\Sitemap::priority($lastMod, $created),
+                'daily',
+                $category['metadata']['last_modified']['time']
+            );
+        }
 
         $sitemap->addItem(
             '/reviews',
