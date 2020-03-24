@@ -33,6 +33,10 @@ $app->route('GET /sync-product-info', function() {
     (new JBAShop\Services\Magento)->syncProductInfo();
 });
 
+$app->route('GET /sync-dynamic-group-products', function() {
+    (new JBAShop\Services\Magento)->syncDynamicGroupProducts();
+});
+
 /**************************/
 
 
