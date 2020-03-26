@@ -1,5 +1,8 @@
-<?php namespace JBAShop\Services;
+<?php
 
+namespace JBAShop\Services;
+
+use PDO;
 use \DB\SQL;
 use \League\CLImate\CLImate;
 
@@ -22,7 +25,7 @@ class Magento
     {
         /** @var SQL $db */
         $db = \Base::instance()->get('magento.connection');
-        
+
         if (!$db) {
             $db = new SQL('mysql:host=' . \Base::instance()->get('magento.host') . ';dbname=' . \Base::instance()->get('magento.db'), \Base::instance()->get('magento.username'), \Base::instance()->get('magento.password'), array(
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
@@ -32,7 +35,7 @@ class Magento
 
             \Base::instance()->set('magento.connection', $db);
         }
-        
+
         return $db;
     }
 
@@ -72,14 +75,14 @@ class Magento
 
         $exclude = [];
         $categoryIds = [null => null];
-        
+
         do {
             $incomplete = false;
             $select = $this->db->prepare($sql);
             $select->execute();
             //CLI Progress bar
             $progress = $this->CLImate->progress()->total($select->rowCount());
-            
+
             while ($row = $select->fetch()) {
                 if (in_array($row['id'], array_keys($categoryIds))) {
                     continue;
@@ -104,7 +107,7 @@ class Magento
                     $this->CLImate->yellow($row['url_path'] . '(' . $row['id'] . ')');
                     continue;
                 }
-                
+
                 //Advance the progress bar, output the cat title
                 $progress->advance(1, $category['title']);
 
@@ -140,7 +143,7 @@ class Magento
         ];
 
         $categories = [];
-        foreach(\Shop\Models\Categories::collection()->find(['magento.id' => ['$exists' => true]], ['projection' => ['slug' => 1, 'title' => 1, 'magento' => 1, 'ancestors' => 1]]) as $category) {
+        foreach (\Shop\Models\Categories::collection()->find(['magento.id' => ['$exists' => true]], ['projection' => ['slug' => 1, 'title' => 1, 'magento' => 1, 'ancestors' => 1]]) as $category) {
             if (empty($category['magento']['id'])) {
                 continue;
             }
@@ -233,18 +236,17 @@ class Magento
                 } else {
                     $toRemove = [];
                 }
-                
-                $newProductCategories = array_filter($toAdd, function($v) use ($toRemove) {
+
+                $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
-                });
+                }));
 
                 $product
                     ->set('magento.id', $row['id'])
                     ->set('title', $row['default_title'])
                     ->set('copy', $row['long_description'])
                     ->set('short_description', $row['short_description'])
-                    ->set('categories', $newProductCategories)
-                ;
+                    ->set('categories', $newProductCategories);
 
                 if (!empty($row['subispeed'])) {
                     $product->set('publication.sales_channels.0', $salesChannels['subispeed']);
@@ -273,7 +275,82 @@ class Magento
         // Then we can run something here if needed to populate them on the products (something may already exist)
     }
 
-    public function syncDynamicGroupProducts(){
-        
+    public function syncDynamicGroupProducts()
+    {
+
+        $sql = "
+            SELECT
+                bundle.parent_id AS magento_id,
+                bundle.option_id,
+                bval.title AS option_title,
+                cpd.`value` AS bundle_discount,
+                bundle.required AS option_required,
+                sel.product_id AS value_model_number,
+                sel.position AS value_position,
+                sel.selection_price_value AS value_price,
+                sel.selection_qty AS value_required_quantity 
+            FROM
+                catalog_product_bundle_option AS bundle
+                LEFT JOIN catalog_product_bundle_option_value AS bval ON bundle.option_id = bval.option_id
+                LEFT JOIN catalog_product_bundle_selection AS sel ON bundle.option_id = sel.option_id
+                LEFT JOIN catalog_product_entity_decimal cpd ON bundle.parent_id = cpd.entity_id 
+            WHERE
+                bval.store_id = 0 
+                AND cpd.attribute_id = 76
+                AND bundle.parent_id = 5219
+        ";
+
+        //Execute query one, to get dynamic group parents
+        $select = $this->db->prepare($sql);
+        $select->execute();
+        $rows = $select->fetchAll(PDO::FETCH_GROUP);
+
+        $progress = $this->CLImate->progress()->total(count($rows));
+
+        //All of the records are now grouped into product gruops based on the magento_id, start looping through them
+        foreach ($rows as $productGroupKey => $productGroupValue) {
+            //Create the parent property for mongo
+            $kit_options_builder = [];
+            $kit_options = [];
+
+            //This is the replItem that corresponds to the magento entity id of the product group
+            //$netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getByExternalErpProductId((string) $productGroupKey);
+
+            //Test to see if i can get a product
+            //$productTest = (new \Shop\Models\ProductTest)->setCondition('tracking.model_number', $netsuiteProduct->itemId)->getItem();
+
+            //Loop through each option grouping the options values together
+            foreach ($productGroupValue as $productOptionKey => $productOptionValue) {
+                $kit_options_builder[$productOptionValue['option_id']]['values'][] = [
+                    'id' => new \MongoDB\BSON\ObjectID(),
+                    'title' => null,
+                    'magento_entity_id' => $productOptionValue['value_model_number'],
+                    'model_number' => (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOptionValue['value_model_number']))->itemId,
+                    'required_model_number' => '',
+                    'required_product_id' => null,
+                ];
+            }
+
+            $newProduct = (new \Shop\Models\ProductTest())
+                ->set('product_type', 'dynamic_group')
+                ->set('tracking', ['model_number' => 'magento_test_model_number'])
+                ->set('magento_test', true)
+                ->set('slug', 'some-slug')
+                ->set('title', 'some-title')
+                ->set('kit_options', $kit_options_builder);
+
+            $newProduct->save();
+
+
+            // $newProduct = (new \Shop\Models\ProductTest())
+            //     ->set('tracking', ['model_number' => $netsuiteProduct->itemId])
+            //     ->set('magento_test', true)
+            //     ->set('slug', 'some-slug')
+            //     ->set('title', 'some-title')
+            //     ->set('kit_options', $kit_options_builder);
+
+            // $newProduct->save();
+            $progress->advance();
+        }
     }
 }
