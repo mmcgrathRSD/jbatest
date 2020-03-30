@@ -14,11 +14,15 @@
 					<?php echo $this->renderLayout('Shop/Site/Views::common/nav.php')?>
 					
 					<div id="algolia_master" class="algoliaMaster container" <?php if(empty($_GET['q'])) : ?>style="display: none"<?php endif; ?>>
-						<?php echo $this->renderView('Search/Site/Views::search/list.php'); ?>
+						<?php //echo $this->renderView('Search/Site/Views::search/list.php'); ?>
 					</div>
 					
 					<?php echo $this->renderView('Theme/Views::system-messages.php'); ?>
-					<tmpl type="view" />
+					<div class="main-container col2-left-layout">
+						<div class="content-container">
+							<tmpl type="view" />
+						</div>
+					</div>
 					<?php echo $this->renderView('Theme/Views::common/footer.php'); ?>
 					<?php echo $this->renderView('Search/Site/Views::search/algolia_js.php'); ?>
 				</div>

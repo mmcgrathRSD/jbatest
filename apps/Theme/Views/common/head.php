@@ -38,7 +38,7 @@
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/olegnax/ajaxcart.css" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/slideshow.css" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/rs-plugin/css/settings.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/olegnax/megamenu.css" media="all" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/jba/megamenu.css?<?php echo $cachebuster; ?>" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/local.css" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/custom.css" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/animation.css" media="all" />
@@ -69,7 +69,7 @@
  <!-- <script src="/shop-assets/js/vendor/jquery-1.11.2.min.js"></script> -->
   <script src="/shop-assets/js/vendor/instantsearch.min.js?<?php echo $cachebuster; ?>" ></script>
   
-  <script src="/theme/js/jba2.js?<?php echo $cachebuster; ?>"></script>
+  <!-- <script src="/theme/js/jba2.js?<?php echo $cachebuster; ?>"></script> -->
   <script src="/shop-assets/js/vendor/jquery-1.11.2.min.js"></script>
  
   <?php if($DEBUG) :  ?>
