@@ -324,9 +324,9 @@ class Magento
                     $toRemove = [];
                 }
                 
-                $newProductCategories = array_filter($toAdd, function($v) use ($toRemove) {
+                $newProductCategories = array_values(array_filter($toAdd, function($v) use ($toRemove) {
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
-                });
+                }));
 
                 $product
                     ->set('magento.id', $row['id'])
