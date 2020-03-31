@@ -13,8 +13,10 @@ class Magento
 
 
     public function __construct()
-    {
+    {   
+        //Magento Connection
         $this->db = self::getDB();
+        //CLImate local object
         $this->CLImate = new CLImate();
     }
 
@@ -66,22 +68,109 @@ class Magento
                 $existing->set('magento.id', $row['id']);
                 $existing->store();
             } else {**/
-                try {
-                    $brand = new \Shop\Models\Manufacturers([
-                        'title' => $row['name'],
-                        'magento' => [
-                            'id' => $row['id']
-                        ]
-                    ]);
-        
-                    $brand->save();
-                } catch (\Exception $e) {
-                    $this->CLImate->red($e->getMessage());
-                }
+            try {
+                $brand = new \Shop\Models\Manufacturers([
+                    'title' => $row['name'],
+                    'magento' => [
+                        'id' => $row['id']
+                    ]
+                ]);
+
+                $brand->save();
+            } catch (\Exception $e) {
+                $this->CLImate->red($e->getMessage());
+            }
                 
             // }
+        }
+    }
 
             // TODO: redirects, photos, etc
+    public function syncMagentoUsersToMongo($magentoEntityId = null){
+        $sql = "
+            SELECT
+                ce.entity_id,
+                cevf.VALUE as firstname,
+                cevl.VALUE as lastname, 
+                cevp.VALUE as password_hash,
+                ce.email 
+            FROM
+                customer_entity ce
+                INNER JOIN customer_entity_varchar cevf ON ce.entity_id = cevf.entity_id
+                INNER JOIN eav_attribute eaf ON eaf.attribute_id = cevf.attribute_id
+                INNER JOIN customer_entity_varchar cevl ON ce.entity_id = cevl.entity_id
+                INNER JOIN eav_attribute eal ON eal.attribute_id = cevl.attribute_id
+                INNER JOIN customer_entity_varchar cevp ON ce.entity_id = cevp.entity_id
+                INNER JOIN eav_attribute eaph ON eaph.attribute_id = cevp.attribute_id
+                INNER JOIN eav_entity_type eet ON eet.entity_type_id = eal.entity_type_id = eaf.entity_type_id 
+            WHERE
+                eet.entity_type_code = 'customer' 
+                AND eaf.attribute_code = 'firstname' 
+                AND eal.attribute_code = 'lastname' 
+                AND eaph.attribute_code = 'password_hash'
+            LIMIT 3
+        ";
+
+        //Get all the users from the magento database
+        $select = $this->db->prepare($sql);
+        $select->execute();
+        $users = $select->fetchall();
+
+        
+        foreach($users as $user){
+            //Temp variable for our cli table
+            $data = [];
+            
+            try{
+                //The user data structure for transforming a Magento user to a Mongo User
+                $userData = [
+                    'email' => $user['email'],
+                    'first_name' => $user['firstname'],
+                    'password' => '',
+                    'role' => 'identified',
+                    'active' => true,
+                    'last_name' => $user['lastname'],
+                    'old' => [
+                        'password' => $user['password_hash'],
+                    ],
+                    'price_level' => 'Retail-JBA',
+                ]; 
+                //Create the new user in mongo
+                $newUser = \Users\Models\Users::createNewUser( $userData, $registration_action );
+                
+                if($newUser){
+                    //New user was successfully transwered from Magento to Mongo
+                    array_push($data, ['New Mongo User Created From Magento!', $newUser['email'], ✅]);
+                    
+                    //See if we have an existing netsuite user for this email and division
+                    $netsuiteUser = \Netsuite\Models\Customer::getCustomerFromEmail($newUser['email']);
+                    
+                    //If we found a valid netsuite user, update the netsuite object on the corresponding mongo user
+                    if($netsuiteUser){
+                        array_push($data, ['Netsuite User Found!', $netsuiteUser['email'], ✅]);
+                        
+                        //Try to update the mongo user we just created with the netsuite data we need
+                        try{
+                            $updateUser = \Users\Models\Users::updateUserNetsuiteFields($email, [
+                                'netsuite_external_id' => $netsuiteUser['externalId'],
+                                'netsuite_internal_id' => $netsuiteUser['internalId'],
+                                'netsuite_entity_id' => $netsuiteUser['entityId'],
+                            ]);
+                            array_push($data, ['Mongo User Netsuite Data Updated!', $newUser['email'], ✅]);
+                        }catch(Exception $e){
+                            $this->CLImate->to('error')->red($e->getMessage());
+                        }
+                    }else{
+                        //No netsuite user was found for this Magento customer
+                        array_push($data, ['No Netsuite User Found!', $netsuiteUser['email'], ❌]);
+                    }
+                }
+            }catch(Exception $e){
+                $this->CLImate->to('error')->red($e->getMessage());
+            }
+            
+            //Write our output for this iteration of the loop
+            $this->CLImate->table($data);
         }
     }
 
@@ -94,14 +183,17 @@ class Magento
                 cc.entity_id AS id,
                 cc.`value` AS `name`,
                 cc1.`value` AS url_path,
-                IF (cce.parent_id IN (1, 2, 652, 333, 515, 757, 1060, 1425), NULL, cce.parent_id) AS parent_id,
-                position AS sort_order
+            IF
+                ( cce.parent_id IN ( 1, 2, 652, 333, 515, 757, 1060, 1425 ), NULL, cce.parent_id ) AS parent_id,
+                position AS sort_order,
+                ccdesc.description AS description 
             FROM
                 catalog_category_entity_varchar cc
                 JOIN catalog_category_entity_varchar cc1 ON cc.entity_id = cc1.entity_id
                 JOIN catalog_category_entity_int cc_int ON cc1.entity_id = cc_int.entity_id
                 JOIN eav_entity_type ee ON cc.entity_type_id = ee.entity_type_id
-                JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id 
+                JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id
+                JOIN ( SELECT entity_id, description FROM catalog_category_flat_store_1 UNION SELECT entity_id, description FROM catalog_category_flat_store_4 UNION SELECT entity_id, description FROM catalog_category_flat_store_5 ) AS ccdesc ON ccdesc.entity_id = cc.entity_id 
             WHERE
                 cc.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'name' ) 
                 AND cc1.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'url_path' ) 
@@ -109,7 +201,8 @@ class Magento
                 AND cc_int.`value` = 1 
                 AND (( cce.parent_id = 2 AND cce.children_count > 1 ) OR cce.parent_id > 2 ) 
                 AND ee.entity_model = 'catalog/category' 
-            GROUP BY id
+            GROUP BY
+                id 
             ORDER BY
                 cce.parent_id ASC,
                 cce.position ASC
@@ -117,27 +210,31 @@ class Magento
 
         $exclude = [];
         $categoryIds = [null => null];
+        
         do {
             $incomplete = false;
             $select = $this->db->prepare($sql);
             $select->execute();
-
+            //CLI Progress bar
+            $progress = $this->CLImate->progress()->total($select->rowCount());
+            
             while ($row = $select->fetch()) {
                 if (in_array($row['id'], array_keys($categoryIds))) {
                     continue;
                 }
-                // TODO: description, images, etc
+                // TODO: images, etc
                 // TODO: assign products to categories
 
                 $category = new \Shop\Models\Categories([
                     'title'   => $row['name'],
+                    'description' => $row['description'],
                     // 'slug'    => $row['url_path'],
                     'magento' => [
                         'id'        => $row['id'],
                         'parent_id' => $row['parent_id']
                     ]
                 ]);
-                
+
                 if (in_array($row['parent_id'], array_keys($categoryIds))) {
                     $category->set('parent', $categoryIds[$row['parent_id']]);
                 } else {
@@ -146,6 +243,9 @@ class Magento
                     continue;
                 }
                 
+                //Advance the progress bar, output the cat title
+                $progress->advance(1, $category['title']);
+
                 $category->save();
                 $categoryIds[$row['id']] = $category->id;
 
@@ -291,9 +391,9 @@ class Magento
                     $toRemove = [];
                 }
                 
-                $newProductCategories = array_filter($toAdd, function($v) use ($toRemove) {
+                $newProductCategories = array_values(array_filter($toAdd, function($v) use ($toRemove) {
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
-                });
+                }));
 
                 $product
                     ->set('magento.id', $row['id'])

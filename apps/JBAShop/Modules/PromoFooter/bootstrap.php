@@ -10,7 +10,7 @@ switch ($global_app_name)
         
         break;
     case "site":
-        
+        die;
         break;
 }
 ?>

@@ -93,18 +93,9 @@ class ThemeBootstrap extends \Dsc\Bootstrap
 
         // add the OLD css assets to be minified
         $files = array(
-			'css/bootstrap.css',
-            'css/custom.css',
-			'css/custom_includes/new_custom.css',
-			'css/custom_includes/nav.css',
-			'css/custom_includes/categories.css',
-			'css/custom_includes/home.css',
-			'css/custom_includes/products.css',
-			'css/custom_includes/stock.css',
 			'css/search.css',
-			'css/instantsearch.min.css',
-            'css/custom_includes/promotional.css',
-            'css/product.css'
+            'css/instantsearch.min.css',
+            'scss/scss_master.css',
         );
 
 		if(!$this->app->get('DEBUG'))  {
@@ -118,28 +109,16 @@ class ThemeBootstrap extends \Dsc\Bootstrap
 
 		$files = array(
 			'js/vendor/ie_assign_polyfill.js',
-			'js/vendor/bootstrap.min.js',
-			'js/vendor/instantsearch.min.js',
+			//'js/vendor/instantsearch.min.js',
 			'js/vendor/slick.min.js',
 			'js/vendor/stickyickyicky.js',
 			'js/vendor/simpleMask.js',
             'js/vendor/alphanum.js',
-			'js/returns.js',
-			'js/social.js',
-            'js/shop_custom.js',
-            'js/userMediaSlider.js',
-            'js/affirm_custom.js',
-			'js/generic_algolia_functions.js',
-			'js/listrak.js',
-            'js/estimate_shipping.js',
-            'js/returns.js',
 			'js/ymm.js',
 			//'js/checkout.js',
-			//End shop assets. Start theme assets
+            //End shop assets. Start theme assets
+            'js/jba2.js',
 			'js/custom.js',
-			'js/custom_includes/nav.js',
-			'js/custom_includes/new_custom.js',
-			'js/stock_cutoff_timer.js'
 		);
 
         foreach ($files as $file)
