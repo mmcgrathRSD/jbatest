@@ -139,7 +139,7 @@ class Magento
                     'price_level' => 'Retail-JBA',
                 ]; 
                 //Create the new user in mongo
-                $newUser = \Users\Models\Users::createNewUser( $userData, $registration_action );
+                $newUser = \Users\Models\Users::createNewUser($userData);
                 
                 if($newUser){
                     //New user was successfully transwered from Magento to Mongo
@@ -154,7 +154,7 @@ class Magento
                         
                         //Try to update the mongo user we just created with the netsuite data we need
                         try{
-                            $updateUser = \Users\Models\Users::updateUserNetsuiteFields($email, [
+                            $updateUser = \Users\Models\Users::updateUserNetsuiteFields($netsuiteUser['email'], [
                                 'netsuite_external_id' => $netsuiteUser['externalId'],
                                 'netsuite_internal_id' => $netsuiteUser['internalId'],
                                 'netsuite_entity_id' => $netsuiteUser['entityId'],
