@@ -238,7 +238,8 @@ class Magento
                     'magento' => [
                         'id'        => $row['id'],
                         'parent_id' => $row['parent_id']
-                    ]
+                    ],
+                    'gm_product_category' => 'Vehicles & Parts > Vehicle Parts & Accessories',
                 ]);
 
                 if (in_array($row['parent_id'], array_keys($categoryIds))) {
