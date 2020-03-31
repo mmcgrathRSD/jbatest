@@ -25,6 +25,10 @@ require $app->get('PATH_ROOT') . 'config/config.php';
 
 /*** MAGENTO SYNC ROUTES ***/
 
+$app->route('GET /sync-brands', function() {
+    (new JBAShop\Services\Magento)->syncBrands();
+});
+
 $app->route('GET /sync-categories', function() {
     (new JBAShop\Services\Magento)->syncCategories();
 });
