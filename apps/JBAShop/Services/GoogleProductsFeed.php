@@ -17,13 +17,13 @@ class GoogleProductsFeed
 	public function __construct($path = null) {
 		if(empty($path)){
 			$this->path = \Base::instance()->get('TEMP');
+		}else{
+			$this->path = $path;
 		}
-		$this->path = $path;
 	}
 	
 	public function compressFeeds($files = [])
 	{
-		
 		foreach ($files as $file) {
 			// Name of the gz file we're creating
 			$gzfile = $file.".gz";
@@ -53,13 +53,13 @@ class GoogleProductsFeed
 		$productCollection = \Dsc\Mongo\Helper::getCollection('shop.products');
 		//restrict categories to sales_channel/global
 		$categoriesCursor = $categoryCollection->find([
-			'gm_product_category' => [
-				'$exists' => true,
-				'$ne'     => ''
-			],
+			// 'gm_product_category' => [
+				// '$exists' => true,
+				// '$ne'     => ''
+			// ],
 			'$or' => [
-				'sales_channels.0' => ['$exists' => false],
-				'sales_channels.slug' => \Base::instance()->get('sales_channel')
+				['sales_channels.0' => ['$exists' => false]],
+				['sales_channels.slug' => \Base::instance()->get('sales_channel')]
 			]
 		]);
 		//we do this to stop the category cursor from timing out
@@ -69,8 +69,11 @@ class GoogleProductsFeed
 		}
 		$productIds = [];
 		$productsWriter = $this->startXML($name);
+		$progress = $mate->progress()->total(count($categories));
+
 		//for each category collect all products and generate xml feed entries
 		foreach ($categories as $category) {
+			$progress->advance(0, $category['title']);
 			$googleProductCategory = $category['gm_product_category'];
 			$query = [
 			    'publication.sales_channels.slug' => \Base::instance()->get('sales_channel'),
@@ -141,9 +144,10 @@ class GoogleProductsFeed
 				if ($item['g:price'] == 0) {
 					continue;
 				}
-				
-				$this->addItem($productsWriter, $item);
+				var_dump($item);die('item');
+				// $this->addItem($productsWriter, $item);
 			}
+			$progress->advance(1);
 		}
 
 		$this->endXML($productsWriter);
@@ -192,6 +196,7 @@ class GoogleProductsFeed
 	 */
 	protected function startXML($name)
 	{
+		//set the $fileName so we can return the full path to file.
 		$this->fileName = $this->path."{$name}.xml";
 		$writer = new \XMLWriter();
 		$writer->openUri($this->fileName);

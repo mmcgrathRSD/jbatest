@@ -72,14 +72,11 @@ class Diagnostics extends \Dsc\Controller
             $channels = (new \Shop\Models\SalesChannels())->getItems();
             $path = \Base::instance()->get('TEMP');
             $feeds = [];
+
             foreach($channels as $channel){
                 $feeds[] = (new \JBAShop\Services\GoogleProductsFeed())->generateFeeds($channel->get('slug') . '_products');
             }
-            // $feeds = [
-            //     '/var/www/static.rallysportdirect.com/google/subispeed_products.xml',
-            //     '/var/www/static.rallysportdirect.com/google/ftspeed_products.xml'
-            // ];
-
+            
             (new \JBAShop\Services\GoogleProductsFeed())->compressFeeds($feeds);
         } catch (\Exception $e) {
             $this->sendNewRelicError('Error Creating Google Product Feed', $e);
