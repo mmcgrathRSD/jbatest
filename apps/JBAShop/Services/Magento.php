@@ -38,6 +38,54 @@ class Magento
         return $db;
     }
 
+    public function syncBrands()
+    {
+        $sql = "
+            SELECT
+                aov.option_id AS id,
+                aov.`value` AS name
+            FROM
+                eav_attribute_option_value aov
+                INNER JOIN eav_attribute_option ao ON aov.option_id = ao.option_id
+                INNER JOIN eav_attribute a ON a.attribute_id = ao.attribute_id 
+            WHERE
+                a.attribute_id = 81 
+            GROUP BY
+                aov.option_id,
+                aov.`value` 
+            ORDER BY aov.`value` ASC
+        ";
+
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        while ($row = $select->fetch()) {
+            /**$existing = (new \Shop\Models\Manufacturers)
+                ->setCondition('title', $row['name'])
+                ->getItem();
+
+            if (!empty($existing->slug)) {
+                $existing->set('magento.id', $row['id']);
+                $existing->store();
+            } else {**/
+            try {
+                $brand = new \Shop\Models\Manufacturers([
+                    'title' => $row['name'],
+                    'magento' => [
+                        'id' => $row['id']
+                    ]
+                ]);
+
+                $brand->save();
+            } catch (\Exception $e) {
+                $this->CLImate->red($e->getMessage());
+            }
+                
+            // }
+        }
+    }
+
+            // TODO: redirects, photos, etc
     public function syncMagentoUsersToMongo($magentoEntityId = null){
         $sql = "
             SELECT
@@ -249,6 +297,7 @@ class Magento
         $sql = "
             SELECT
                 def.entity_id AS 'id',
+                mB.option_id as 'brand_id',
                 cpe.sku AS 'model',
                 `status`.`value` AS 'enabled',
                 !ISNULL(subi.`value`) AS 'subispeed',
@@ -259,7 +308,7 @@ class Magento
                 ftspeed_name.`value` AS 'ftspeed_title',
                 cats.categories,
                 default_desc.`value` AS 'long_description',
-                default_short_desc.`value` AS 'short_description' 
+                default_short_desc.`value` AS 'short_description'
             FROM
                 catalog_product_entity_int def
                 INNER JOIN catalog_product_entity_int AS `status` ON ( def.entity_id = `status`.entity_id AND `status`.store_id = 0 AND `status`.attribute_id = 96 AND `status`.`value` = 1 )
@@ -285,7 +334,15 @@ class Magento
                         cat.product_id = product.entity_id 
                     GROUP BY
                         cat.product_id 
-                ) AS cats ON cats.product_id = def.entity_id 
+                ) AS cats ON cats.product_id = def.entity_id
+                LEFT JOIN catalog_product_entity_int AS m
+                    ON m.attribute_id = 81
+                    AND m.entity_type_id = '4'
+                    AND m.STORE_ID = 0
+                    AND def.entity_id = m.entity_id
+                LEFT JOIN eav_attribute_option_value mB
+                    ON mB.option_id = m.value
+                    AND mB.STORE_ID = 0
             WHERE
                 def.attribute_id = 102 
                 AND def.store_id = 0
@@ -313,6 +370,16 @@ class Magento
             // TODO: brands
 
             if (!empty($product->id)) {
+                if (!empty($row['brand_id'])) {
+                    $brand = (new \Shop\Models\Manufacturers)
+                        ->setCondition('magento.id', $row['brand_id'])
+                        ->getItem();
+
+                    if (!empty($brand->slug)) {
+                        $product->set('manufacturer.id', $brand->id);
+                    }
+                }
+
                 $productCategories = array_values(array_intersect_key($categories, array_flip(explode(',', $row['categories']))));
 
                 $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
@@ -335,22 +402,24 @@ class Magento
                     ->set('categories', $newProductCategories)
                 ;
 
+                $productSalesChannels = [];
                 if (!empty($row['subispeed'])) {
-                    $product->set('publication.sales_channels.0', $salesChannels['subispeed']);
+                    $productSalesChannels[] = $salesChannels['subispeed'];
                 }
 
                 if (!empty($row['ftspeed'])) {
-                    $product->set('publication.sales_channels.0', $salesChannels['ftspeed']);
+                    $productSalesChannels[] = $salesChannels['ftspeed'];
                 }
 
+                $product->set('publication.sales_channels', $productSalesChannels);
                 if (!empty($row['enabled'])) {
-                    $product->set('publication.status', $salesChannels['published']);
+                    $product->set('publication.status', 'published');
                 }
 
                 $product->save();
             }
 
-            $progress->advance();
+            $progress->advance(1, $row['model']);
         }
     }
 
