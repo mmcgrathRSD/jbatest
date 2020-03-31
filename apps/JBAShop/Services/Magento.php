@@ -60,7 +60,6 @@ class Magento
                 AND eaf.attribute_code = 'firstname' 
                 AND eal.attribute_code = 'lastname' 
                 AND eaph.attribute_code = 'password_hash'
-            LIMIT 3
         ";
 
         //Get all the users from the magento database
