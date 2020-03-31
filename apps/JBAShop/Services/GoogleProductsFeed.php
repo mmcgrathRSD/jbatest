@@ -11,9 +11,13 @@ class GoogleProductsFeed
 		'g:google_product_category',
 		'g:product_type'
 	];
-	protected $path = '/var/www/static.rallysportdirect.com/google/';
+	protected $path;
+	protected $fileName;
 
-	public function __construct($path = '/var/www/static.rallysportdirect.com/google/') {
+	public function __construct($path = null) {
+		if(empty($path)){
+			$this->path = \Base::instance()->get('TEMP');
+		}
 		$this->path = $path;
 	}
 	
@@ -36,7 +40,7 @@ class GoogleProductsFeed
 		
 	}
 	
-	public function generateFeeds()
+	public function generateFeeds($name = 'product')
 	{
 		$mate = new CLImate();
 		/** @var \MongoDb $mongo */
@@ -47,12 +51,15 @@ class GoogleProductsFeed
 
 		/** @var \MongoCollection $collection */
 		$productCollection = \Dsc\Mongo\Helper::getCollection('shop.products');
-
+		//restrict categories to sales_channel/global
 		$categoriesCursor = $categoryCollection->find([
-			'publication.status' => 'published',
 			'gm_product_category' => [
 				'$exists' => true,
 				'$ne'     => ''
+			],
+			'$or' => [
+				'sales_channels.0' => ['$exists' => false],
+				'sales_channels.slug' => \Base::instance()->get('sales_channel')
 			]
 		]);
 		//we do this to stop the category cursor from timing out
@@ -61,56 +68,16 @@ class GoogleProductsFeed
 		    $categories[] = $categoryDoc;
 		}
 		$productIds = [];
-		$productsWriter = $this->startXML('rsd_products');
-		//$extendedWriter = $this->startXML('rsd_products_extended');
-
+		$productsWriter = $this->startXML($name);
+		//for each category collect all products and generate xml feed entries
 		foreach ($categories as $category) {
 			$googleProductCategory = $category['gm_product_category'];
 			$query = [
-				'publication.status' => 'published',
-			    'publication.sales_channels.slug' => 'rallysport-usa',
+			    'publication.sales_channels.slug' => \Base::instance()->get('sales_channel'),
 				'categories.0.id'    => new \MongoDB\BSON\ObjectID((string) $category['_id'])
 			];
 			$products = $productCollection->find($query);
-			$categoryTree = $category['title'];
 
-			if (!empty($category['parent'])) {
-				$parentCategory = $categoryCollection->findOne(['_id' => new \MongoDB\BSON\ObjectID((string) $category['parent'])], [
-                    'projection' => [
-                        'title' => true
-                    ]
-                ]);
-				if (!empty($parentCategory)) {
-					if ($parentCategory['title'] == 'Clothing and Accessories') {
-						continue;
-					}
-
-					$categoryTree = $parentCategory['title'] . ' > ' . $categoryTree;
-				}
-			}
-
-			$saleExcludedBrands = [
-			    'AMS',
-                'Hawk',
-                'AirLift',
-                'BC Racing',
-                'Blouch',
-                'Cobb Tuning',
-                'Cosworth',
-                'DeatschWerks',
-                'Eibach',
-                'ETS',
-                'Go Fast Bits',
-                'GoPro',
-                'GrimmSpeed',
-                'Injector Dynamics',
-                'Killer B',
-                'Nameless',
-                'Racecomp Engineering',
-                'Rally Armor',
-                'TurboSmart'
-			];
-			$saleExcludedBrands = array_map('strtolower', $saleExcludedBrands);
 			foreach ($products as $data) {
 				/** @var \JBAShop\Models\Products $product */
 				$product = (new \JBAShop\Models\Products())->bind($data);
@@ -133,13 +100,13 @@ class GoogleProductsFeed
 				}
 
 				$productIds[] = $productId;
-				$modelNumber = $product->{'tracking.model_number'};
-				$gtin = $product->{'tracking.upc'};
+				$modelNumber = $product->get('tracking.model_number');
+				$gtin = $product->get('tracking.upc');
 				$mpn = trim(substr($modelNumber, strpos($modelNumber, ' ')));
 				$title = $product->title;
-				$link = 'https://www.rallysportdirect.com' . $product->generateStandardURL();
+				$link = $product->generateStandardURL(true);
 
-				if(strtolower($product->{'manufacturer.title'}) == 'cobb tuning') {
+				if(strtolower($product->get('manufacturer.title')) == 'cobb tuning') {
 				    $price = $product->price(null, null, null, 'map');
 				} else {
 				    $price = $product->price();
@@ -162,18 +129,15 @@ class GoogleProductsFeed
 					'g:mpn'                     => $mpn, 
 					'g:price'                   => $price,
 					'g:image_link'              => $product->productFeedsImage(),
-					'g:manufacturer'            => $product->{'manufacturer.title'},
-					'g:brand'                   => $product->{'manufacturer.title'},
+					'g:manufacturer'            => $product->get('manufacturer.title'),
+					'g:brand'                   => $product->get('manufacturer.title'),
 					'g:condition'               => 'new',
 					'g:availability'            => $stock,
-					'g:google_product_category' => $googleProductCategory,
-					'g:product_type'            => $categoryTree,
-					'g:shipping_weight'         => !empty($product->{'shipping.weight'}) ? $product->{'shipping.weight'} : 1
+					'g:google_product_category' => 'Vehicles & Parts > Vehicle Parts & Accessories',//According to David "Looks like we are populating the category with the above data for all parts/feeds."
+					'g:product_type'            => 'Vehicles & Parts > Vehicle Parts & Accessories',//From the sample xml provided by David data this value falls under the same rules as above.
+					'g:shipping_weight'         => !empty($product->get('shipping.weight')) ? $product->get('shipping.weight') : 1
 				], $additionalItemInfo);
-				
-				//if(!in_array(strtolower($product->{'manufacturer.title'}), $saleExcludedBrands)) {
-				//    $item['g:promotion_id'] = 'Tax_Season_sale_10_off';
-				//}
+
 				if ($item['g:price'] == 0) {
 					continue;
 				}
@@ -183,7 +147,8 @@ class GoogleProductsFeed
 		}
 
 		$this->endXML($productsWriter);
-		//$this->endXML($extendedWriter);
+
+		return $this->fileName;
 	}
 
 	function isValidBarcode($barcode) {
@@ -227,15 +192,14 @@ class GoogleProductsFeed
 	 */
 	protected function startXML($name)
 	{
+		$this->fileName = $this->path."{$name}.xml";
 		$writer = new \XMLWriter();
-		$writer->openUri($this->path."{$name}.xml");
+		$writer->openUri($this->fileName);
 		$writer->setIndent(true);
 		$writer->startDocument('1.0','UTF-8');
-
 		$writer->startElement('rss');
 		$writer->writeAttribute('version', '2.0');
 		$writer->writeAttribute('xmlns:g', 'http://base.google.com/ns/1.0');
-
 		$writer->startElement('channel');
 
 		return $writer;
