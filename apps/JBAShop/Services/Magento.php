@@ -1,6 +1,9 @@
-<?php namespace JBAShop\Services;
+<?php
+
+namespace JBAShop\Services;
 
 use \DB\SQL;
+use Exception;
 use \League\CLImate\CLImate;
 
 class Magento
@@ -13,7 +16,7 @@ class Magento
 
 
     public function __construct()
-    {   
+    {
         //Magento Connection
         $this->db = self::getDB();
         //CLImate local object
@@ -24,7 +27,7 @@ class Magento
     {
         /** @var SQL $db */
         $db = \Base::instance()->get('magento.connection');
-        
+
         if (!$db) {
             $db = new SQL('mysql:host=' . \Base::instance()->get('magento.host') . ';dbname=' . \Base::instance()->get('magento.db'), \Base::instance()->get('magento.username'), \Base::instance()->get('magento.password'), array(
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
@@ -34,7 +37,7 @@ class Magento
 
             \Base::instance()->set('magento.connection', $db);
         }
-        
+
         return $db;
     }
 
@@ -80,13 +83,14 @@ class Magento
             } catch (\Exception $e) {
                 $this->CLImate->red($e->getMessage());
             }
-                
+
             // }
         }
     }
 
-            // TODO: redirects, photos, etc
-    public function syncMagentoUsersToMongo($magentoEntityId = null){
+    // TODO: redirects, photos, etc
+    public function syncMagentoUsersToMongo($magentoEntityId = null)
+    {
         $sql = "
             SELECT
                 ce.entity_id,
@@ -115,12 +119,12 @@ class Magento
         $select->execute();
         $users = $select->fetchall();
 
-        
-        foreach($users as $user){
+
+        foreach ($users as $user) {
             //Temp variable for our cli table
             $data = [];
-            
-            try{
+
+            try {
                 //The user data structure for transforming a Magento user to a Mongo User
                 $userData = [
                     'email' => $user['email'],
@@ -133,41 +137,44 @@ class Magento
                         'password' => $user['password_hash'],
                     ],
                     'price_level' => 'Retail-JBA',
-                ]; 
+                    'magento' => [
+                        'user_id' => $user['entity_id'],
+                    ],
+                ];
                 //Create the new user in mongo
-                $newUser = \Users\Models\Users::createNewUser( $userData, $registration_action );
-                
-                if($newUser){
+                $newUser = \Users\Models\Users::createNewUser($userData);
+
+                if ($newUser) {
                     //New user was successfully transwered from Magento to Mongo
                     array_push($data, ['New Mongo User Created From Magento!', $newUser['email'], ✅]);
-                    
+
                     //See if we have an existing netsuite user for this email and division
                     $netsuiteUser = \Netsuite\Models\Customer::getCustomerFromEmail($newUser['email']);
-                    
+
                     //If we found a valid netsuite user, update the netsuite object on the corresponding mongo user
-                    if($netsuiteUser){
+                    if ($netsuiteUser) {
                         array_push($data, ['Netsuite User Found!', $netsuiteUser['email'], ✅]);
-                        
+
                         //Try to update the mongo user we just created with the netsuite data we need
-                        try{
-                            $updateUser = \Users\Models\Users::updateUserNetsuiteFields($email, [
+                        try {
+                            $updateUser = \Users\Models\Users::updateUserNetsuiteFields($netsuiteUser['email'], [
                                 'netsuite_external_id' => $netsuiteUser['externalId'],
                                 'netsuite_internal_id' => $netsuiteUser['internalId'],
                                 'netsuite_entity_id' => $netsuiteUser['entityId'],
                             ]);
                             array_push($data, ['Mongo User Netsuite Data Updated!', $newUser['email'], ✅]);
-                        }catch(Exception $e){
+                        } catch (Exception $e) {
                             $this->CLImate->to('error')->red($e->getMessage());
                         }
-                    }else{
+                    } else {
                         //No netsuite user was found for this Magento customer
                         array_push($data, ['No Netsuite User Found!', $netsuiteUser['email'], ❌]);
                     }
                 }
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 $this->CLImate->to('error')->red($e->getMessage());
             }
-            
+
             //Write our output for this iteration of the loop
             $this->CLImate->table($data);
         }
@@ -209,14 +216,14 @@ class Magento
 
         $exclude = [];
         $categoryIds = [null => null];
-        
+
         do {
             $incomplete = false;
             $select = $this->db->prepare($sql);
             $select->execute();
             //CLI Progress bar
             $progress = $this->CLImate->progress()->total($select->rowCount());
-            
+
             while ($row = $select->fetch()) {
                 if (in_array($row['id'], array_keys($categoryIds))) {
                     continue;
@@ -241,7 +248,7 @@ class Magento
                     $this->CLImate->yellow($row['url_path'] . '(' . $row['id'] . ')');
                     continue;
                 }
-                
+
                 //Advance the progress bar, output the cat title
                 $progress->advance(1, $category['title']);
 
@@ -277,7 +284,7 @@ class Magento
         ];
 
         $categories = [];
-        foreach(\Shop\Models\Categories::collection()->find(['magento.id' => ['$exists' => true]], ['projection' => ['slug' => 1, 'title' => 1, 'magento' => 1, 'ancestors' => 1]]) as $category) {
+        foreach (\Shop\Models\Categories::collection()->find(['magento.id' => ['$exists' => true]], ['projection' => ['slug' => 1, 'title' => 1, 'magento' => 1, 'ancestors' => 1]]) as $category) {
             if (empty($category['magento']['id'])) {
                 continue;
             }
@@ -389,8 +396,8 @@ class Magento
                 } else {
                     $toRemove = [];
                 }
-                
-                $newProductCategories = array_values(array_filter($toAdd, function($v) use ($toRemove) {
+
+                $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
                 }));
 
@@ -399,8 +406,7 @@ class Magento
                     ->set('title', $row['default_title'])
                     ->set('copy', $row['long_description'])
                     ->set('short_description', $row['short_description'])
-                    ->set('categories', $newProductCategories)
-                ;
+                    ->set('categories', $newProductCategories);
 
                 $productSalesChannels = [];
                 if (!empty($row['subispeed'])) {
