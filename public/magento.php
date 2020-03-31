@@ -25,6 +25,10 @@ require $app->get('PATH_ROOT') . 'config/config.php';
 
 /*** MAGENTO SYNC ROUTES ***/
 
+$app->route('GET /sync-brands', function() {
+    (new JBAShop\Services\Magento)->syncBrands();
+});
+
 $app->route('GET /sync-categories', function() {
     (new JBAShop\Services\Magento)->syncCategories();
 });
@@ -34,7 +38,15 @@ $app->route('GET /sync-product-info', function() {
 });
 
 $app->route('GET /sync-dynamic-group-products', function() {
-    (new JBAShop\Services\Magento)->syncDynamicGroupProducts();
+	(new JBAShop\Services\Magento)->syncDynamicGroupProducts();
+});
+/**
+ * This method syncs all users from magento to mongo
+ * @param int $magentoId - the user primary key from magento database (customer_entity.entity_id)
+ * @return void
+ */
+$app->route('GET /sync-magento-users-to-mongo', function($f3){
+	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo();
 });
 
 /**************************/
@@ -48,8 +60,6 @@ $app->route('GET /sync-dynamic-group-products', function() {
 
 // trigger the preflight event PreSite, PostSite etc
 \Dsc\System::instance()->preflight();
-
-
 
 //excute everything.
 $app->run();

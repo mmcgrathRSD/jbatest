@@ -17,8 +17,10 @@ class Magento
 
 
     public function __construct()
-    {
+    {   
+        //Magento Connection
         $this->db = self::getDB();
+        //CLImate local object
         $this->CLImate = new CLImate();
     }
 
@@ -38,6 +40,141 @@ class Magento
         }
 
         return $db;
+    }
+
+    public function syncBrands()
+    {
+        $sql = "
+            SELECT
+                aov.option_id AS id,
+                aov.`value` AS name
+            FROM
+                eav_attribute_option_value aov
+                INNER JOIN eav_attribute_option ao ON aov.option_id = ao.option_id
+                INNER JOIN eav_attribute a ON a.attribute_id = ao.attribute_id 
+            WHERE
+                a.attribute_id = 81 
+            GROUP BY
+                aov.option_id,
+                aov.`value` 
+            ORDER BY aov.`value` ASC
+        ";
+
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        while ($row = $select->fetch()) {
+            /**$existing = (new \Shop\Models\Manufacturers)
+                ->setCondition('title', $row['name'])
+                ->getItem();
+
+            if (!empty($existing->slug)) {
+                $existing->set('magento.id', $row['id']);
+                $existing->store();
+            } else {**/
+            try {
+                $brand = new \Shop\Models\Manufacturers([
+                    'title' => $row['name'],
+                    'magento' => [
+                        'id' => $row['id']
+                    ]
+                ]);
+
+                $brand->save();
+            } catch (\Exception $e) {
+                $this->CLImate->red($e->getMessage());
+            }
+                
+            // }
+        }
+    }
+
+            // TODO: redirects, photos, etc
+    public function syncMagentoUsersToMongo($magentoEntityId = null){
+        $sql = "
+            SELECT
+                ce.entity_id,
+                cevf.VALUE as firstname,
+                cevl.VALUE as lastname, 
+                cevp.VALUE as password_hash,
+                ce.email 
+            FROM
+                customer_entity ce
+                INNER JOIN customer_entity_varchar cevf ON ce.entity_id = cevf.entity_id
+                INNER JOIN eav_attribute eaf ON eaf.attribute_id = cevf.attribute_id
+                INNER JOIN customer_entity_varchar cevl ON ce.entity_id = cevl.entity_id
+                INNER JOIN eav_attribute eal ON eal.attribute_id = cevl.attribute_id
+                INNER JOIN customer_entity_varchar cevp ON ce.entity_id = cevp.entity_id
+                INNER JOIN eav_attribute eaph ON eaph.attribute_id = cevp.attribute_id
+                INNER JOIN eav_entity_type eet ON eet.entity_type_id = eal.entity_type_id = eaf.entity_type_id 
+            WHERE
+                eet.entity_type_code = 'customer' 
+                AND eaf.attribute_code = 'firstname' 
+                AND eal.attribute_code = 'lastname' 
+                AND eaph.attribute_code = 'password_hash'
+        ";
+
+        //Get all the users from the magento database
+        $select = $this->db->prepare($sql);
+        $select->execute();
+        $users = $select->fetchall();
+
+        
+        foreach($users as $user){
+            //Temp variable for our cli table
+            $data = [];
+            
+            try{
+                //The user data structure for transforming a Magento user to a Mongo User
+                $userData = [
+                    'email' => $user['email'],
+                    'first_name' => $user['firstname'],
+                    'password' => '',
+                    'role' => 'identified',
+                    'active' => true,
+                    'last_name' => $user['lastname'],
+                    'old' => [
+                        'password' => $user['password_hash'],
+                    ],
+                    'price_level' => 'Retail-JBA',
+                ]; 
+                //Create the new user in mongo
+                $newUser = \Users\Models\Users::createNewUser( $userData, $registration_action );
+                
+                if($newUser){
+                    //New user was successfully transwered from Magento to Mongo
+                    array_push($data, ['New Mongo User Created From Magento!', $newUser['email'], ✅]);
+                    
+                    //See if we have an existing netsuite user for this email and division
+                    $netsuiteUser = \Netsuite\Models\Customer::getCustomerFromEmail($newUser['email']);
+                    
+                    //If we found a valid netsuite user, update the netsuite object on the corresponding mongo user
+                    if($netsuiteUser){
+                        array_push($data, ['Netsuite User Found!', $netsuiteUser['email'], ✅]);
+                        
+                        //Try to update the mongo user we just created with the netsuite data we need
+                        try{
+                            $updateUser = \Users\Models\Users::updateUserNetsuiteFields($email, [
+                                'netsuite_external_id' => $netsuiteUser['externalId'],
+                                'netsuite_internal_id' => $netsuiteUser['internalId'],
+                                'netsuite_entity_id' => $netsuiteUser['entityId'],
+                            ]);
+                            array_push($data, ['Mongo User Netsuite Data Updated!', $newUser['email'], ✅]);
+                        }catch(Exception $e){
+                            $this->CLImate->to('error')->red($e->getMessage());
+                        }
+                    }else{
+                        //No netsuite user was found for this Magento customer
+                        array_push($data, ['No Netsuite User Found!', $netsuiteUser['email'], ❌]);
+                    }
+                }
+            }catch(Exception $e){
+                $this->CLImate->to('error')->red($e->getMessage());
+            }
+            
+            //Write our output for this iteration of the loop
+            $this->CLImate->table($data);
+        }
     }
 
     public function syncCategories()
@@ -164,6 +301,7 @@ class Magento
         $sql = "
             SELECT
                 def.entity_id AS 'id',
+                mB.option_id as 'brand_id',
                 cpe.sku AS 'model',
                 `status`.`value` AS 'enabled',
                 !ISNULL(subi.`value`) AS 'subispeed',
@@ -174,7 +312,7 @@ class Magento
                 ftspeed_name.`value` AS 'ftspeed_title',
                 cats.categories,
                 default_desc.`value` AS 'long_description',
-                default_short_desc.`value` AS 'short_description' 
+                default_short_desc.`value` AS 'short_description'
             FROM
                 catalog_product_entity_int def
                 INNER JOIN catalog_product_entity_int AS `status` ON ( def.entity_id = `status`.entity_id AND `status`.store_id = 0 AND `status`.attribute_id = 96 AND `status`.`value` = 1 )
@@ -200,7 +338,15 @@ class Magento
                         cat.product_id = product.entity_id 
                     GROUP BY
                         cat.product_id 
-                ) AS cats ON cats.product_id = def.entity_id 
+                ) AS cats ON cats.product_id = def.entity_id
+                LEFT JOIN catalog_product_entity_int AS m
+                    ON m.attribute_id = 81
+                    AND m.entity_type_id = '4'
+                    AND m.STORE_ID = 0
+                    AND def.entity_id = m.entity_id
+                LEFT JOIN eav_attribute_option_value mB
+                    ON mB.option_id = m.value
+                    AND mB.STORE_ID = 0
             WHERE
                 def.attribute_id = 102 
                 AND def.store_id = 0
@@ -228,6 +374,16 @@ class Magento
             // TODO: brands
 
             if (!empty($product->id)) {
+                if (!empty($row['brand_id'])) {
+                    $brand = (new \Shop\Models\Manufacturers)
+                        ->setCondition('magento.id', $row['brand_id'])
+                        ->getItem();
+
+                    if (!empty($brand->slug)) {
+                        $product->set('manufacturer.id', $brand->id);
+                    }
+                }
+
                 $productCategories = array_values(array_intersect_key($categories, array_flip(explode(',', $row['categories']))));
 
                 $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
@@ -237,8 +393,8 @@ class Magento
                 } else {
                     $toRemove = [];
                 }
-
-                $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
+                
+                $newProductCategories = array_values(array_filter($toAdd, function($v) use ($toRemove) {
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
                 }));
 
@@ -249,22 +405,24 @@ class Magento
                     ->set('short_description', $row['short_description'])
                     ->set('categories', $newProductCategories);
 
+                $productSalesChannels = [];
                 if (!empty($row['subispeed'])) {
-                    $product->set('publication.sales_channels.0', $salesChannels['subispeed']);
+                    $productSalesChannels[] = $salesChannels['subispeed'];
                 }
 
                 if (!empty($row['ftspeed'])) {
-                    $product->set('publication.sales_channels.0', $salesChannels['ftspeed']);
+                    $productSalesChannels[] = $salesChannels['ftspeed'];
                 }
 
+                $product->set('publication.sales_channels', $productSalesChannels);
                 if (!empty($row['enabled'])) {
-                    $product->set('publication.status', $salesChannels['published']);
+                    $product->set('publication.status', 'published');
                 }
 
                 $product->save();
             }
 
-            $progress->advance();
+            $progress->advance(1, $row['model']);
         }
     }
 
