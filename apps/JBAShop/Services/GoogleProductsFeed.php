@@ -53,10 +53,10 @@ class GoogleProductsFeed
 		$productCollection = \Dsc\Mongo\Helper::getCollection('shop.products');
 		//restrict categories to sales_channel/global
 		$categoriesCursor = $categoryCollection->find([
-			// 'gm_product_category' => [
-				// '$exists' => true,
-				// '$ne'     => ''
-			// ],
+			'gm_product_category' => [
+				'$exists' => true,
+				'$ne'     => ''
+			],
 			'$or' => [
 				['sales_channels.0' => ['$exists' => false]],
 				['sales_channels.slug' => \Base::instance()->get('sales_channel')]
@@ -144,8 +144,8 @@ class GoogleProductsFeed
 				if ($item['g:price'] == 0) {
 					continue;
 				}
+				$this->addItem($productsWriter, $item);
 				var_dump($item);die('item');
-				// $this->addItem($productsWriter, $item);
 			}
 			$progress->advance(1);
 		}
