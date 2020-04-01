@@ -17,7 +17,7 @@ class Magento
 
 
     public function __construct()
-    {   
+    {
         //Magento Connection
         $this->db = self::getDB();
         //CLImate local object
@@ -84,13 +84,14 @@ class Magento
             } catch (\Exception $e) {
                 $this->CLImate->red($e->getMessage());
             }
-                
+
             // }
         }
     }
 
-            // TODO: redirects, photos, etc
-    public function syncMagentoUsersToMongo($magentoEntityId = null){
+    // TODO: redirects, photos, etc
+    public function syncMagentoUsersToMongo($magentoEntityId = null)
+    {
         $sql = "
             SELECT
                 ce.entity_id,
@@ -119,12 +120,12 @@ class Magento
         $select->execute();
         $users = $select->fetchall();
 
-        
-        foreach($users as $user){
+
+        foreach ($users as $user) {
             //Temp variable for our cli table
             $data = [];
-            
-            try{
+
+            try {
                 //The user data structure for transforming a Magento user to a Mongo User
                 $userData = [
                     'email' => $user['email'],
@@ -137,41 +138,44 @@ class Magento
                         'password' => $user['password_hash'],
                     ],
                     'price_level' => 'Retail-JBA',
-                ]; 
+                    'magento' => [
+                        'user_id' => $user['entity_id'],
+                    ],
+                ];
                 //Create the new user in mongo
                 $newUser = \Users\Models\Users::createNewUser($userData);
-                
-                if($newUser){
+
+                if ($newUser) {
                     //New user was successfully transwered from Magento to Mongo
                     array_push($data, ['New Mongo User Created From Magento!', $newUser['email'], ✅]);
-                    
+
                     //See if we have an existing netsuite user for this email and division
                     $netsuiteUser = \Netsuite\Models\Customer::getCustomerFromEmail($newUser['email']);
-                    
+
                     //If we found a valid netsuite user, update the netsuite object on the corresponding mongo user
-                    if($netsuiteUser){
+                    if ($netsuiteUser) {
                         array_push($data, ['Netsuite User Found!', $netsuiteUser['email'], ✅]);
-                        
+
                         //Try to update the mongo user we just created with the netsuite data we need
-                        try{
+                        try {
                             $updateUser = \Users\Models\Users::updateUserNetsuiteFields($netsuiteUser['email'], [
                                 'netsuite_external_id' => $netsuiteUser['externalId'],
                                 'netsuite_internal_id' => $netsuiteUser['internalId'],
                                 'netsuite_entity_id' => $netsuiteUser['entityId'],
                             ]);
                             array_push($data, ['Mongo User Netsuite Data Updated!', $newUser['email'], ✅]);
-                        }catch(Exception $e){
+                        } catch (Exception $e) {
                             $this->CLImate->to('error')->red($e->getMessage());
                         }
-                    }else{
+                    } else {
                         //No netsuite user was found for this Magento customer
                         array_push($data, ['No Netsuite User Found!', $netsuiteUser['email'], ❌]);
                     }
                 }
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 $this->CLImate->to('error')->red($e->getMessage());
             }
-            
+
             //Write our output for this iteration of the loop
             $this->CLImate->table($data);
         }
@@ -235,7 +239,8 @@ class Magento
                     'magento' => [
                         'id'        => $row['id'],
                         'parent_id' => $row['parent_id']
-                    ]
+                    ],
+                    'gm_product_category' => 'Vehicles & Parts > Vehicle Parts & Accessories',
                 ]);
 
                 if (in_array($row['parent_id'], array_keys($categoryIds))) {
@@ -393,8 +398,8 @@ class Magento
                 } else {
                     $toRemove = [];
                 }
-                
-                $newProductCategories = array_values(array_filter($toAdd, function($v) use ($toRemove) {
+
+                $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
                 }));
 
