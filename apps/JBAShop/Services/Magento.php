@@ -440,7 +440,116 @@ class Magento
         // Then we can run something here if needed to populate them on the products (something may already exist)
     }
 
-    public function syncProductRatings(){
-        
+    public function syncProductRatings()
+    {
+        //ignore customer numbe rfor now, role hardcode to user
+        //
+
+        $sql = "
+            SELECT
+                rd.review_id,
+                r.created_at,
+                rd.title,
+                rv.entity_pk_value as magento_id,
+                rd.detail,
+                rd.customer_id,
+                rd.nickname,
+                rv.`value` as rating_value,
+                r.status_id,
+                'subispeed' AS channel,
+                default_name.`value` AS 'product_title',
+                url_key.`value` AS 'url_key',
+                url_path.`value` AS 'url_path' 
+            FROM
+                review_detail rd
+                LEFT JOIN rating_option_vote rv ON rd.review_id = rv.review_id 
+                AND rv.rating_id = 3
+                LEFT JOIN review r ON r.review_id = rv.review_id 
+                AND r.status_id = 1
+                LEFT JOIN catalog_product_entity_varchar AS url_key ON ( rv.entity_pk_value = url_key.entity_id AND url_key.store_id = 0 AND url_key.attribute_id = 97 )
+                LEFT JOIN catalog_product_entity_varchar AS url_path ON ( rv.entity_pk_value = url_path.entity_id AND url_path.store_id = 0 AND url_path.attribute_id = 98 )
+                LEFT JOIN catalog_product_entity_varchar AS default_name ON ( rv.entity_pk_value = default_name.entity_id AND default_name.store_id = 0 AND default_name.attribute_id = 71 ) 
+            WHERE rv.entity_pk_value = 4379
+            AND rd.store_id = 1 UNION
+            SELECT
+                rd.review_id,
+                r.created_at,
+                rd.title,
+                rv.entity_pk_value,
+                rd.detail,
+                rd.customer_id,
+                rd.nickname,
+                rv.`value`,
+                r.status_id,
+                'ft86' AS channel,
+                default_name.`value` AS 'product_title',
+                url_key.`value` AS 'url_key',
+                url_path.`value` AS 'url_path' 
+            FROM
+                review_detail rd
+                LEFT JOIN rating_option_vote rv ON rd.review_id = rv.review_id 
+                AND rv.rating_id = 3
+                LEFT JOIN review r ON r.review_id = rv.review_id 
+                AND r.status_id = 1
+                LEFT JOIN catalog_product_entity_varchar AS url_key ON ( rv.entity_pk_value = url_key.entity_id AND url_key.store_id = 0 AND url_key.attribute_id = 97 )
+                LEFT JOIN catalog_product_entity_varchar AS url_path ON ( rv.entity_pk_value = url_path.entity_id AND url_path.store_id = 0 AND url_path.attribute_id = 98 )
+                LEFT JOIN catalog_product_entity_varchar AS default_name ON ( rv.entity_pk_value = default_name.entity_id AND default_name.store_id = 0 AND default_name.attribute_id = 71 ) 
+            WHERE rv.entity_pk_value = 4379
+            AND rd.store_id = 4 UNION
+            SELECT
+                rd.review_id,
+                r.created_at,
+                rd.title,
+                rv.entity_pk_value,
+                rd.detail,
+                rd.customer_id,
+                rd.nickname,
+                rv.`value`,
+                r.status_id,
+                'ftspeed' AS channel,
+                default_name.`value` AS 'product_title',
+                url_key.`value` AS 'url_key',
+                url_path. `value` AS 'url_path' 
+            FROM
+                review_detail rd
+                LEFT JOIN rating_option_vote rv ON rd.review_id = rv.review_id 
+                AND rv.rating_id = 3
+                LEFT JOIN review r ON r.review_id = rv.review_id 
+                AND r.status_id = 1
+                LEFT JOIN catalog_product_entity_varchar AS url_key ON ( rv.entity_pk_value = url_key.entity_id AND url_key.store_id = 0 AND url_key.attribute_id = 97 )
+                LEFT JOIN catalog_product_entity_varchar AS url_path ON ( rv.entity_pk_value = url_path.entity_id AND url_path.store_id = 0 AND url_path.attribute_id = 98 )
+                LEFT JOIN catalog_product_entity_varchar AS default_name ON ( rv.entity_pk_value = default_name.entity_id AND default_name.store_id = 0 AND default_name.attribute_id = 71 ) 
+            WHERE
+                rd.store_id = 5
+            AND rv.entity_pk_value = 4379
+        ";
+
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        while ($rating = $select->fetch()) {
+            $netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($rating['magento_id']);
+
+            $mongoProduct = (new \Shop\Models\Products)->collection()->find([
+                'magento.id' => $rating['magento_id'],
+            ]);
+
+            // $ratingModel = (new \Shop\Models\UserContent())
+            //     ->set('rating', $rating['rating_value']);
+
+            // $ratingModel->save();
+        }
+
+
+        //$review = (new \Shop\Models\UserContent)->setCondition('type', 'review')->setCondition('product_id', ['$exists' => true])->getItem();
+        // $review = (new \Shop\Models\UserContent())
+        //     ->set('product_id', new \MongoDB\BSON\ObjectId())
+        //     ->set('user_id', 'dummy_user_id')
+        //     ->set('user_name', 'dummy_user_name')
+        //     ->set('publication.status', 'draft');
+
+        // $review->save();
+
+        die;
     }
 }
