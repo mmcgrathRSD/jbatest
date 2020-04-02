@@ -173,6 +173,8 @@ class Magento
                 }
             } catch (Exception $e) {
                 $this->CLImate->to('error')->red($e->getMessage());
+                //This fixes CLImate exception of pushing empty array to table() 
+                array_push($data, ['Email ALready Exists... Skipping', $user['email'], ❌]);
             }
 
             //Write our output for this iteration of the loop
