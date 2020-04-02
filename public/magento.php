@@ -46,6 +46,13 @@ $app->route('GET /sync-magento-users-to-mongo', function($f3){
 	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo();
 });
 
+/**
+ * This method syncs all product ratings to shop.usercontent
+ */
+$app->route('GET /sync-product-ratings', function($f3){
+	(new JBAShop\Services\Magento)->syncProductRatings();
+});
+
 /**************************/
 
 

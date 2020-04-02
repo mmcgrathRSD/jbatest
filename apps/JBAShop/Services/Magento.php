@@ -439,4 +439,8 @@ class Magento
         // Images need to be uploaded and tagged by flat model in cloudinary
         // Then we can run something here if needed to populate them on the products (something may already exist)
     }
+
+    public function syncProductRatings(){
+        
+    }
 }
