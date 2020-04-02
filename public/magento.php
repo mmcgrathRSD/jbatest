@@ -37,6 +37,14 @@ $app->route('GET /sync-product-info', function() {
     (new JBAShop\Services\Magento)->syncProductInfo();
 });
 
+$app->route('GET /sync-product-images', function() {
+	(new JBAShop\Services\Magento)->syncProductImages();
+});
+
+$app->route('GET /sync-category-images', function() {
+	(new JBAShop\Services\Magento)->syncCategoryImages();
+});
+
 /**
  * This method syncs all users from magento to mongo
  * @param int $magentoId - the user primary key from magento database (customer_entity.entity_id)
