@@ -1,0 +1,99 @@
+.ais-hierarchical-menu--list__lvl0 .ais-hierarchical-menu--item .ais-hierarchical-menu--list .parent span:before {
+    content:'';
+    position: absolute;
+    width:20px;
+    height: 25px;
+    verflow: hidden;
+    margin: -5px 0 0 -20px;
+    background: url('/theme/img/jba/arrow_item_sidebar.gif') -20px 0 no-repeat;/* transition: all 50ms ease-in-out; *//* -webkit-transition: all 50ms ease-in-out; */
+    -moz-transition: all 50ms ease-in-out;/* background-position: 0 0; */
+    -o-transition: all 50ms ease-in-out;
+    transition: all 600ms ease-in-out;
+    -webkit-transition: all 600ms ease-in-out;
+    -moz-transition: all 600ms ease-in-out;
+    -o-transition: all 600ms ease-in-out;
+}
+
+.ais-hierarchical-menu--item .parent {
+    padding-right:24px;
+}
+
+.ais-hierarchical-menu--list__lvl1 > .ais-hierarchical-menu--item .parent a {
+    padding-left: 20px;
+}
+
+.ais-hierarchical-menu--list__lvl2 .parent a {
+    padding-left: 32px;
+}
+
+.new_toggle {
+    content: '';
+    display: block;
+    float: right;
+    width: 24px;
+    height: 25px;
+    margin: -5px 0;
+    cursor: pointer;
+    background: url(/theme/img/jba/arrow_toggle_sidebar_plus.gif) -24px 0 no-repeat;
+    background-size: 48px 50px;
+    position: absolute;
+    right:0;
+    transition: all 600ms ease-in-out;
+    -webkit-transition: all 600ms ease-in-out;
+    -moz-transition: all 600ms ease-in-out;
+    -o-transition: all 600ms ease-in-out;
+
+}
+
+.new_toggle:hover {
+    background-position: 0 0;
+    color: #ffffff;
+    background-color: #000000;
+    transition: all 10ms ease-in-out;
+    -webkit-transition: all 10ms ease-in-out;
+    -moz-transition: all 10ms ease-in-out;
+    -o-transition: all 10ms ease-in-out;
+}
+
+.ais-hierarchical-menu--list__lvl0 .ais-hierarchical-menu--item .ais-hierarchical-menu--list .parent a:hover span:before {
+background-position: 0 0;
+transition: all 50ms ease-in-out;
+    -webkit-transition: all 50ms ease-in-out;
+    -moz-transition: all 50ms ease-in-out;
+    -o-transition: all 50ms ease-in-out;
+}
+
+.ais-hierarchical-menu--list__lvl0 .ais-hierarchical-menu--item .ais-hierarchical-menu--list .parent span {
+    white-space: normal;
+}
+
+
+em.toggle {
+    display: none!important;
+}
+
+.ais-hierarchical-menu--item__active > div > li > a {
+    color: #ffffff;
+    background-color: #000000;
+}
+
+.ais-hierarchical-menu--item__active
+> div
+> li
+a
+span:before {
+    background-position: 0 0!important;
+    transition: all 50ms ease-in-out;
+    -webkit-transition: all 50ms ease-in-out;
+    -moz-transition: all 50ms ease-in-out;
+    -o-transition: all 50ms ease-in-out;
+}
+
+.active > div > li .new_toggle 
+  {
+      background-image: url(/theme/img/jba/arrow_toggle_sidebar_minus.gif);
+}
+
+// .last_algolia_level > .new_toggle {
+//     display: none!important;
+// }

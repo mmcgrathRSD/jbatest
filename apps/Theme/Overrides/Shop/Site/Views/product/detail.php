@@ -3,32 +3,12 @@
       <div class="breadcrumbs">
          <ul>
             <li style="display: inline-block;" typeof="v:Breadcrumb">
-               <a href="https://www.subispeed.com/" title="Home" rel="v:url" property="v:title">
+               <a href="/" title="Home" rel="v:url" property="v:title">
                Home                </a>
                <span>/</span>
             </li>
-            <li style="display: inline-block;" typeof="v:Breadcrumb">
-               <a href="https://www.subispeed.com/more" title="More..." rel="v:url" property="v:title">
-               More...                </a>
-               <span>/</span>
-            </li>
-            <li style="display: inline-block;" typeof="v:Breadcrumb">
-               <a href="https://www.subispeed.com/more/2013-crosstrek" title="13-17 Crosstrek" rel="v:url" property="v:title">
-               13-17 Crosstrek                </a>
-               <span>/</span>
-            </li>
-            <li style="display: inline-block;" typeof="v:Breadcrumb">
-               <a href="https://www.subispeed.com/more/2013-crosstrek/interior" title="Interior" rel="v:url" property="v:title">
-               Interior                </a>
-               <span>/</span>
-            </li>
-            <li style="display: inline-block;" typeof="v:Breadcrumb">
-               <a href="https://www.subispeed.com/more/2013-crosstrek/interior/bezels-and-trim-pieces" title="Bezels and Trim Pieces" rel="v:url" property="v:title">
-               Bezels and Trim Pieces                </a>
-               <span>/</span>
-            </li>
             <li style="display: inline-block;">
-               <strong>Subaru Matte Black AC Knob Full Replacement - 2015+ WRX / STI / 2014+ Forester / 2013+ Crosstrek</strong>
+               <strong><?php echo $item->title; ?></strong>
             </li>
          </ul>
       </div>
@@ -41,7 +21,7 @@
             <div class="product-essential">
                <form action="https://www.subispeed.com/checkout/cart/add/uenc/aHR0cHM6Ly93d3cuc3ViaXNwZWVkLmNvbS9zdWJhcnUtbWF0dGUtYmxhY2stYWMta25vYi1mdWxsLXJlcGxhY2VtZW50LTIwMTUtd3J4LXN0aS0yMDE0LWZvcmVzdGVyLTIwMTMtY3Jvc3N0cmVr/product/13193/form_key/PTT3lpSgzitk4OCG/" method="post" id="product_addtocart_form">
                   <div class="product-category-title">
-                     <h3><?php echo $item->manufacturer['title']; ?>s</h3>
+                     <h3><?php echo $item->manufacturer['title']; ?></h3>
                   </div>
                   <div class="product-img-box">
                      <div class="product-image">
@@ -103,30 +83,33 @@
                      </script>			
                   </div>
                   <div class="product-shop ">
-                     <meta itemprop="brand" content="Subaru">
-                     <meta itemprop="sku" content="SUB72324FJ020-KIT">
-                     <meta itemprop="category" content="Bezels and Trim Pieces">
-                     <span itemprop="weight" itemscope="" itemtype="http://schema.org/QuantitativeValue">
-                        <meta itemprop="value" content="1.5000">
-                        <meta itemprop="unitCode" content="LBR">
-                     </span>
-                     <meta itemprop="image" content="https://www.subispeed.com/media/catalog/product/cache/1/image/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-3.jpg">
+                     <meta itemprop="brand" content="<?php echo $item->manufacturer['title']; ?>">
+                     <meta itemprop="sku" content="<?php echo $item->tracking['model_number']; ?>">
+                     <meta itemprop="category" content="NOTE">
+                     <meta itemprop="image" content="NOTE">
                      <div class="product-name " itemprop="name">
                         <h1><?php echo $item->title; ?></h1>
+                        <?php if(!empty($item->title_suffix)) : ?>
+                        <h2 class="product_suffix block marginTopNone"> - <?php echo $item->title_suffix; ?></h2>
+                        <?php endif; ?>
+                        <?php if(!empty($item->h2)) : ?>
+                        <h2 class="product_suffix block marginTopNone"> - <?php echo $item->h2; ?></h2>
+                        <?php endif; ?>
                      </div>
                      <div class="ratings" itemprop="aggregateRating" itemscope="" itemtype="http://schema.org/AggregateRating">
-                        <meta itemprop="ratingValue" content="4.65">
-                        <meta itemprop="reviewCount" content="3">
+                        <meta itemprop="ratingValue" content="NOTE">
+                        <meta itemprop="reviewCount" content="NOTE">
                         <div class="rating-box">
-                           <div class="rating" style="width:93%"></div>
+                           <div class="rating" style="width:100%;" NOTE></div>
                         </div>
                         <p class="rating-links">
-                           <a href="https://www.subispeed.com/review/product/list/id/13193/">3 Review(s)</a>
+                           <a href="NOTE">X Review(s)</a>
                            <span class="separator">|</span>
-                           <a href="https://www.subispeed.com/review/product/list/id/13193/#review-form">Add Your Review</a>
+                           <a href="NOTE">Add Your Review</a>
                         </p>
                      </div>
                      <script>
+                     //NOTE
                         var magPrice=76.5;
                         var _affirm_config = {
                           public_api_key: affirm_api_key, /* Use the PUBLIC API KEY Affirm sent you. */
@@ -174,62 +157,16 @@
                         <div class="f-left">
                            <div class="price-box">
                               <span class="regular-price" id="product-price-13193">
-                              <span class="price">$76.50</span>                                    </span>
+                              <span class="price"><?php echo $this->renderLayout('Shop/Site/Views::product/blocks/lockup/price.php')?></span>                                    </span>
                            </div>
                         </div>
                         <div class="f-left">
-                           <p class="sku">SKU: <span>SUB72324FJ020-KIT</span></p>
+                           <p class="sku">SKU: <span><?php echo $item->tracking['model_number']; ?></span></p>
                            <p class="availability in-stock">
                               <span>
-                                 <style type="text/css">
-                                    /*---------- bubble tooltip -----------*/
-                                    span.tt{
-                                    position:relative;
-                                    z-index:950;
-                                    color:#3CA3FF;
-                                    font-weight:bold;
-                                    text-decoration:none;
-                                    }
-                                    span.tt span{ display: none; }
-                                    /*background:; ie hack, something must be changed in a for ie to execute it*/
-                                    span.tt:hover{ z-index:25; color: #aaaaff; background:;}
-                                    span.tt:hover span.amtooltip{
-                                    display:block;
-                                    position:absolute;
-                                    top:0px; left:0;
-                                    padding: 15px 0 0 0;
-                                    width:200px;
-                                    color: #3f3f3f;
-                                    font-size: 12px;
-                                    text-align: center;
-                                    filter: alpha(opacity:95);
-                                    KHTMLOpacity: 0.95;
-                                    MozOpacity: 0.95;
-                                    opacity: 0.95;
-                                    }
-                                    span.tt:hover span.top{
-                                    display: block;
-                                    padding: 30px 8px 0;
-                                    background: url(https://www.subispeed.com/js/amasty/amstockstatusxnotif/bubble.gif) no-repeat top;
-                                    }
-                                    span.tt:hover span.middle{ /* different middle bg for stretch */
-                                    display: block;
-                                    padding: 0 8px;
-                                    background: url(https://www.subispeed.com/js/amasty/amstockstatusxnotif/bubble_filler.gif) repeat bottom;
-                                    }
-                                    span.tt:hover span.bottom{
-                                    display: block;
-                                    padding:3px 8px 10px;
-                                    color: #548912;
-                                    background: url(https://www.subispeed.com/js/amasty/amstockstatusxnotif/bubble.gif) no-repeat bottom;
-                                    }
-                                 </style>
                                  <span class="tt">
                                  <img src="https://www.subispeed.com/media//amstockstatus/icons/501.jpg" class="amstockstatus_icon" alt="" title=""><span class="amtooltip">
                                  <span class="top"></span>
-                                 <span class="middle">
-                                 <strong>11 left in stock.</strong>
-                                 </span>
                                  <span class="bottom"></span>
                                  </span></span> <span class="amstockstatus amsts_501"><span style="font-weight: bold; color:#afd500">In Stock</span></span>
                               </span>
@@ -239,9 +176,8 @@
                      <div class="clear"></div>
                      <div><a id="learn-more" style="visibility: none;position: relative" href="#"></a></div>
                      <div class="short-description" itemprop="description">
-                        <div class="std">Add a unique style and finish by replacing the OEM knobs and retain that OEM fitment.<br>
-                           <br>
-                           <strong>Note:</strong> Price is for a set of 3 AC trim knobs
+                        <div class="std">
+                           <?php echo $item->short_description; ?>
                         </div>
                      </div>
                      <div class="add-to-box">
@@ -259,7 +195,6 @@
                      </div>
                      <ul class="add-to-links">
                         <li><a class="link-wishlist  icon-black" href="https://www.subispeed.com/wishlist/index/add/product/13193/form_key/PTT3lpSgzitk4OCG/" onclick=""><span class="link_i"></span>Add to Wishlist</a></li>
-                        <li><a class="link-email-friend  icon-black" href="https://www.subispeed.com/sendfriend/product/send/id/13193/"><span class="link_i"></span>Email to a Friend</a></li>
                      </ul>
                      <div class="social">
                         <!-- AddThis Button BEGIN -->
@@ -394,28 +329,12 @@
                <div class="product-tabs-content tabs-content std" id="product_tabs_description_tabbed_contents" style="">
                   <h2>Details</h2>
                   <div class="std">
-                     <h4 align="center">Subaru Matte Black AC Knob Full Replacement</h4>
+                     <h4 align="center"><?php echo $item->title; ?></h4>
                      <div class="container">
-                        <div class="leftColumn">
-                           <p>Add a unique style and finish by replacing the OEM knobs and retain that OEM fitment. Just pull out your OEM ones and plug these in and give your AC control a new look that it deserves.</p>
-                           <p><strong>Note.</strong> Price is for a set of 3 AC trim knobs.  Depending on your original equipment, you may need to pull the red portion off these new trim rings and also swap out the inner silver piece.</p>
-                        </div>
-                        <div class="rightColumn">
-                           <h4 align="center">Subispeed AC Knob Install</h4>
-                           <div class="video-container">
-                              <p><iframe width="560" height="315" src="https://www.youtube.com/embed/BiXL5uayl6I" frameborder="0" allowfullscreen=""></iframe></p>
-                           </div>
-                        </div>
+                        <?php echo $item->copy; ?>
                      </div>
                      <div id="clear"></div>
-                     <hr>
-                     <h3>This Part Fits</h3>
-                     <ul style="margin-bottom: 0">
-                        <li>2013-2017 Crosstrek Subaru Matte Black AC Knob Full Replacement</li>
-                        <li> 2015-2020 STI Subaru Matte Black AC Knob Full Replacement</li>
-                        <li> 2015-2020 WRX Subaru Matte Black AC Knob Full Replacement</li>
-                        <li> 2014-2018 Subaru Forester Subaru Matte Black AC Knob Full Replacement</li>
-                     </ul>
+                     <?php //West told me to remove the 'this part fits' section ?>
                   </div>
                </div>
                <h2 id="product_acc_additional_tabbed" class="tab-heading"><a href="#">Additional</a></h2>

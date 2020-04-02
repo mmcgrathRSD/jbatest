@@ -118,7 +118,9 @@ class ThemeBootstrap extends \Dsc\Bootstrap
 			//'js/checkout.js',
             //End shop assets. Start theme assets
             'js/jba2.js',
-			'js/custom.js',
+            'js/vendor/jquery-1.11.2.min.js',
+            'js/custom.js',
+            'js/custom_includes/jba_custom_algolia.js'
 		);
 
         foreach ($files as $file)
