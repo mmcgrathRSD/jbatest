@@ -293,7 +293,7 @@ class Magento
                     $categorySalesChannels[] = $salesChannels['ftspeed'];
                 }
                 if(!empty($categorySalesChannels)){
-                    $category->set('publication.sales_channels', $categorySalesChannels);
+                    $category->set('sales_channels', $categorySalesChannels);
                 }
 
                 //Advance the progress bar, output the cat title
