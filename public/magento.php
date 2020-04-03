@@ -3,7 +3,7 @@ if (php_sapi_name() != "cli") {
 	die('no way bro');
 }
 //AUTOLOAD all your composer libraries now.
-(@include_once (__dir__ . '/../vendor/autoload.php')) OR die("You need to run php composer.phar install for your application to run.");
+(@include_once(__dir__ . '/../vendor/autoload.php')) or die("You need to run php composer.phar install for your application to run.");
 //Require FatFree Base Library https://github.com/bcosca/fatfree
 $app = Base::instance();
 //Set the PATH so we can use it in our apps
@@ -25,16 +25,16 @@ require $app->get('PATH_ROOT') . 'config/config.php';
 
 /*** MAGENTO SYNC ROUTES ***/
 
-$app->route('GET /sync-brands', function() {
-    (new JBAShop\Services\Magento)->syncBrands();
+$app->route('GET /sync-brands', function () {
+	(new JBAShop\Services\Magento)->syncBrands();
 });
 
-$app->route('GET /sync-categories', function() {
-    (new JBAShop\Services\Magento)->syncCategories();
+$app->route('GET /sync-categories', function () {
+	(new JBAShop\Services\Magento)->syncCategories();
 });
 
-$app->route('GET /sync-product-info', function() {
-    (new JBAShop\Services\Magento)->syncProductInfo();
+$app->route('GET /sync-product-info', function () {
+	(new JBAShop\Services\Magento)->syncProductInfo();
 });
 
 /**
@@ -42,8 +42,12 @@ $app->route('GET /sync-product-info', function() {
  * @param int $magentoId - the user primary key from magento database (customer_entity.entity_id)
  * @return void
  */
-$app->route('GET /sync-magento-users-to-mongo', function($f3){
+$app->route('GET /sync-magento-users-to-mongo', function ($f3) {
 	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo();
+});
+
+$app->route('GET /add-sale-channel-to-categories', function ($f3) {
+	(new JBAShop\Services\Magento)->addSalesChannelsToCategories();
 });
 
 /**************************/

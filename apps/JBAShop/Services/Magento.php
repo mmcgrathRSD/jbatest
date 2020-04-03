@@ -439,4 +439,87 @@ class Magento
         // Images need to be uploaded and tagged by flat model in cloudinary
         // Then we can run something here if needed to populate them on the products (something may already exist)
     }
+
+    public function addSalesChannelsToCategories()
+    {
+        $salesChannels = [
+            'ftspeed' => [
+                'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
+                'title' => 'FTSpeed',
+                'slug' => 'ftspeed'
+            ],
+            'subispeed' => [
+                'id' => new \MongoDB\BSON\ObjectID('5841b1deb38c50ba028b4567'),
+                'title' => 'SubiSpeed',
+                'slug' => 'subispeed'
+            ]
+        ];
+
+        $sql = "
+            SELECT DISTINCT
+                cc.entity_id AS magento_id,
+                channel.channel
+            FROM
+                catalog_category_entity_varchar cc
+                JOIN catalog_category_entity_varchar cc1 ON cc.entity_id = cc1.entity_id
+                JOIN catalog_category_entity_int cc_int ON cc1.entity_id = cc_int.entity_id
+                JOIN eav_entity_type ee ON cc.entity_type_id = ee.entity_type_id
+                JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id
+                JOIN ( SELECT entity_id, description FROM catalog_category_flat_store_1 UNION SELECT entity_id, description FROM catalog_category_flat_store_4 UNION SELECT entity_id, description FROM catalog_category_flat_store_5 ) AS ccdesc ON ccdesc.entity_id = cc.entity_id
+                JOIN (
+                SELECT
+                    entity_id,
+                    'subispeed' AS channel 
+                FROM
+                    catalog_category_flat_store_1 AS subispeed UNION
+                SELECT
+                    entity_id,
+                    'ft86speedfactory' AS channel 
+                FROM
+                    catalog_category_flat_store_4 AS ft86speedfactory UNION
+                SELECT
+                    entity_id,
+                    'ftspeed' AS channel 
+                FROM
+                    catalog_category_flat_store_5 AS ftspeed 
+                ) AS channel ON channel.entity_id = cc.entity_id 
+            WHERE
+                cc.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'name' ) 
+                AND cc1.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'url_path' ) 
+                AND cc_int.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'is_active' ) 
+                AND cc_int.`value` = 1 
+                AND (( cce.parent_id = 2 AND cce.children_count > 1 ) OR cce.parent_id > 2 ) 
+                AND ee.entity_model = 'catalog/category' 
+            GROUP BY
+                magento_id 
+            ORDER BY
+                cce.parent_id ASC,
+                cce.position ASC
+        ";
+
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        while ($category = $select->fetch()) {
+            $productSalesChannels = [];
+
+            $categoryModel = (new \Shop\Models\Categories)
+                ->setCondition('magento.id', (int) $category['magento_id'])
+                ->getItem();
+
+            if ($categoryModel) {
+                if ($category['channel'] === 'subispeed') {
+                    $productSalesChannels[] = $salesChannels['subispeed'];
+                }
+
+                if ($category['channel'] === 'ftspeed') {
+                    $productSalesChannels[] = $salesChannels['ftspeed'];
+                }
+
+                $categoryModel->set('publication.sales_channels', $productSalesChannels);
+
+                $categoryModel->save();
+            }
+        }
+    }
 }
