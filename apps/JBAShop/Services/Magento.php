@@ -184,6 +184,18 @@ class Magento
 
     public function syncCategories()
     {
+        $salesChannels = [
+            'ftspeed' => [
+                'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
+                'title' => 'FTSpeed',
+                'slug' => 'ftspeed'
+            ],
+            'subispeed' => [
+                'id' => new \MongoDB\BSON\ObjectID('5841b1deb38c50ba028b4567'),
+                'title' => 'SubiSpeed',
+                'slug' => 'subispeed'
+            ]
+        ];
         // TODO: category enabled?
 
         $sql = "
@@ -191,6 +203,7 @@ class Magento
                 cc.entity_id AS id,
                 cc.`value` AS `name`,
                 cc1.`value` AS url_path,
+                channel.channel,
             IF
                 ( cce.parent_id IN ( 1, 2, 652, 333, 515, 757, 1060, 1425 ), NULL, cce.parent_id ) AS parent_id,
                 position AS sort_order,
@@ -202,6 +215,23 @@ class Magento
                 JOIN eav_entity_type ee ON cc.entity_type_id = ee.entity_type_id
                 JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id
                 JOIN ( SELECT entity_id, description FROM catalog_category_flat_store_1 UNION SELECT entity_id, description FROM catalog_category_flat_store_4 UNION SELECT entity_id, description FROM catalog_category_flat_store_5 ) AS ccdesc ON ccdesc.entity_id = cc.entity_id 
+                JOIN (
+                    SELECT
+                        entity_id,
+                        'subispeed' AS channel 
+                    FROM
+                        catalog_category_flat_store_1 AS subispeed UNION
+                    SELECT
+                        entity_id,
+                        'ft86speedfactory' AS channel 
+                    FROM
+                        catalog_category_flat_store_4 AS ft86speedfactory UNION
+                    SELECT
+                        entity_id,
+                        'ftspeed' AS channel 
+                    FROM
+                        catalog_category_flat_store_5 AS ftspeed 
+                    ) AS channel ON channel.entity_id = cc.entity_id 
             WHERE
                 cc.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'name' ) 
                 AND cc1.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'url_path' ) 
@@ -226,23 +256,25 @@ class Magento
             //CLI Progress bar
             $progress = $this->CLImate->progress()->total($select->rowCount());
 
-            while ($row = $select->fetch()) {
+            while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
                 if (in_array($row['id'], array_keys($categoryIds))) {
                     continue;
                 }
                 // TODO: images, etc
                 // TODO: assign products to categories
+                
+                $category = (new \Shop\Models\Categories)->setCondition('magento.id', $row['id'])->getItem();
 
-                $category = new \Shop\Models\Categories([
-                    'title'   => $row['name'],
-                    'description' => $row['description'],
-                    // 'slug'    => $row['url_path'],
-                    'magento' => [
-                        'id'        => $row['id'],
-                        'parent_id' => $row['parent_id']
-                    ],
-                    'gm_product_category' => 'Vehicles & Parts > Vehicle Parts & Accessories',
-                ]);
+                if(empty($category)){
+                    $category = new \Shop\Models\Categories();
+                }
+                
+                $category
+                    ->set('title', $row['name'])
+                    ->set('description', $row['description'])
+                    ->set('magento.id', $row['id'])
+                    ->set('magento.parent_id', $row['parent_id'])
+                    ->set('gm_product_category', 'Vehicles & Parts > Vehicle Parts & Accessories');
 
                 if (in_array($row['parent_id'], array_keys($categoryIds))) {
                     $category->set('parent', $categoryIds[$row['parent_id']]);
@@ -251,6 +283,18 @@ class Magento
                     $this->CLImate->yellow($row['url_path'] . '(' . $row['id'] . ')');
                     continue;
                 }
+                
+                //Add Sales Channels To Categories
+                $categorySalesChannels = [];
+                if ($row['channel'] === 'subispeed') {
+                    $categorySalesChannels[] = $salesChannels['subispeed'];
+                }
+                if ($category['channel'] === 'ftspeed') {
+                    $categorySalesChannels[] = $salesChannels['ftspeed'];
+                }
+                if(!empty($categorySalesChannels)){
+                    $category->set('sales_channels', $categorySalesChannels);
+                }
 
                 //Advance the progress bar, output the cat title
                 $progress->advance(1, $category['title']);
@@ -258,15 +302,20 @@ class Magento
                 $category->save();
                 $categoryIds[$row['id']] = $category->id;
 
-                $redirect = new \Redirect\Admin\Models\Routes([
-                    'title' => 'Magento category redirect: ' . $row['name'],
-                    'url' => [
-                        'alias'   => $row['url_path'],
-                        'redirect' => $category->url()
-                    ],
-                    'magento' => true
-                ]);
-                $redirect->save();
+                try{
+                    $redirect = new \Redirect\Admin\Models\Routes([
+                        'title' => 'Magento category redirect: ' . $row['name'],
+                        'url' => [
+                            'alias'   => $row['url_path'],
+                            'redirect' => $category->url()
+                        ],
+                        'magento' => true
+                    ]);
+
+                    $redirect->save();
+                }catch(Exception $e){
+                    //If redirect already exists, do nothing
+                }
             }
         } while ($incomplete);
     }
