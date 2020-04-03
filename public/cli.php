@@ -984,6 +984,24 @@ $app->route('GET /sync-algolia-full/@type/@channel', function ($f3) {
     }
 });
 
+$app->route('GET /expired-new-flags', function(){
+    \Search\Models\Algolia\Products::queuePartialUpdate();
+});
+
+$app->route('GET /save-all-cats-handy-somewhere', function(){
+    $cursor = (new \Shop\Models\Categories)->collection()->find();
+    $climate = new \League\CLImate\CLImate();
+    $count = (new \Shop\Models\Categories)->collection()->count();
+    $progress = $climate->progress()->total($count);
+    forEach($cursor as $doc){
+        $category = new \Shop\Models\Categories($doc);
+        $category->save();
+        $progress->advance(1, $category->get('title'));
+    }
+    $climate->green('Done');
+
+});
+
 $app->route('GET /ltl-averages', function() {
     $shiphawk = new \Shop\Services\ShipHawk;
     
