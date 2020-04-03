@@ -406,6 +406,7 @@ class Magento
                 def.attribute_id = 102 
                 AND def.store_id = 0
             ORDER BY cpe.sku ASC
+            
         ";
 
         $select = $this->db->prepare($sql);
@@ -453,6 +454,8 @@ class Magento
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
                 }));
 
+
+
                 $product
                     ->set('magento.id', $row['id'])
                     ->set('title', $row['default_title'])
@@ -472,6 +475,12 @@ class Magento
                 $product->set('publication.sales_channels', $productSalesChannels);
                 if (!empty($row['enabled'])) {
                     $product->set('publication.status', 'published');
+                }
+
+                if($netsuiteProduct['itemType'] === 'kit'){
+                    $product->set('product_type', 'group');
+                }else{
+                    $product->set('product_type', 'standard');
                 }
 
                 $product->save();
