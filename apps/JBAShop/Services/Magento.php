@@ -432,11 +432,158 @@ class Magento
         }
     }
 
-    public function assignCloudinaryImages()
+    public function syncProductImages()
     {
-        // This is not a sync
+        $sql = 
+            "SELECT
+                cpg.entity_id AS product_id,
+                CONCAT( 'https://www.subispeed.com/media/catalog/product', cpg.`VALUE` ) AS url,
+                IFNULL( cpgv1.position, cpgv.position ) AS `order`,
+                IFNULL( cpgv1.disabled, cpgv.disabled ) AS `disabled`,
+                IFNULL( IF ( base.`VALUE` = cpg.`VALUE`, 1, NULL ), IF ( base_def.`VALUE` = cpg.`VALUE`, 1, 0 ) ) AS featured_image,
+                IF( google.`VALUE` = cpg.`VALUE`, 1, 0 ) AS google_image,
+                image_label.`VALUE` AS caption
+            FROM
+                catalog_product_entity_media_gallery cpg
+                LEFT JOIN catalog_product_entity_media_gallery_value cpgv1 ON ( cpgv1.value_id = cpg.value_id AND cpgv1.store_id = 1 )
+                LEFT JOIN catalog_product_entity_media_gallery_value cpgv ON ( cpgv.value_id = cpg.value_id AND cpgv.store_id = 0 )
+                LEFT JOIN catalog_product_entity_varchar base ON ( base.entity_id = cpg.entity_id AND base.attribute_id = 86 AND base.store_id = 1 )
+                LEFT JOIN catalog_product_entity_varchar base_def ON (
+                    base_def.entity_id = cpg.entity_id 
+                    AND base_def.attribute_id = 86 
+                    AND base_def.store_id = 0 
+                    AND base_def.entity_id NOT IN (
+                        SELECT entity_id
+                        FROM catalog_product_entity_varchar
+                        WHERE attribute_id = 86
+                        AND store_id = 1
+                    )
+                )
+                LEFT JOIN catalog_product_entity_varchar google ON ( google.entity_id = cpg.entity_id AND google.attribute_id = 220 AND google.store_id = 0 )
+                LEFT JOIN catalog_product_entity_varchar image_label ON ( image_label.entity_id = cpg.entity_id AND image_label.attribute_id = 112 AND image_label.store_id = 1 ) 
+            ORDER BY
+                product_id ASC,
+                featured_image DESC,
+                `order` ASC,
+                google_image DESC";
 
-        // Images need to be uploaded and tagged by flat model in cloudinary
-        // Then we can run something here if needed to populate them on the products (something may already exist)
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        $finalList = [];
+        while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
+            if (
+                $row['disabled']
+                && !$row['featured_image']
+                && !$row['google_image']
+            ) {
+                continue;
+            }
+
+            if ($row['google_image']) {
+                $finalList[$row['product_id']]['google'] = $row['url'];
+            }
+
+            if (!$row['disabled'] || $row['featured_image']) {
+                $finalList[$row['product_id']]['images'][] = $row['url'];
+            }
+        }
+        
+        foreach ($finalList as $magentoId => $links) {
+            $product = (new \Shop\Models\Products)
+                ->setCondition('magento.id', (int) $magentoId)
+                // ->setCondition('publication.status', 'published')
+                // ->setCondition('categories.id', new \MongoDB\BSON\ObjectID('5e85f71ad36f5e431c0ed942'))
+                ->getItem();
+
+
+            if (empty($product)) {
+                continue;
+            }
+
+            $model = $product->get('tracking.model_number_flat');
+
+            if (!empty($links['google'])) {
+                $upload = \Cloudinary\Uploader::upload(trim($links['google']), [
+                    'type' => 'upload',
+                    'format' => 'jpg',
+                    'folder' => 'google_images'
+                ]);
+
+                // TODO: make sure admin does NOT delete this field
+                $product->set('google_image', $upload['public_id']);
+                $product->store();
+            }
+
+            foreach ($links['images'] as $i => $image) {
+                $meta = ['order' => $i + 1];
+                if (!empty($image['caption'])) {
+                    $meta['caption'] = $image['caption'];
+                }
+
+                \Cloudinary\Uploader::upload(trim($image), [
+                    'tags' => $model,
+                    'type' => 'private',
+                    'format' => 'jpg',
+                    'folder' => 'product_images',
+                    'context' => $meta
+                ]);
+            }
+
+            if (count($links['images'])) {
+                $product->getImagesForProductFromCloudinary();
+            }
+        }
+    }
+
+    public function syncCategoryImages()
+    {
+        $sql = 
+            "SELECT
+                entity_id AS category_id,
+                CONCAT( 'https://www.subispeed.com/media/catalog/category/', thumbnail ) AS thumbnail 
+            FROM catalog_category_flat_store_1
+            WHERE thumbnail IS NOT NULL
+            
+            UNION
+            
+            SELECT
+                entity_id AS category_id,
+                CONCAT( 'https://www.subispeed.com/media/catalog/category/', thumbnail ) AS thumbnail 
+            FROM catalog_category_flat_store_4
+            WHERE thumbnail IS NOT NULL
+            
+            UNION
+            
+            SELECT
+                entity_id AS category_id,
+                CONCAT( 'https://www.subispeed.com/media/catalog/category/', thumbnail ) AS thumbnail 
+            FROM catalog_category_flat_store_5
+            WHERE thumbnail IS NOT NULL";
+
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
+            $category = (new \Shop\Models\Categories)
+                ->setCondition('magento.id', (int) $row['category_id'])
+                ->getItem();
+
+            if (empty($category)) {
+                continue;
+            }
+
+            $upload = \Cloudinary\Uploader::upload($row['thumbnail'], [
+                'type' => 'private',
+                'format' => 'jpg',
+                'folder' => 'categories',
+                'context' => [
+                    'magento_id' => (int) $row['category_id']
+                ]
+            ]);
+
+            $category->set('category_image.slug', $upload['public_id']);
+            $category->store();
+        }
     }
 }
