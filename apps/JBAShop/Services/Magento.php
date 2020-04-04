@@ -659,9 +659,9 @@ class Magento
                 rd.detail,
                 rd.customer_id,
                 rd.nickname,
-                rv_overall.`value` as 'Overall Satisfaction',
-                rv_ease.`value` as 'Ease of Installation',
-                rv_fit.`value` as 'Fit / Quality',
+                rv_overall.`value` as 'overall_satisfaction',
+                rv_ease.`value` as 'ease_of_installation',
+                rv_fit.`value` as 'fit_and_quality',
                 r.status_id,
                 'subispeed' AS channel,
                 default_name.`value` AS 'product_title',
@@ -704,9 +704,9 @@ class Magento
                 rd.detail,
                 rd.customer_id,
                 rd.nickname,
-                rv_overall.`value` as 'Overall Satisfaction',
-                rv_ease.`value` as 'Ease of Installation',
-                rv_fit.`value` as 'Fit / Quality',
+                rv_overall.`value` as 'overall_satisfaction',
+                rv_ease.`value` as 'ease_of_installation',
+                rv_fit.`value` as 'fit_and_quality',
                 r.status_id,
                 'ft86' AS channel,
                 default_name.`value` AS 'product_title',
@@ -749,9 +749,9 @@ class Magento
                 rd.detail,
                 rd.customer_id,
                 rd.nickname,
-                rv_overall.`value` as 'Overall Satisfaction',
-                rv_ease.`value` as 'Ease of Installation',
-                rv_fit.`value` as 'Fit / Quality',
+                rv_overall.`value` as 'overall_satisfaction',
+                rv_ease.`value` as 'ease_of_installation',
+                rv_fit.`value` as 'fit_and_quality',
                 r.status_id,
                 'ftspeed' AS channel,
                 default_name.`value` AS 'product_title',
@@ -802,7 +802,6 @@ class Magento
                     $userContent = new \Shop\Models\UserContent();
                     //Set all the required properties for the rating. Useres both $mongoProduct, $user and $rating data
                     $userContent
-                        ->set('rating', 1)
                         ->set('product_id', new \MongoDB\BSON\ObjectID( (string) $mongoProduct->_id ))
                         ->set('user_id', new \MongoDB\BSON\ObjectID( (string) $user->_id ))
                         ->set('user_name', $rating['nickname'])
@@ -812,8 +811,13 @@ class Magento
                         ->set('product_title', $mongoProduct['title'])
                         ->set('product_slug', $mongoProduct['slug'])
                         ->set('username', $user['username'])
-                        ->set('role', 'user');
-
+                        ->set('role', 'user')
+                        ->set('rating_criteria', [
+                            'overall_satisfaction' => $rating['overall_satisfaction'], 
+                            'ease_of_installation' => $rating['ease_of_installation'],
+                            'fit_and_quality' => $rating['fit_and_quality'],
+                        ]);
+                    
                     try{
                         //Save the new review
                         $userContent->save();
