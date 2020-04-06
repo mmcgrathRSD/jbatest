@@ -792,18 +792,35 @@ class Magento
 
         while ($rating = $select->fetch(\PDO::FETCH_ASSOC)) {
             //Find the product the rating is for
-            $mongoProduct = (new \Shop\Models\Products)->setCondition('magento.id', $rating['entity_pk_value'])->getItem();
+            $mongoProduct = (new \Shop\Models\Products)->collection()->findOne([
+                'magento.id' => $rating['entity_pk_value']
+            ], [
+                'projection' => [
+                    '_id' => true,
+                    'title' => true,
+                    'slug' => true,
+                    'tracking' => true,
+                ],
+            ]);
 
             //If we found a product in mongo, check to see if the user the rating is from exists
-            if($mongoProduct){
-                $user =  (new \Users\Models\Users)->setCondition('magento.user_id', (int) $rating['customer_id'])->getItem();
+            if(isset($mongoProduct['_id'])){
+                $user = (new \Users\Models\Users)->collection()->findOne([
+                    'magento.user_id' => (int) $rating['customer_id']
+                ], [
+                    'projection' => [
+                        '_id' => true,
+                        'username' => true,
+                    ],
+                ]);
+
                 //If a product AND a user are found, create the product rating
-                if($user){
+                if(isset($user['_id'])){
                     $userContent = new \Shop\Models\UserContent();
                     //Set all the required properties for the rating. Useres both $mongoProduct, $user and $rating data
                     $userContent
-                        ->set('product_id', new \MongoDB\BSON\ObjectID( (string) $mongoProduct->_id ))
-                        ->set('user_id', new \MongoDB\BSON\ObjectID( (string) $user->_id ))
+                        ->set('product_id', new \MongoDB\BSON\ObjectID( (string) $mongoProduct['_id'] ))
+                        ->set('user_id', new \MongoDB\BSON\ObjectID( (string) $user['_id'] ))
                         ->set('user_name', $rating['nickname'])
                         ->set('publication.status', 'published')
                         ->set('part_number', $mongoProduct['tracking']['model_number'])
