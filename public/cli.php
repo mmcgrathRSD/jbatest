@@ -985,7 +985,7 @@ $app->route('GET /sync-algolia-full/@type/@channel', function ($f3) {
 });
 
 $app->route('GET /expired-new-flags', function(){
-    \Search\Models\Algolia\Products::queuePartialUpdate();
+    \Search\Models\Algolia\Products::syncExpiredNewFlags();
 });
 
 $app->route('GET /save-all-cats-handy-somewhere', function(){
