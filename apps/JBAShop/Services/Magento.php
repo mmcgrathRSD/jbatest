@@ -185,6 +185,18 @@ class Magento
 
     public function syncCategories()
     {
+        $salesChannels = [
+            'ftspeed' => [
+                'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
+                'title' => 'FTSpeed',
+                'slug' => 'ftspeed'
+            ],
+            'subispeed' => [
+                'id' => new \MongoDB\BSON\ObjectID('5841b1deb38c50ba028b4567'),
+                'title' => 'SubiSpeed',
+                'slug' => 'subispeed'
+            ]
+        ];
         // TODO: category enabled?
 
         $sql = "
@@ -192,6 +204,7 @@ class Magento
                 cc.entity_id AS id,
                 cc.`value` AS `name`,
                 cc1.`value` AS url_path,
+                channel.channel,
             IF
                 ( cce.parent_id IN ( 1, 2, 652, 333, 515, 757, 1060, 1425 ), NULL, cce.parent_id ) AS parent_id,
                 position AS sort_order,
@@ -203,6 +216,23 @@ class Magento
                 JOIN eav_entity_type ee ON cc.entity_type_id = ee.entity_type_id
                 JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id
                 JOIN ( SELECT entity_id, description FROM catalog_category_flat_store_1 UNION SELECT entity_id, description FROM catalog_category_flat_store_4 UNION SELECT entity_id, description FROM catalog_category_flat_store_5 ) AS ccdesc ON ccdesc.entity_id = cc.entity_id 
+                JOIN (
+                    SELECT
+                        entity_id,
+                        'subispeed' AS channel 
+                    FROM
+                        catalog_category_flat_store_1 AS subispeed UNION
+                    SELECT
+                        entity_id,
+                        'ft86speedfactory' AS channel 
+                    FROM
+                        catalog_category_flat_store_4 AS ft86speedfactory UNION
+                    SELECT
+                        entity_id,
+                        'ftspeed' AS channel 
+                    FROM
+                        catalog_category_flat_store_5 AS ftspeed 
+                    ) AS channel ON channel.entity_id = cc.entity_id 
             WHERE
                 cc.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'name' ) 
                 AND cc1.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'url_path' ) 
@@ -227,23 +257,25 @@ class Magento
             //CLI Progress bar
             $progress = $this->CLImate->progress()->total($select->rowCount());
 
-            while ($row = $select->fetch()) {
+            while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
                 if (in_array($row['id'], array_keys($categoryIds))) {
                     continue;
                 }
                 // TODO: images, etc
                 // TODO: assign products to categories
+                
+                $category = (new \Shop\Models\Categories)->setCondition('magento.id', $row['id'])->getItem();
 
-                $category = new \Shop\Models\Categories([
-                    'title'   => $row['name'],
-                    'description' => $row['description'],
-                    // 'slug'    => $row['url_path'],
-                    'magento' => [
-                        'id'        => $row['id'],
-                        'parent_id' => $row['parent_id']
-                    ],
-                    'gm_product_category' => 'Vehicles & Parts > Vehicle Parts & Accessories',
-                ]);
+                if(empty($category)){
+                    $category = new \Shop\Models\Categories();
+                }
+                
+                $category
+                    ->set('title', $row['name'])
+                    ->set('description', $row['description'])
+                    ->set('magento.id', $row['id'])
+                    ->set('magento.parent_id', $row['parent_id'])
+                    ->set('gm_product_category', 'Vehicles & Parts > Vehicle Parts & Accessories');
 
                 if (in_array($row['parent_id'], array_keys($categoryIds))) {
                     $category->set('parent', $categoryIds[$row['parent_id']]);
@@ -252,6 +284,18 @@ class Magento
                     $this->CLImate->yellow($row['url_path'] . '(' . $row['id'] . ')');
                     continue;
                 }
+                
+                //Add Sales Channels To Categories
+                $categorySalesChannels = [];
+                if ($row['channel'] === 'subispeed') {
+                    $categorySalesChannels[] = $salesChannels['subispeed'];
+                }
+                if ($category['channel'] === 'ftspeed') {
+                    $categorySalesChannels[] = $salesChannels['ftspeed'];
+                }
+                if(!empty($categorySalesChannels)){
+                    $category->set('sales_channels', $categorySalesChannels);
+                }
 
                 //Advance the progress bar, output the cat title
                 $progress->advance(1, $category['title']);
@@ -259,15 +303,20 @@ class Magento
                 $category->save();
                 $categoryIds[$row['id']] = $category->id;
 
-                $redirect = new \Redirect\Admin\Models\Routes([
-                    'title' => 'Magento category redirect: ' . $row['name'],
-                    'url' => [
-                        'alias'   => $row['url_path'],
-                        'redirect' => $category->url()
-                    ],
-                    'magento' => true
-                ]);
-                $redirect->save();
+                try{
+                    $redirect = new \Redirect\Admin\Models\Routes([
+                        'title' => 'Magento category redirect: ' . $row['name'],
+                        'url' => [
+                            'alias'   => $row['url_path'],
+                            'redirect' => $category->url()
+                        ],
+                        'magento' => true
+                    ]);
+
+                    $redirect->save();
+                }catch(Exception $e){
+                    //If redirect already exists, do nothing
+                }
             }
         } while ($incomplete);
     }
@@ -358,6 +407,7 @@ class Magento
                 def.attribute_id = 102 
                 AND def.store_id = 0
             ORDER BY cpe.sku ASC
+            
         ";
 
         $select = $this->db->prepare($sql);
@@ -405,6 +455,8 @@ class Magento
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
                 }));
 
+
+
                 $product
                     ->set('magento.id', $row['id'])
                     ->set('title', $row['default_title'])
@@ -426,6 +478,12 @@ class Magento
                     $product->set('publication.status', 'published');
                 }
 
+                if($netsuiteProduct['itemType'] === 'kit'){
+                    $product->set('product_type', 'group');
+                }else{
+                    $product->set('product_type', 'standard');
+                }
+
                 $product->save();
             }
 
@@ -433,12 +491,362 @@ class Magento
         }
     }
 
-    public function assignCloudinaryImages()
+    public function syncProductImages()
     {
-        // This is not a sync
+        $sql = 
+            "SELECT
+                cpg.entity_id AS product_id,
+                CONCAT( 'https://www.subispeed.com/media/catalog/product', cpg.`VALUE` ) AS url,
+                IFNULL( cpgv1.position, cpgv.position ) AS `order`,
+                IFNULL( cpgv1.disabled, cpgv.disabled ) AS `disabled`,
+                IFNULL( IF ( base.`VALUE` = cpg.`VALUE`, 1, NULL ), IF ( base_def.`VALUE` = cpg.`VALUE`, 1, 0 ) ) AS featured_image,
+                IF( google.`VALUE` = cpg.`VALUE`, 1, 0 ) AS google_image,
+                image_label.`VALUE` AS caption
+            FROM
+                catalog_product_entity_media_gallery cpg
+                LEFT JOIN catalog_product_entity_media_gallery_value cpgv1 ON ( cpgv1.value_id = cpg.value_id AND cpgv1.store_id = 1 )
+                LEFT JOIN catalog_product_entity_media_gallery_value cpgv ON ( cpgv.value_id = cpg.value_id AND cpgv.store_id = 0 )
+                LEFT JOIN catalog_product_entity_varchar base ON ( base.entity_id = cpg.entity_id AND base.attribute_id = 86 AND base.store_id = 1 )
+                LEFT JOIN catalog_product_entity_varchar base_def ON (
+                    base_def.entity_id = cpg.entity_id 
+                    AND base_def.attribute_id = 86 
+                    AND base_def.store_id = 0 
+                    AND base_def.entity_id NOT IN (
+                        SELECT entity_id
+                        FROM catalog_product_entity_varchar
+                        WHERE attribute_id = 86
+                        AND store_id = 1
+                    )
+                )
+                LEFT JOIN catalog_product_entity_varchar google ON ( google.entity_id = cpg.entity_id AND google.attribute_id = 220 AND google.store_id = 0 )
+                LEFT JOIN catalog_product_entity_varchar image_label ON ( image_label.entity_id = cpg.entity_id AND image_label.attribute_id = 112 AND image_label.store_id = 1 ) 
+            ORDER BY
+                product_id ASC,
+                featured_image DESC,
+                `order` ASC,
+                google_image DESC";
 
-        // Images need to be uploaded and tagged by flat model in cloudinary
-        // Then we can run something here if needed to populate them on the products (something may already exist)
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        $finalList = [];
+        while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
+            if (
+                $row['disabled']
+                && !$row['featured_image']
+                && !$row['google_image']
+            ) {
+                continue;
+            }
+
+            if ($row['google_image']) {
+                $finalList[$row['product_id']]['google'] = $row['url'];
+            }
+
+            if (!$row['disabled'] || $row['featured_image']) {
+                $finalList[$row['product_id']]['images'][] = $row['url'];
+            }
+        }
+        
+        foreach ($finalList as $magentoId => $links) {
+            $product = (new \Shop\Models\Products)
+                ->setCondition('magento.id', (int) $magentoId)
+                // ->setCondition('publication.status', 'published')
+                // ->setCondition('categories.id', new \MongoDB\BSON\ObjectID('5e85f71ad36f5e431c0ed942'))
+                ->getItem();
+
+
+            if (empty($product)) {
+                continue;
+            }
+
+            $model = $product->get('tracking.model_number_flat');
+
+            if (!empty($links['google'])) {
+                $upload = \Cloudinary\Uploader::upload(trim($links['google']), [
+                    'type' => 'upload',
+                    'format' => 'jpg',
+                    'folder' => 'google_images'
+                ]);
+
+                // TODO: make sure admin does NOT delete this field
+                $product->set('google_image', $upload['public_id']);
+                $product->store();
+            }
+
+            foreach ($links['images'] as $i => $image) {
+                $meta = ['order' => $i + 1];
+                if (!empty($image['caption'])) {
+                    $meta['caption'] = $image['caption'];
+                }
+
+                \Cloudinary\Uploader::upload(trim($image), [
+                    'tags' => $model,
+                    'type' => 'private',
+                    'format' => 'jpg',
+                    'folder' => 'product_images',
+                    'context' => $meta
+                ]);
+            }
+
+            if (count($links['images'])) {
+                $product->getImagesForProductFromCloudinary();
+            }
+        }
+    }
+
+    public function syncCategoryImages()
+    {
+        $sql = 
+            "SELECT
+                entity_id AS category_id,
+                CONCAT( 'https://www.subispeed.com/media/catalog/category/', thumbnail ) AS thumbnail 
+            FROM catalog_category_flat_store_1
+            WHERE thumbnail IS NOT NULL
+            
+            UNION
+            
+            SELECT
+                entity_id AS category_id,
+                CONCAT( 'https://www.subispeed.com/media/catalog/category/', thumbnail ) AS thumbnail 
+            FROM catalog_category_flat_store_4
+            WHERE thumbnail IS NOT NULL
+            
+            UNION
+            
+            SELECT
+                entity_id AS category_id,
+                CONCAT( 'https://www.subispeed.com/media/catalog/category/', thumbnail ) AS thumbnail 
+            FROM catalog_category_flat_store_5
+            WHERE thumbnail IS NOT NULL";
+
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
+            $category = (new \Shop\Models\Categories)
+                ->setCondition('magento.id', (int) $row['category_id'])
+                ->getItem();
+
+            if (empty($category)) {
+                continue;
+            }
+
+            $upload = \Cloudinary\Uploader::upload($row['thumbnail'], [
+                'type' => 'private',
+                'format' => 'jpg',
+                'folder' => 'categories',
+                'context' => [
+                    'magento_id' => (int) $row['category_id']
+                ]
+            ]);
+
+            $category->set('category_image.slug', $upload['public_id']);
+            $category->store();
+        }
+    }
+
+    public function syncProductRatings()
+    {
+        //ignore customer numbe rfor now, role hardcode to user
+        //
+
+        $sql = "
+            SELECT
+                rd.review_id,
+                r.created_at,
+                rd.title,
+                rv_overall.entity_pk_value,
+                rd.detail,
+                rd.customer_id,
+                rd.nickname,
+                rv_overall.`value` as 'overall_satisfaction',
+                rv_ease.`value` as 'ease_of_installation',
+                rv_fit.`value` as 'fit_and_quality',
+                r.status_id,
+                'subispeed' AS channel,
+                default_name.`value` AS 'product_title',
+                url_key.`value` AS 'url_key',
+                url_path.`value` AS 'url_path'
+            FROM
+                review_detail rd
+            LEFT JOIN rating_option_vote rv_overall ON
+                rd.review_id = rv_overall.review_id
+                AND rv_overall.rating_id = 3
+            JOIN review r ON
+                r.review_id = rv_overall.review_id
+                AND r.status_id = 1
+            LEFT JOIN rating_option_vote rv_ease ON
+                rd.review_id = rv_ease.review_id
+                AND rv_ease.rating_id = 4
+            LEFT JOIN rating_option_vote rv_fit ON
+                rd.review_id = rv_fit.review_id
+                AND rv_fit.rating_id = 5
+            LEFT JOIN catalog_product_entity_varchar AS url_key ON
+                ( rv_overall.entity_pk_value = url_key.entity_id
+                AND url_key.store_id = 0
+                AND url_key.attribute_id = 97 )
+            LEFT JOIN catalog_product_entity_varchar AS url_path ON
+                ( rv_overall.entity_pk_value = url_path.entity_id
+                AND url_path.store_id = 0
+                AND url_path.attribute_id = 98 )
+            LEFT JOIN catalog_product_entity_varchar AS default_name ON
+                ( rv_overall.entity_pk_value = default_name.entity_id
+                AND default_name.store_id = 0
+                AND default_name.attribute_id = 71 )
+            WHERE
+                rd.store_id = 1
+            UNION
+            SELECT
+                rd.review_id,
+                r.created_at,
+                rd.title,
+                rv_overall.entity_pk_value,
+                rd.detail,
+                rd.customer_id,
+                rd.nickname,
+                rv_overall.`value` as 'overall_satisfaction',
+                rv_ease.`value` as 'ease_of_installation',
+                rv_fit.`value` as 'fit_and_quality',
+                r.status_id,
+                'ft86' AS channel,
+                default_name.`value` AS 'product_title',
+                url_key.`value` AS 'url_key',
+                url_path.`value` AS 'url_path'
+            FROM
+                review_detail rd
+            LEFT JOIN rating_option_vote rv_overall ON
+                rd.review_id = rv_overall.review_id
+                AND rv_overall.rating_id = 3
+            JOIN review r ON
+                r.review_id = rv_overall.review_id
+                AND r.status_id = 1
+            LEFT JOIN rating_option_vote rv_ease ON
+                rd.review_id = rv_ease.review_id
+                AND rv_ease.rating_id = 4
+            LEFT JOIN rating_option_vote rv_fit ON
+                rd.review_id = rv_fit.review_id
+                AND rv_fit.rating_id = 5
+            LEFT JOIN catalog_product_entity_varchar AS url_key ON
+                ( rv_overall.entity_pk_value = url_key.entity_id
+                AND url_key.store_id = 0
+                AND url_key.attribute_id = 97 )
+            LEFT JOIN catalog_product_entity_varchar AS url_path ON
+                ( rv_overall.entity_pk_value = url_path.entity_id
+                AND url_path.store_id = 0
+                AND url_path.attribute_id = 98 )
+            LEFT JOIN catalog_product_entity_varchar AS default_name ON
+                ( rv_overall.entity_pk_value = default_name.entity_id
+                AND default_name.store_id = 0
+                AND default_name.attribute_id = 71 )
+            WHERE
+                rd.store_id = 4
+            UNION
+            SELECT
+                rd.review_id,
+                r.created_at,
+                rd.title,
+                rv_overall.entity_pk_value,
+                rd.detail,
+                rd.customer_id,
+                rd.nickname,
+                rv_overall.`value` as 'overall_satisfaction',
+                rv_ease.`value` as 'ease_of_installation',
+                rv_fit.`value` as 'fit_and_quality',
+                r.status_id,
+                'ftspeed' AS channel,
+                default_name.`value` AS 'product_title',
+                url_key.`value` AS 'url_key',
+                url_path.`value` AS 'url_path'
+            FROM
+                review_detail rd
+            LEFT JOIN rating_option_vote rv_overall ON
+                rd.review_id = rv_overall.review_id
+                AND rv_overall.rating_id = 3
+            JOIN review r ON
+                r.review_id = rv_overall.review_id
+                AND r.status_id = 1
+            LEFT JOIN rating_option_vote rv_ease ON
+                rd.review_id = rv_ease.review_id
+                AND rv_ease.rating_id = 4
+            LEFT JOIN rating_option_vote rv_fit ON
+                rd.review_id = rv_fit.review_id
+                AND rv_fit.rating_id = 5
+            LEFT JOIN catalog_product_entity_varchar AS url_key ON
+                ( rv_overall.entity_pk_value = url_key.entity_id
+                AND url_key.store_id = 0
+                AND url_key.attribute_id = 97 )
+            LEFT JOIN catalog_product_entity_varchar AS url_path ON
+                ( rv_overall.entity_pk_value = url_path.entity_id
+                AND url_path.store_id = 0
+                AND url_path.attribute_id = 98 )
+            LEFT JOIN catalog_product_entity_varchar AS default_name ON
+                ( rv_overall.entity_pk_value = default_name.entity_id
+                AND default_name.store_id = 0
+                AND default_name.attribute_id = 71 )
+            WHERE
+                rd.store_id = 5
+        ";
+
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        while ($rating = $select->fetch(\PDO::FETCH_ASSOC)) {
+            //Find the product the rating is for
+            $mongoProduct = (new \Shop\Models\Products)->collection()->findOne([
+                'magento.id' => $rating['entity_pk_value']
+            ], [
+                'projection' => [
+                    '_id' => true,
+                    'title' => true,
+                    'slug' => true,
+                    'tracking' => true,
+                ],
+            ]);
+
+            //If we found a product in mongo, check to see if the user the rating is from exists
+            if(isset($mongoProduct['_id'])){
+                $user = (new \Users\Models\Users)->collection()->findOne([
+                    'magento.user_id' => (int) $rating['customer_id']
+                ], [
+                    'projection' => [
+                        '_id' => true,
+                        'username' => true,
+                    ],
+                ]);
+
+                //If a product AND a user are found, create the product rating
+                if(isset($user['_id'])){
+                    $userContent = new \Shop\Models\UserContent();
+                    //Set all the required properties for the rating. Useres both $mongoProduct, $user and $rating data
+                    $userContent
+                        ->set('product_id', new \MongoDB\BSON\ObjectID( (string) $mongoProduct['_id'] ))
+                        ->set('user_id', new \MongoDB\BSON\ObjectID( (string) $user['_id'] ))
+                        ->set('user_name', $rating['nickname'])
+                        ->set('publication.status', 'published')
+                        ->set('part_number', $mongoProduct['tracking']['model_number'])
+                        ->set('copy', $rating['detail'])
+                        ->set('product_title', $mongoProduct['title'])
+                        ->set('product_slug', $mongoProduct['slug'])
+                        ->set('username', $user['username'])
+                        ->set('role', 'user')
+                        ->set('rating_criteria', [
+                            'overall_satisfaction' => $rating['overall_satisfaction'], 
+                            'ease_of_installation' => $rating['ease_of_installation'],
+                            'fit_and_quality' => $rating['fit_and_quality'],
+                        ]);
+                    
+                    try{
+                        //Save the new review
+                        $userContent->save();
+                    }catch(Exception $e){
+                        $this->CLImate->red($e->getMessage());
+                    }
+                    
+                }
+            }
+
+        }
     }
 
     public function syncDynamicGroupProducts()

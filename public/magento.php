@@ -40,6 +40,14 @@ $app->route('GET /sync-product-info', function() {
 $app->route('GET /sync-dynamic-group-products', function() {
 	(new JBAShop\Services\Magento)->syncDynamicGroupProducts();
 });
+$app->route('GET /sync-product-images', function() {
+	(new JBAShop\Services\Magento)->syncProductImages();
+});
+
+$app->route('GET /sync-category-images', function() {
+	(new JBAShop\Services\Magento)->syncCategoryImages();
+});
+
 /**
  * This method syncs all users from magento to mongo
  * @param int $magentoId - the user primary key from magento database (customer_entity.entity_id)
@@ -47,6 +55,13 @@ $app->route('GET /sync-dynamic-group-products', function() {
  */
 $app->route('GET /sync-magento-users-to-mongo', function($f3){
 	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo();
+});
+
+/**
+ * This method syncs all product ratings to shop.usercontent
+ */
+$app->route('GET /sync-product-ratings', function($f3){
+	(new JBAShop\Services\Magento)->syncProductRatings();
 });
 
 /**************************/

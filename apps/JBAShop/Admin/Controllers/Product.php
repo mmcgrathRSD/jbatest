@@ -45,21 +45,6 @@ class Product extends \Shop\Admin\Controllers\Product
     }
     
     
-    
- 	public function getCloudinaryImages() 
-    {
-       $product = $this->getItem();
-       
-       $images = $product->getImagesForProductFromCloudinary();
-       $count = count($images);
-       \Dsc\System::addMessage("Found {$count} Images for Cloudinary Tag : " . $product->getCouldinaryTag());
-       
-       $id = $this->getItem()->get( $this->getItemKey() ).'#tab_tab-images';
-        $route = str_replace('{id}', $id, $this->edit_item_route );
-        $this->app->reroute( $route );
-    }
-    
-    
     protected function displayCreate() 
     {
         $model = new \JBAShop\Models\Categories;
