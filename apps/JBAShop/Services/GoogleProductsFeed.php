@@ -40,7 +40,7 @@ class GoogleProductsFeed
 		
 	}
 	
-	public function generateFeeds($name = 'product')
+	public function generateFeeds($name = 'products')
 	{
 		$mate = new CLImate();
 		/** @var \MongoDb $mongo */
@@ -48,7 +48,6 @@ class GoogleProductsFeed
 	
 		/** @var \MongoCollection $collection */
 		$categoryCollection = \Dsc\Mongo\Helper::getCollection('common.categories');
-
 		/** @var \MongoCollection $collection */
 		$productCollection = \Dsc\Mongo\Helper::getCollection('shop.products');
 		//restrict categories to sales_channel/global
@@ -79,13 +78,12 @@ class GoogleProductsFeed
 			    'publication.sales_channels.slug' => \Base::instance()->get('sales_channel'),
 				'categories.0.id'    => new \MongoDB\BSON\ObjectID((string) $category['_id'])
 			];
-			$products = $productCollection->find($query);
 
+			$products = $productCollection->find($query);
 			foreach ($products as $data) {
 				/** @var \JBAShop\Models\Products $product */
 				$product = (new \JBAShop\Models\Products())->bind($data);
 				$additionalItemInfo = [];
-				
 				if(!empty($product->specs)){//if the item has specs then we will try and attach apparel data.
 					$specs =  array_map('strtolower', $product->specs);//lowercase all attributes stored in specs.
 					$additionalItemInfo = array_filter([
@@ -125,19 +123,19 @@ class GoogleProductsFeed
 				$item = array_merge([
 					'title'                     => $title,
 					'link'                      => $link,
-					'description'               => preg_replace('/(\s)+/', ' ', $product->get('copy')),
+					'description'               => preg_replace('/(\s)+/', ' ', $product->get('short_description')),
 					'g:id'                      => $modelNumber,
 				    'g:identifier_exists'       => $gidentifier_exists,
 				    'g:gtin'                    => $gtin,
-					'g:mpn'                     => $mpn, 
+					'g:mpn'                     => $mpn, //TODO: Get with David to see why they don't send this info
 					'g:price'                   => $price,
 					'g:image_link'              => $product->productFeedsImage(),
-					'g:manufacturer'            => $product->get('manufacturer.title'),
+					'g:manufacturer'            => $product->get('manufacturer.title'),//See line 136
 					'g:brand'                   => $product->get('manufacturer.title'),
 					'g:condition'               => 'new',
 					'g:availability'            => $stock,
-					'g:google_product_category' => 'Vehicles & Parts > Vehicle Parts & Accessories',//According to David "Looks like we are populating the category with the above data for all parts/feeds."
-					'g:product_type'            => 'Vehicles & Parts > Vehicle Parts & Accessories',//From the sample xml provided by David data this value falls under the same rules as above.
+					'g:google_product_category' => $googleProductCategory,//According to David "Looks like we are populating the category with the above data for all parts/feeds." RSD has something similar to this so we will utilize that functionality. 
+					'g:product_type'            => $googleProductCategory,//From the sample xml provided by David data this value falls under the same rules as above.
 					'g:shipping_weight'         => !empty($product->get('shipping.weight')) ? $product->get('shipping.weight') : 1
 				], $additionalItemInfo);
 
@@ -145,7 +143,6 @@ class GoogleProductsFeed
 					continue;
 				}
 				$this->addItem($productsWriter, $item);
-				var_dump($item);die('item');
 			}
 			$progress->advance(1);
 		}
@@ -231,7 +228,6 @@ class GoogleProductsFeed
 			if (in_array($k, $this->cleanKeys)) {
 				$v = $this->cleanString($v);
 			}
-
 			$writer->writeElement($k, $v);
 		}
 		$writer->endElement();
