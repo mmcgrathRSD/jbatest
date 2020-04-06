@@ -14,12 +14,8 @@ class GoogleProductsFeed
 	protected $path;
 	protected $fileName;
 
-	public function __construct($path = null) {
-		if(empty($path)){
-			$this->path = \Base::instance()->get('TEMP');
-		}else{
-			$this->path = $path;
-		}
+	public function __construct($path) {
+		$this->path = $path;
 	}
 	
 	public function compressFeeds($files = [])
