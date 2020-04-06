@@ -861,4 +861,58 @@ class Magento
             $this->CLImate->table($data);
         }
     }
+
+    public function syncYmmsFromRally()
+    {
+        // remove all ymms and product ymm data before starting
+        \Shop\Models\YearMakeModels::collection()->deleteMany([]);
+        \Shop\Models\Products::collection()->updateMany([
+            'ymms.0' => [
+                '$exists' => true
+            ]
+        ], [
+            '$unset' => [
+                'ymms' => ''
+            ]
+        ]);
+
+        $rallyYmms = (new \JBAShop\Models\RallyYearMakeModels)
+            ->setCondition('$or', [
+                [ 'vehicle_make' => 'Subaru' ],
+                [ 'vehicle_make' => 'Toyota', 'vehicle_model' => '86' ],
+                [ 'vehicle_make' => 'Toyota', 'vehicle_model' => 'Supra', 'vehicle_year' => ['$in' => ['2020', '2021']] ],
+                [ 'vehicle_make' => 'Scion', 'vehicle_model' => 'FR-S' ]
+            ])
+            ->getItems();
+
+        $progress = $this->CLImate->blue(count($rallyYmms) . ' ymms to add');
+
+        foreach ($rallyYmms as $rallyYmm) {
+            $progress = $this->CLImate->yellow('Adding ' . $rallyYmm->makeTitle() . '...');
+
+            $jbaYmm = (new \Shop\Models\YearMakeModels)
+                ->bind($rallyYmm->cast())
+                ->store();
+
+            $rallyProducts = \JBAShop\Models\RallyProducts::collection()->distinct('tracking.model_number', [
+                'ymms.slug' => $jbaYmm->slug
+            ]);
+
+            $update = \Shop\Models\Products::collection()->updateMany([
+                'tracking.model_number' => [
+                    '$in' => $rallyProducts
+                ]
+            ], [
+                '$push' => [
+                    'ymms' => [
+                        'id'    => $jbaYmm->id,
+                        'slug'  => $jbaYmm->slug,
+                        'title' => $jbaYmm->title
+                    ]
+                ]
+            ]);
+
+            $progress = $this->CLImate->green('Updated ' . $update->getModifiedCount() . ' products!');
+        }
+    }
 }
