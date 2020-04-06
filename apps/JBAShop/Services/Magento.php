@@ -483,7 +483,13 @@ class Magento
                     $product->set('product_type', 'standard');
                 }
 
-                $product->save();
+                try{
+                    $product->save();
+                }catch(Exception $e){
+                    if($e->getMessage() !== 'Not a group item'){
+                        throw $e;
+                    }
+                }
             }
 
             $progress->advance(1, $row['model']);
