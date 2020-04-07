@@ -871,6 +871,18 @@ class Magento
 
     public function syncDynamicGroupProducts()
     {
+        $salesChannels = [
+            'ftspeed' => [
+                'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
+                'title' => 'FTSpeed',
+                'slug' => 'ftspeed'
+            ],
+            'subispeed' => [
+                'id' => new \MongoDB\BSON\ObjectID('5841b1deb38c50ba028b4567'),
+                'title' => 'SubiSpeed',
+                'slug' => 'subispeed'
+            ]
+        ];
 
         $sql = "
             SELECT *
@@ -963,51 +975,89 @@ class Magento
                 def.attribute_id = 102 
             AND def.store_id = 0 
             ) DATA ON DATA.id = dgroups.magento_id
+            WHERE magento_id IN(5459, 6101, 6341)
         ";
+
+        //\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOptionValue['value_model_number']))->itemId,
 
         //Execute query one, to get dynamic group parents
         $select = $this->db->prepare($sql);
         $select->execute();
-        $rows = $select->fetchAll(PDO::FETCH_GROUP);
 
-        $progress = $this->CLImate->progress()->total(count($rows));
+        while($rows = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)){
+            foreach($rows as $productGroup){
+                //Set a few temp variables for each iteration, for product level values
+                $options = [];
+                $product = '';
+                $categories = [];
+                $productSalesChannels = [];
 
-        //All of the records are now grouped into product gruops based on the magento_id, start looping through them
-        foreach ($rows as $productGroupKey => $productGroupValue) {
-            //Create the parent property for mongo
-            $kit_options_builder = [];
-            $kit_options = [];
+                //Loop through each kit option/kit option value
+                foreach($productGroup as $productOption){
+                    //The dynamic group product itself
+                    $product = $productOption['model'];
+                    //Set the categories for the product
+                    $categories = array_unique(explode(',', $productOption['categories']));
 
-            //Loop through each option grouping the options values together
-            foreach ($productGroupValue as $productOptionKey => $productOptionValue) {
-                $kit_options_builder[$productOptionValue['option_id']]['values'][] = [
-                    'id' => new \MongoDB\BSON\ObjectID(),
-                    'title' => null,
-                    'magento_entity_id' => $productOptionValue['value_model_number'],
-                    'model_number' => (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOptionValue['value_model_number']))->itemId,
-                    'required_model_number' => '',
-                    'required_product_id' => null,
-                ];
-            }
+                    //Option Properties
+                    $options[$productOption['option_id']]['id'] = new \MongoDB\BSON\ObjectID();
+                    $options[$productOption['option_id']]['title'] = $productOption['option_title'];
+                    $options[$productOption['option_id']]['allow_none'] = $productOption['required'] ? false : true;
+                    $options[$productOption['option_id']]['quantity'] = (int) $productOption['value_required_quantity'];
+                    $options[$productOption['option_id']]['discount_percentage'] = 0;
 
-            $newProduct = (new \Shop\Models\ProductTest())
+                    //Value Properties
+                    $options[$productOption['option_id']]['values'][] = [
+                        'id' => new \MongoDB\BSON\ObjectID(),
+                        'model_number' => (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOption['value_model_number']))->itemId,
+                        'option_id' => $productOption['option_id'],
+                        'title' => $productOption['option_title']
+                    ];
+
+                    //Set the sales channels
+                    if($productOption['subispeed']){
+                        $productSalesChannels[] = $salesChannels['subispeed'];
+                    }
+                    if($productOption['ftspeed']){
+                        $productSalesChannels[] = $salesChannels['ftspeed'];
+                    }
+                }
+
+                //Build the categories
+                $categories = array_map(function($categoryId){
+                    $categoryModel = \Shop\Models\Categories::collection()->findOne(['magento.id' => (int) $categoryId], ['projection' => ['_id'=>true, 'title' => true, 'slug' => true, 'magento' => true]]);
+                    return [
+                            'id' => $categoryModel['_id'],
+                            'title' => $categoryModel['title'],
+                            'slug' => $categoryModel['slug'],
+                            'magento_id' => $categoryModel['magento']['id'],
+                    ];
+                }, $categories);
+
+                //Build the rest of the product and save it
+                $newProduct = (new \Shop\Models\ProductTest())
                 ->set('product_type', 'dynamic_group')
-                ->set('tracking', ['model_number' => 'magento_test_model_number'])
+                ->set('categories', $categories)
+                ->set('tracking', [
+                    'model_number' => (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId((int)$product))->itemId,
+                ])
                 ->set('magento_test', true)
                 ->set('slug', 'some-slug')
                 ->set('title', 'some-title')
-                ->set('kit_options', $kit_options_builder);
+                ->set('kit_options', array_values($options))
+                ->set('publication.sales_channels', array_unique($productSalesChannels));
 
-            try {
-                $newProduct->save();
-            } catch (Exception $e) {
-                $this->CLImate->red('And Item In Group Doesnt Exist' . $e->getMessage());
+                try{
+                    $newProduct->save();
+                }catch(Exception $e){
+                    $this->CLImate->red($e->getMessage());
+                }
             }
-
-            $progress->advance();
         }
+
+        
     }
-    
+
     public function syncYmmsFromRally()
     {
         // remove all ymms and product ymm data before starting
