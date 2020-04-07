@@ -453,23 +453,41 @@ class Magento
                 $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
                 }));
-
-
+                $hasYmmSuffix = strpos($row['default_title'], '-');//Does the title have a YMM suffixeses?
+                //If there is a ymmSuffix get substring to first instance of '-' else use default_title.
+                $title = $hasYmmSuffix > 0 ? substr($row['default_title'], 0, $hasYmmSuffix) : $row['default_title'];
 
                 $product
                     ->set('magento.id', $row['id'])
-                    ->set('title', $row['default_title'])
+                    ->set('title', $title)
                     ->set('copy', $row['long_description'])
                     ->set('short_description', $row['short_description'])
                     ->set('categories', $newProductCategories);
 
-                $productSalesChannels = [];
+                $productSalesChannels = []; $suffixTitles = [];
+                $kill = FALSE;
+                /** Note: Based on sales channels IF subispeed and ftspeed is set we want title suffix to be concated as
+                 * `subispeed`, `ft86`, `ftspeed` as per David Kouang.
+                 * ELSE it will  fall as either `subispeed` OR `ft86`, `ftspeed`
+                 * */
+
                 if (!empty($row['subispeed'])) {
                     $productSalesChannels[] = $salesChannels['subispeed'];
+                    //So we don't add things we don't need to only add suffix if in sales channel
+                    $suffixTitles[] = $this->stripYmmFromTitle($title, $row['subispeed_title']);//If this channel is active then put in suffixTitles array FIRST!
                 }
 
                 if (!empty($row['ftspeed'])) {
                     $productSalesChannels[] = $salesChannels['ftspeed'];
+                    //So we don't add things we don't need to only add suffix if in sales channel
+                    $suffixTitles[] = $this->stripYmmFromTitle($title, $row['ft86_title']);//If this channel is active then put in suffixTitles array SECOND!
+                    $suffixTitles[] = $this->stripYmmFromTitle($title, $row['ftspeed_title']);//If this channel is active then put in suffixTitles array LAST!
+                }
+
+                if (!empty($suffixTitles)) {
+                    $suffixString = implode(', ', array_unique(array_filter($suffixTitles)));//Get valid unique suffixes and convert to csv.
+                    $kill = count(array_unique(array_filter($suffixTitles))) > 2;
+                    $product->set('title_suffix', !empty($suffixString) ? $suffixString : NULL);//if there is a suffix string then set it else leave as null.
                 }
 
                 $product->set('publication.sales_channels', $productSalesChannels);
@@ -485,6 +503,10 @@ class Magento
 
                 try{
                     $product->save();
+                    if ($kill) {
+                        var_dump($row);
+                        die('should have suffix mod in db');
+                    }
                 }catch(Exception $e){
                     if($e->getMessage() !== 'Not a group item'){
                         throw $e;
@@ -921,4 +943,13 @@ class Magento
             $progress = $this->CLImate->green('Updated ' . $update->getModifiedCount() . ' products!');
         }
     }
+
+    /** Strip ymm from title. JBA saves their product titles in the format [PRODUCT_NAME] - [YMM]. 
+     *So assuming that $title = [PRODUCT_NAME] and $ymm = [PRODUCT_NAME] - [YMM] and there for this function will return [YMM] from the $ymmTitle.*/
+    private function stripYmmFromTitle($title, $ymmTitle)
+    {
+        //strip out the title and any remaining  - separator from start of string.
+        return trim(preg_replace('/^[\s]?-/', '', str_replace($title, "", $ymmTitle)));
+    }
+
 }
