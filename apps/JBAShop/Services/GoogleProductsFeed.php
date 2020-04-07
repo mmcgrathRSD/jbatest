@@ -80,6 +80,7 @@ class GoogleProductsFeed
 				/** @var \JBAShop\Models\Products $product */
 				$product = (new \JBAShop\Models\Products())->bind($data);
 				$additionalItemInfo = [];
+
 				if(!empty($product->specs)){//if the item has specs then we will try and attach apparel data.
 					$specs =  array_map('strtolower', $product->specs);//lowercase all attributes stored in specs.
 					$additionalItemInfo = array_filter([
@@ -94,6 +95,10 @@ class GoogleProductsFeed
 
 				if (in_array($productId, $productIds)) {
 					continue;
+				}
+
+				if($product->get('product_type') === 'group'){
+					$additionalItemInfo['g:group_item'] = 'yes';
 				}
 
 				$productIds[] = $productId;
@@ -138,6 +143,7 @@ class GoogleProductsFeed
 				if ($item['g:price'] == 0) {
 					continue;
 				}
+
 				$this->addItem($productsWriter, $item);
 			}
 			$progress->advance(1);
