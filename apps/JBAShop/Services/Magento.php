@@ -978,15 +978,14 @@ class Magento
             WHERE magento_id IN(5459, 6101, 6341)
         ";
 
-        //\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOptionValue['value_model_number']))->itemId,
-
-        //Execute query one, to get dynamic group parents
+        //This query returns 1 record for each dynamic group member. the PDO::FETCH_GROUP is a helper to group all magento for a given dynamic group together
+        //For example, $productGroup will contain all recrods for a given dynamic group
         $select = $this->db->prepare($sql);
         $select->execute();
 
         while($rows = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)){
             foreach($rows as $magentoID => $productGroup){
-                //Set a few temp variables for each iteration, for product level values
+                //Set a few temp variables for product level values
                 $options = [];
                 $modelNumber = '';
                 $categories = [];
@@ -994,20 +993,20 @@ class Magento
 
                 //Loop through each kit option/kit option value
                 foreach($productGroup as $productOption){
-                    //The dynamic group product itself
+                    //This value is what we'll use for the model number of the dynamic group product itself
                     $modelNumber = $productOption['model'];
+                    
                     //Set the categories for the product
                     $categories = array_unique(explode(',', $productOption['categories']));
-                    //The magento ID of the dynamic Kit
 
-                    //Option Properties
+                    //Dynamic Kit Option Properties
                     $options[$productOption['option_id']]['id'] = new \MongoDB\BSON\ObjectID();
                     $options[$productOption['option_id']]['title'] = $productOption['option_title'];
                     $options[$productOption['option_id']]['allow_none'] = $productOption['required'] ? false : true;
                     $options[$productOption['option_id']]['quantity'] = (int) $productOption['value_required_quantity'];
                     $options[$productOption['option_id']]['discount_percentage'] = 0;
 
-                    //Value Properties
+                    //Dynamic Kit option value properties
                     $options[$productOption['option_id']]['values'][] = [
                         'id' => new \MongoDB\BSON\ObjectID(),
                         'model_number' => (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOption['value_model_number']))->itemId,
@@ -1015,7 +1014,7 @@ class Magento
                         'title' => $productOption['option_title']
                     ];
 
-                    //Set the sales channels
+                    //Set the sales channels for the dyamic kit based on hardcoded array at the top
                     if($productOption['subispeed']){
                         $productSalesChannels[] = $salesChannels['subispeed'];
                     }
@@ -1042,7 +1041,7 @@ class Magento
                     $newProduct = new \Shop\Models\ProductTest();
                 }
 
-                //Build the rest of the product and save it
+                //Build/Update the dyanmic kit and save it to mongo
                 $newProduct->set('product_type', 'dynamic_group')
                     ->set('categories', $categories)
                     ->set('tracking', [
@@ -1053,7 +1052,8 @@ class Magento
                     ->set('slug', 'some-slug')
                     ->set('title', 'some-title')
                     ->set('kit_options', array_values($options))
-                    ->set('publication.sales_channels', array_unique($productSalesChannels));
+                    ->set('publication.sales_channels', array_unique($productSalesChannels))
+                    ->set('prices.group_discount_percentage', 'TODO DONT FORGET ME!!');
 
                 try{
                     $newProduct->save();
