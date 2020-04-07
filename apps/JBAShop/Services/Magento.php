@@ -985,19 +985,20 @@ class Magento
         $select->execute();
 
         while($rows = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)){
-            foreach($rows as $productGroup){
+            foreach($rows as $magentoID => $productGroup){
                 //Set a few temp variables for each iteration, for product level values
                 $options = [];
-                $product = '';
+                $modelNumber = '';
                 $categories = [];
                 $productSalesChannels = [];
 
                 //Loop through each kit option/kit option value
                 foreach($productGroup as $productOption){
                     //The dynamic group product itself
-                    $product = $productOption['model'];
+                    $modelNumber = $productOption['model'];
                     //Set the categories for the product
                     $categories = array_unique(explode(',', $productOption['categories']));
+                    //The magento ID of the dynamic Kit
 
                     //Option Properties
                     $options[$productOption['option_id']]['id'] = new \MongoDB\BSON\ObjectID();
@@ -1034,18 +1035,25 @@ class Magento
                     ];
                 }, $categories);
 
+                //The next two lines check to see if the product already exists based on magento ID
+                //So we dont create the same dynamic kit twice. Instead, update it if it exists
+                $newProduct = (new \Shop\Models\ProductTest)->setCondition('magento.id', $magentoID)->getItem();
+                if(empty($newProduct)){
+                    $newProduct = new \Shop\Models\ProductTest();
+                }
+
                 //Build the rest of the product and save it
-                $newProduct = (new \Shop\Models\ProductTest())
-                ->set('product_type', 'dynamic_group')
-                ->set('categories', $categories)
-                ->set('tracking', [
-                    'model_number' => (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId((int)$product))->itemId,
-                ])
-                ->set('magento_test', true)
-                ->set('slug', 'some-slug')
-                ->set('title', 'some-title')
-                ->set('kit_options', array_values($options))
-                ->set('publication.sales_channels', array_unique($productSalesChannels));
+                $newProduct->set('product_type', 'dynamic_group')
+                    ->set('categories', $categories)
+                    ->set('tracking', [
+                        'model_number' => $modelNumber,
+                    ])
+                    ->set('magento_test', true)
+                    ->set('magento', ['id' => $magentoID])
+                    ->set('slug', 'some-slug')
+                    ->set('title', 'some-title')
+                    ->set('kit_options', array_values($options))
+                    ->set('publication.sales_channels', array_unique($productSalesChannels));
 
                 try{
                     $newProduct->save();
