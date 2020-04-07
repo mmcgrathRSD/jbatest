@@ -486,7 +486,6 @@ class Magento
 
                 if (!empty($suffixTitles)) {
                     $suffixString = implode(', ', array_unique(array_filter($suffixTitles)));//Get valid unique suffixes and convert to csv.
-                    $kill = count(array_unique(array_filter($suffixTitles))) > 2;
                     $product->set('title_suffix', !empty($suffixString) ? $suffixString : NULL);//if there is a suffix string then set it else leave as null.
                 }
 
@@ -503,10 +502,6 @@ class Magento
 
                 try{
                     $product->save();
-                    if ($kill) {
-                        var_dump($row);
-                        die('should have suffix mod in db');
-                    }
                 }catch(Exception $e){
                     if($e->getMessage() !== 'Not a group item'){
                         throw $e;
