@@ -835,6 +835,7 @@ class Magento
                     $userContent
                         ->set('product_id', $mongoProduct['_id'])
                         ->set('user_id', $user['_id'])
+                        ->set('type', 'review')
                         ->set('user_name', $rating['nickname'])
                         ->set('publication.status', 'published')
                         ->set('part_number', $mongoProduct['tracking']['model_number'])
@@ -919,6 +920,124 @@ class Magento
             ]);
 
             $progress = $this->CLImate->green('Updated ' . $update->getModifiedCount() . ' products!');
+        }
+    }
+
+    public function syncUserContentImages()
+    {
+        \Shop\Models\UserContent::collection()->deleteMany(['type' => 'image']);
+        // manually delete images from cloudinary user_content folder
+
+        $guestUser = (new \Users\Models\Users)
+            ->setCondition('email', 'guest@jbautosports.com')
+            ->getItem();
+
+        if (empty($guestUser->email)) {
+            $guestUser = \Users\Models\Users::createNewUser([
+                'email' => 'guest@jbautosports.com',
+                'first_name' => 'Guest',
+                'password' => '',
+                'role' => 'identified',
+                'active' => true,
+                'last_name' => 'User',
+                'price_level' => 'Retail-JBA'
+            ]);
+        }
+        
+        $sql = 
+            "SELECT
+                CONCAT('https://www.subispeed.com/media/catalog/product/customerimg', file) AS image_url,
+                product_id,
+                customer_id,
+                guest_email,
+                title,
+                `status`,
+                IF(store_id = 1, 'subispeed', 'ftspeed') AS store
+            FROM amasty_amcustomerimg_image
+            WHERE store_id IN (1, 4, 5)
+                AND `status` != 'declined'";
+
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        $missingProducts = [];
+        while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
+            if (in_array($row['product_id'], $missingProducts)) {
+                continue;
+            }
+
+            $data = [];
+
+            $mongoProduct = (new \Shop\Models\Products)->collection()->findOne([
+                'magento.id' => $row['product_id']
+            ], [
+                'projection' => [
+                    '_id' => true,
+                    'title' => true,
+                    'slug' => true,
+                    'tracking' => true
+                ],
+            ]);
+
+            if (isset($mongoProduct['_id'])) {
+                $data[] = ['Product Found!', $mongoProduct['tracking']['model_number'], '✅'];
+
+                $user = (new \Users\Models\Users)->collection()->findOne([
+                    '$or' => [
+                        [ 'magento.user_id' => (int) $rating['customer_id'] ],
+                        [ 'email' => $row['guest_email'] ]
+                    ]
+                ], [
+                    'projection' => [
+                        '_id' => true,
+                        'username' => true,
+                    ]
+                ]);
+
+                if (empty($user['_id'])) {
+                    $user = $guestUser;
+                }
+
+                $upload = \Cloudinary\Uploader::upload($row['image_url'], [
+                    'type' => 'upload',
+                    'format' => 'jpg',
+                    'folder' => Cloudinary::USER_CONTENT,
+                    'tags' => 'review',
+                    'context' => [
+                        'model_number' => $mongoProduct['tracking']['model_number_flat']
+                    ]
+                ]);
+
+                $userContent = (new \Shop\Models\UserContent)
+                    ->set('type', 'image')
+                    ->set('user_id', $user['_id'])
+                    ->set('user_name', $user['username'])
+                    ->set('username', $user['username'])
+                    ->set('role', 'user')
+                    ->set('product_id', $mongoProduct['_id'])
+                    ->set('part_number', $mongoProduct['tracking']['model_number'])
+                    ->set('product_title', $mongoProduct['title'])
+                    ->set('product_slug', $mongoProduct['slug'])
+                    ->set('publication.status', $row['status'] == 'pending' ? 'review' : 'published')
+                    ->set('images.0', $upload['public_id']);
+
+                if (!empty($row['title'])) {
+                    $userContent->set('caption', trim($row['title']));
+                }
+                
+                try {
+                    $userContent->save();
+                    $data[] = ['User image added for product', $mongoProduct['tracking']['model_number'], '✅'];
+                } catch(Exception $e) {
+                    $this->CLImate->red($e->getMessage());
+                }
+
+            } else {
+                $missingProducts[] = $row['product_id'];
+                $data[] = ['Product not found!', $row['product_id'], '❌'];
+            }
+
+            $this->CLImate->table($data);
         }
     }
 }
