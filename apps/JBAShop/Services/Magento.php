@@ -813,7 +813,7 @@ class Magento
             //If we found a product in mongo, check to see if the user the rating is from exists
             if(isset($mongoProduct['_id'])){
                 //For CLI Output
-                $data[] = ['Product Was Found!', $mongoProduct['title'], ✅];
+                $data[] = ['Product Was Found!', $mongoProduct['title'], "✅"];
 
                 //Check to see if the user who enetered the review exists:
                 $user = (new \Users\Models\Users)->collection()->findOne([
@@ -828,14 +828,14 @@ class Magento
                 //If a product AND a user are found, create the product rating
                 if(isset($user['_id'])){
                     //For CLI Output
-                    $data[] = ['User Was Found!', $user['username'], ✅];
+                    $data[] = ['User Was Found!', $user['username'], "✅"];
 
                     $userContent = new \Shop\Models\UserContent();
                     //Set all the required properties for the rating. Useres both $mongoProduct, $user and $rating data
                     $userContent
+                        ->set('product_id', $mongoProduct['_id'])
+                        ->set('user_id', $user['_id'])
                         ->set('type', 'review')
-                        ->set('product_id', new \MongoDB\BSON\ObjectID( (string) $mongoProduct['_id'] ))
-                        ->set('user_id', new \MongoDB\BSON\ObjectID( (string) $user['_id'] ))
                         ->set('user_name', $rating['nickname'])
                         ->set('publication.status', 'published')
                         ->set('part_number', $mongoProduct['tracking']['model_number'])
@@ -853,16 +853,16 @@ class Magento
                     try{
                         //Save the new review
                         $userContent->save();
-                        $data[] = ['New Review Created For Product', $mongoProduct['title'], ✅];
+                        $data[] = ['New Review Created For Product', $mongoProduct['title'], "✅"];
                     }catch(Exception $e){
                         $this->CLImate->red($e->getMessage());
                     }
                     
                 }else{
-                    $data[] = ['No User Found ', $user['_id'], ❌];
+                    $data[] = ['No User Found ', $user['_id'], "❌"];
                 }
             }else{
-                $data[] = ['No Product With Magento_ID: ', $rating['entity_pk_value'], ❌];
+                $data[] = ['No Product With Magento_ID: ', $rating['entity_pk_value'], "❌"];
             }
 
             $this->CLImate->table($data);
