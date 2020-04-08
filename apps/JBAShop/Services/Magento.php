@@ -952,7 +952,8 @@ class Magento
                 guest_email,
                 title,
                 `status`,
-                IF(store_id = 1, 'subispeed', 'ftspeed') AS store
+                IF(store_id = 1, 'subispeed', 'ftspeed') AS store,
+                created_at
             FROM amasty_amcustomerimg_image
             WHERE store_id IN (1, 4, 5)
                 AND `status` != 'declined'";
@@ -1019,7 +1020,9 @@ class Magento
                     ->set('product_title', $mongoProduct['title'])
                     ->set('product_slug', $mongoProduct['slug'])
                     ->set('publication.status', $row['status'] == 'pending' ? 'review' : 'published')
-                    ->set('images.0', $upload['public_id']);
+                    ->set('images.0', $upload['public_id'])
+                    ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($row['created_at']))
+                ;
 
                 if (!empty($row['title'])) {
                     $userContent->set('caption', trim($row['title']));
