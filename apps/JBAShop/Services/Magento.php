@@ -1113,6 +1113,7 @@ class Magento
         }
     }
 
+    //This is a helper function to return the outermost categories for a given product
     public function getOuterMostCategories($categoryIDs){
 
         $categories = [];
