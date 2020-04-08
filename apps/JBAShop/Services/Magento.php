@@ -440,7 +440,7 @@ class Magento
                         $product->set('manufacturer.id', $brand->id);
                     }
                 }
-
+            
                 $productCategories = array_values(array_intersect_key($categories, array_flip(explode(',', $row['categories']))));
 
                 $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
@@ -988,7 +988,7 @@ class Magento
                 //Set a few temp variables for product level values
                 $options = [];
                 $modelNumber = '';
-                $categories = [];
+                $categoriesIDs = [];
                 $productSalesChannels = [];
 
                 //Loop through each kit option/kit option value
@@ -997,7 +997,7 @@ class Magento
                     $modelNumber = $productOption['model'];
                     
                     //Set the categories for the product
-                    $categories = array_unique(explode(',', $productOption['categories']));
+                    $categoriesIDs = array_unique(explode(',', $productOption['categories']));
 
                     //Dynamic Kit Option Properties
                     $options[$productOption['option_id']]['id'] = new \MongoDB\BSON\ObjectID();
@@ -1023,16 +1023,8 @@ class Magento
                     }
                 }
 
-                //Build the categories
-                $categories = array_map(function($categoryId){
-                    $categoryModel = \Shop\Models\Categories::collection()->findOne(['magento.id' => (int) $categoryId], ['projection' => ['_id'=>true, 'title' => true, 'slug' => true, 'magento' => true]]);
-                    return [
-                            'id' => $categoryModel['_id'],
-                            'title' => $categoryModel['title'],
-                            'slug' => $categoryModel['slug'],
-                            'magento_id' => $categoryModel['magento']['id'],
-                    ];
-                }, $categories);
+                //Call The Helper Function to get all the outermost categories for the product
+                $categories = $this->getOuterMostCategories($categoriesIDs);
 
                 //The next two lines check to see if the product already exists based on magento ID
                 //So we dont create the same dynamic kit twice. Instead, update it if it exists
@@ -1053,6 +1045,7 @@ class Magento
                     ->set('title', 'some-title')
                     ->set('kit_options', array_values($options))
                     ->set('publication.sales_channels', array_unique($productSalesChannels))
+                    //Kit level discount
                     ->set('prices.group_discount_percentage', 'TODO DONT FORGET ME!!');
 
                 try{
@@ -1118,5 +1111,44 @@ class Magento
 
             $progress = $this->CLImate->green('Updated ' . $update->getModifiedCount() . ' products!');
         }
+    }
+
+    public function getOuterMostCategories($categoryIDs){
+
+        $categories = [];
+        foreach (\Shop\Models\Categories::collection()->find(['magento.id' => ['$exists' => true]], ['projection' => ['slug' => 1, 'title' => 1, 'magento' => 1, 'ancestors' => 1]]) as $category) {
+            if (empty($category['magento']['id'])) {
+                continue;
+            }
+
+            $add = [
+                'id'    => $category['_id'],
+                'title' => $category['title'],
+                'slug'  => $category['slug']
+            ];
+
+            $categories[$category['magento']['id']] = [
+                'add'    => $add,
+                'remove' => $category['ancestors']
+            ];
+        }
+
+        //Anywhere $row['categories'] exists, replace with $categoryIDs
+        $productCategories = array_values(array_intersect_key($categories, array_flip($categoryIDs)));
+    
+        $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
+        $remove = \Dsc\ArrayHelper::getColumn($productCategories, 'remove');
+        
+        if (count($remove)) {
+            $toRemove = array_merge(...\Dsc\ArrayHelper::getColumn($productCategories, 'remove'));
+        } else {
+            $toRemove = [];
+        }
+
+        $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
+            return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
+        }));
+
+        return $newProductCategories;
     }
 }
