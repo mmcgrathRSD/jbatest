@@ -925,6 +925,9 @@ class Magento
 
     public function syncUserContentImages()
     {
+        \Shop\Models\UserContent::collection()->deleteMany(['type' => 'image']);
+        // manually delete images from cloudinary user_content folder
+
         $guestUser = (new \Users\Models\Users)
             ->setCondition('email', 'guest@jbautosports.com')
             ->getItem();
@@ -957,7 +960,12 @@ class Magento
         $select = $this->db->prepare($sql);
         $select->execute();
 
+        $missingProducts = [];
         while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
+            if (in_array($row['product_id'], $missingProducts)) {
+                continue;
+            }
+
             $data = [];
 
             $mongoProduct = (new \Shop\Models\Products)->collection()->findOne([
@@ -972,7 +980,7 @@ class Magento
             ]);
 
             if (isset($mongoProduct['_id'])) {
-                $data[] = ['Product Was Found!', $mongoProduct['title'], ✅];
+                $data[] = ['Product Found!', $mongoProduct['tracking']['model_number'], '✅'];
 
                 $user = (new \Users\Models\Users)->collection()->findOne([
                     '$or' => [
@@ -994,6 +1002,7 @@ class Magento
                     'type' => 'upload',
                     'format' => 'jpg',
                     'folder' => Cloudinary::USER_CONTENT,
+                    'tags' => 'review',
                     'context' => [
                         'model_number' => $mongoProduct['tracking']['model_number_flat']
                     ]
@@ -1018,12 +1027,14 @@ class Magento
                 
                 try {
                     $userContent->save();
-                    $data[] = ['New user image added for product', $mongoProduct['title'], ✅];
+                    $data[] = ['User image added for product', $mongoProduct['tracking']['model_number'], '✅'];
                 } catch(Exception $e) {
                     $this->CLImate->red($e->getMessage());
                 }
+
             } else {
-                $data[] = ['No Product with id: ', $rating['entity_pk_value'], ❌];
+                $missingProducts[] = $row['product_id'];
+                $data[] = ['Product not found!', $row['product_id'], '❌'];
             }
 
             $this->CLImate->table($data);
