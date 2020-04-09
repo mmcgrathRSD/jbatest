@@ -21,7 +21,7 @@ else {
 if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
     $item->set('review_rating_counts.total',count($reviews));
 }
-var_dump($item); die;
+
 ?><div class="main row clearfix">
    <div class="col-main grid_18">
       <div class="breadcrumbs">
