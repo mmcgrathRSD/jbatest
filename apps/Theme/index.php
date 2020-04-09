@@ -13,14 +13,19 @@
 				<div role="main">
 					<?php echo $this->renderLayout('Shop/Site/Views::common/nav.php')?>
 					
-					<div id="algolia_master" class="algoliaMaster container" <?php if(empty($_GET['q'])) : ?>style="display: none"<?php endif; ?>>
-						<?php //echo $this->renderView('Search/Site/Views::search/list.php'); ?>
-					</div>
+					
 					
 					<?php echo $this->renderView('Theme/Views::system-messages.php'); ?>
 					<div class="main-container col2-left-layout">
 						<div class="content-container">
-							<tmpl type="view" />
+							<div>
+								<div id="algolia_master" class="algoliaMaster container" <?php if(empty($_GET['q'])) : ?>style="display: none"<?php endif; ?>>
+									<?php echo $this->renderView('Search/Site/Views::search/list.php'); ?>
+								</div>
+								<div id="jba-body">
+									<tmpl type="view" />
+								</div>
+							</div>
 						</div>
 					</div>
 					<?php echo $this->renderView('Theme/Views::common/footer.php'); ?>

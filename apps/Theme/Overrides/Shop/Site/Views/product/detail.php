@@ -1,4 +1,28 @@
-<div class="main row clearfix">
+<pre><?php
+//Adding item if this view was called from the reviews page, not the product page.
+if(empty($item)) {
+	$item = $product;
+}
+if(!empty($reviews)) { //This is also to use this view in the reviews page, not product page. If reviews already exists from the controller, use that rather than making a new query. (Austin's notes)
+	$save = [];
+	foreach($reviews->items as $review) {
+		$save[] = $review;
+	}
+	$reviews = $save;
+	if(empty($questions)) {
+		$save = 1;
+	}
+}
+else {
+	$reviews = (new \Shop\Models\UserContent())->setCondition('product_id', $item->id)->setCondition('type', 'review')->setCondition('publication.status', 'published')->setState('list.limit', 5)->getList();
+}
+
+//This is a catch if the queue task is not run to update the product about review counts
+if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
+    $item->set('review_rating_counts.total',count($reviews));
+}
+var_dump($item); die;
+?><div class="main row clearfix">
    <div class="col-main grid_18">
       <div class="breadcrumbs">
          <ul>
