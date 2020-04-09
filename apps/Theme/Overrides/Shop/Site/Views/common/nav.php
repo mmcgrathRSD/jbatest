@@ -63,28 +63,23 @@
                            <span class="category-fake UI-CATEGORY-TEXT">All</span>
                            <span class="nav-down-arrow"></span>
                            <select name="cat" class="category UI-CATEGORY" style="width: 47.2344px;">
-                              <option value="0">All</option>
-                              <option value="3">
-                                 13+ BRZ                
-                              </option>
-                              <option value="5">
-                                 15+ WRX                 
-                              </option>
-                              <option value="6">
-                                 15+ STI                 
-                              </option>
-                              <option value="955">
-                                 14-18 Forester                
-                              </option>
-                              <option value="1222">
-                                 13-17 Crosstrek                
-                              </option>
-                              <option value="1320">
-                                 17+ Impreza                
-                              </option>
-                              <option value="1369">
-                                 18+ Crosstrek                
-                              </option>
+                           <?php 
+                              $searchDropdown = \Dsc\System::instance()->get('session')->get('search_dropdown');
+                           ?>
+                              <option value="0" <?php echo empty($searchDropdown) ? 'selected="selected"' : ''; ?> >All</option>
+                              <?php 
+                              
+                              foreach((new \Shop\Models\Categories)->collection()->find([
+                                 'search_dropdown' => true,
+                                 '$or' => [
+                                       ['sales_channels.0' => ['$exists' => false]],
+                                       ['sales_channels.0' => ['$exists' => true], 'sales_channels.slug' => \Base::instance()->get('sales_channel')]
+                                    ]
+                                 ]) as $doc){ ?>
+                                 <option value="<?php echo $doc['path']; ?>" <?php echo !empty($searchDropdown) && $searchDropdown['path'] === $doc['path'] ? 'selected="selected"' : ''; ?>><?php echo $doc['title']; ?></option>
+                              <?php 
+                                 }
+                              ?>
                            </select>
                         </div>
                         <div class="nav-input UI-NAV-INPUT" style="padding-left: 47.2344px;">

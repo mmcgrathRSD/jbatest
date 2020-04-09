@@ -22,8 +22,13 @@ require $app->get('PATH_ROOT') . 'config/config.php';
 	"api_secret" => $app->get('cloudinary.api_secret')
 ));
 
+$CLImate = new \League\CLImate\CLImate();
 
 /*** MAGENTO SYNC ROUTES ***/
+
+$app->route('GET /sync-brands', function() {
+    (new JBAShop\Services\Magento)->syncBrands();
+});
 
 $app->route('GET /sync-categories', function() {
     (new JBAShop\Services\Magento)->syncCategories();
@@ -31,6 +36,46 @@ $app->route('GET /sync-categories', function() {
 
 $app->route('GET /sync-product-info', function() {
     (new JBAShop\Services\Magento)->syncProductInfo();
+});
+
+$app->route('GET /sync-product-images', function() {
+	(new JBAShop\Services\Magento)->syncProductImages();
+});
+
+$app->route('GET /sync-category-images', function() {
+	(new JBAShop\Services\Magento)->syncCategoryImages();
+});
+
+$app->route('GET /sync-usercontent-images', function() use ($CLImate) {
+	$input = $CLImate->input('Have you cleared the user_content folder in Cloudinary?');
+	$input->accept(['yes', 'no', 'y', 'n']);
+	$response = filter_var($input->prompt(), FILTER_VALIDATE_BOOLEAN);
+	if ($response) {
+		(new JBAShop\Services\Magento)->syncUserContentImages();
+	} else {
+		$CLImate->error('What the fuck, bro? Go do it!');
+	}
+});
+
+
+$app->route('GET /sync-ymms', function() {
+	(new JBAShop\Services\Magento)->syncYmmsFromRally();
+});
+
+/**
+ * This method syncs all users from magento to mongo
+ * @param int $magentoId - the user primary key from magento database (customer_entity.entity_id)
+ * @return void
+ */
+$app->route('GET /sync-magento-users-to-mongo', function($f3){
+	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo();
+});
+
+/**
+ * This method syncs all product ratings to shop.usercontent
+ */
+$app->route('GET /sync-product-ratings', function($f3){
+	(new JBAShop\Services\Magento)->syncProductRatings();
 });
 
 /**************************/
@@ -44,8 +89,6 @@ $app->route('GET /sync-product-info', function() {
 
 // trigger the preflight event PreSite, PostSite etc
 \Dsc\System::instance()->preflight();
-
-
 
 //excute everything.
 $app->run();
