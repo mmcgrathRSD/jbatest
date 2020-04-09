@@ -84,7 +84,7 @@
                         </div>
                         <div class="nav-input UI-NAV-INPUT" style="padding-left: 47.2344px;">
                            <input class="input-text UI-SEARCH" type="text" autocomplete="off" name="q" value="" maxlength="50" id="search-box">
-                           <input class="input-text UI-SEARCH" type="text" autocomplete="off" name="q" value="" maxlength="50" id="search-box-mobile">
+                           <input class="input-text UI-SEARCH" style="display: none;" type="text" autocomplete="off" name="q" value="" maxlength="50" id="search-box-mobile">
                         </div>
                         <div class="searchautocomplete-loader UI-LOADER" style="display:none;"></div>
                      </div>
