@@ -255,7 +255,7 @@ class Magento
             $select->execute();
             //CLI Progress bar
             $progress = $this->CLImate->progress()->total($select->rowCount());
-
+            $this->CLImate->yellow($select->rowCount() . " rows to process");
             while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
                 if (in_array($row['id'], array_keys($categoryIds))) {
                     continue;
@@ -322,6 +322,7 @@ class Magento
 
     public function syncProductInfo()
     {
+        $failures = [];
         $salesChannels = [
             'ftspeed' => [
                 'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
@@ -354,69 +355,90 @@ class Magento
         }
 
         $sql = "
+        SELECT
+            def.entity_id AS 'id',
+            youtube.value as 'youtube video',
+            install.value as 'install instructions',
+            meta_title.value as 'meta title',
+            is_carb.value as 'is carb',
+            url_key.value as 'default url key',
+            url_path.value as 'default url path',
+            coupon.value as 'qualifies for coupon',
+            warranty.value as 'warranty',
+            mB.option_id as 'brand_id,mfg_id',
+            mB.value as 'brand/manufacturer',
+            cpe.sku AS 'model',
+            `status`.`value` AS 'enabled',
+            ! ISNULL( subi.`value` ) AS 'subispeed',
+            IF (! ISNULL( ft86.`value` ) OR ! ISNULL( ftspeed.`value` ), 1, 0 ) AS 'ftspeed',
+            default_name.`value` AS 'default_title',
+            subi_name.`value` AS 'subispeed_title',
+            ft86_name.`value` AS 'ft86_title',
+            ftspeed_name.`value` AS 'ftspeed_title',
+            cats.categories,
+            default_desc.`value` AS 'long_description',
+            default_short_desc.`value` AS 'short_description'
+        FROM
+            catalog_product_entity_int def
+            INNER JOIN catalog_product_entity_int AS `status` ON ( def.entity_id = `status`.entity_id AND `status`.store_id = 0 AND `status`.attribute_id = 96 AND `status`.`value` = 1 )
+            LEFT JOIN catalog_product_entity cpe ON def.entity_id = cpe.entity_id
+            LEFT JOIN catalog_product_entity_varchar AS default_name ON ( def.entity_id = default_name.entity_id AND default_name.store_id = 0 AND default_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_text AS default_desc ON ( def.entity_id = default_desc.entity_id AND default_desc.store_id = 0 AND default_desc.attribute_id = 72 )
+            LEFT JOIN catalog_product_entity_text AS default_short_desc ON ( def.entity_id = default_short_desc.entity_id AND default_short_desc.store_id = 0 AND default_short_desc.attribute_id = 73 )
+            LEFT JOIN catalog_product_entity_varchar subi_name ON ( def.entity_id = subi_name.entity_id AND subi_name.store_id = 1 AND subi_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_varchar ft86_name ON ( def.entity_id = ft86_name.entity_id AND ft86_name.store_id = 4 AND ft86_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_varchar ftspeed_name ON ( def.entity_id = ftspeed_name.entity_id AND ftspeed_name.store_id = 5 AND ftspeed_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_int AS subi ON ( def.entity_id = subi.entity_id AND subi.store_id = 1 AND subi.attribute_id = 102 )
+            LEFT JOIN catalog_product_entity_int AS ft86 ON ( def.entity_id = ft86.entity_id AND ft86.store_id = 4 AND ft86.attribute_id = 102 )
+            LEFT JOIN catalog_product_entity_int AS ftspeed ON ( def.entity_id = ftspeed.entity_id AND ftspeed.store_id = 5 AND ftspeed.attribute_id = 102 )
+        
+            LEFT JOIN catalog_product_entity_int AS youtube ON ( def.entity_id = youtube.entity_id AND youtube.store_id = 0 AND youtube.attribute_id = 180)
+            LEFT JOIN catalog_product_entity_text AS install ON ( def.entity_id = install.entity_id AND install.store_id = 0 AND install.attribute_id = 144)
+            LEFT JOIN catalog_product_entity_varchar meta_title ON ( def.entity_id = meta_title.entity_id AND meta_title.store_id = 0 AND meta_title.attribute_id = 82)
+            LEFT JOIN catalog_product_entity_int AS is_carb ON ( def.entity_id = is_carb.entity_id AND is_carb.store_id = 0 AND is_carb.attribute_id = 268)
+            LEFT JOIN catalog_product_entity_varchar AS url_key ON ( def.entity_id = url_key.entity_id AND url_key.store_id = 0 AND url_key.attribute_id = 97)
+            LEFT JOIN catalog_product_entity_varchar AS url_path ON ( def.entity_id = url_path.entity_id AND url_path.store_id = 0 AND url_path.attribute_id = 98)
+            LEFT JOIN catalog_product_entity_int AS coupon ON ( def.entity_id = coupon.entity_id AND coupon.store_id = 0 AND coupon.attribute_id = 237)
+            LEFT JOIN catalog_product_entity_text AS warranty ON ( def.entity_id = warranty.entity_id AND warranty.store_id = 0 AND warranty.attribute_id = 236 )
+            LEFT JOIN (
             SELECT
-                def.entity_id AS 'id',
-                mB.option_id as 'brand_id',
-                cpe.sku AS 'model',
-                `status`.`value` AS 'enabled',
-                !ISNULL(subi.`value`) AS 'subispeed',
-                IF (!ISNULL(ft86.`value`) OR !ISNULL(ftspeed.`value`), 1, 0) AS 'ftspeed',
-                default_name.`value` AS 'default_title',
-                subi_name.`value` AS 'subispeed_title',
-                ft86_name.`value` AS 'ft86_title',
-                ftspeed_name.`value` AS 'ftspeed_title',
-                cats.categories,
-                default_desc.`value` AS 'long_description',
-                default_short_desc.`value` AS 'short_description'
+                cat.product_id,
+                GROUP_CONCAT( cat.category_id ) AS categories,
+                product.sku
             FROM
-                catalog_product_entity_int def
-                INNER JOIN catalog_product_entity_int AS `status` ON ( def.entity_id = `status`.entity_id AND `status`.store_id = 0 AND `status`.attribute_id = 96 AND `status`.`value` = 1 )
-                LEFT JOIN catalog_product_entity cpe ON def.entity_id = cpe.entity_id
-                LEFT JOIN catalog_product_entity_varchar AS default_name ON ( def.entity_id = default_name.entity_id AND default_name.store_id = 0 AND default_name.attribute_id = 71 )
-                LEFT JOIN catalog_product_entity_text AS default_desc ON ( def.entity_id = default_desc.entity_id AND default_desc.store_id = 0 AND default_desc.attribute_id = 72 )
-                LEFT JOIN catalog_product_entity_text AS default_short_desc ON ( def.entity_id = default_short_desc.entity_id AND default_short_desc.store_id = 0 AND default_short_desc.attribute_id = 73 )
-                LEFT JOIN catalog_product_entity_varchar subi_name ON ( def.entity_id = subi_name.entity_id AND subi_name.store_id = 1 AND subi_name.attribute_id = 71 )
-                LEFT JOIN catalog_product_entity_varchar ft86_name ON ( def.entity_id = ft86_name.entity_id AND ft86_name.store_id = 4 AND ft86_name.attribute_id = 71 )
-                LEFT JOIN catalog_product_entity_varchar ftspeed_name ON ( def.entity_id = ftspeed_name.entity_id AND ftspeed_name.store_id = 4 AND ftspeed_name.attribute_id = 71 )
-                LEFT JOIN catalog_product_entity_int AS subi ON ( def.entity_id = subi.entity_id AND subi.store_id = 1 AND subi.attribute_id = 102 )
-                LEFT JOIN catalog_product_entity_int AS ft86 ON ( def.entity_id = ft86.entity_id AND ft86.store_id = 4 AND ft86.attribute_id = 102 )
-                LEFT JOIN catalog_product_entity_int AS ftspeed ON ( def.entity_id = ftspeed.entity_id AND ftspeed.store_id = 5 AND ftspeed.attribute_id = 102 )
-                LEFT JOIN (
-                    SELECT
-                        cat.product_id,
-                        GROUP_CONCAT( cat.category_id ) AS categories,
-                        product.sku 
-                    FROM
-                        catalog_category_product AS cat,
-                        catalog_product_entity AS product 
-                    WHERE
-                        cat.product_id = product.entity_id 
-                    GROUP BY
-                        cat.product_id 
-                ) AS cats ON cats.product_id = def.entity_id
-                LEFT JOIN catalog_product_entity_int AS m
-                    ON m.attribute_id = 81
-                    AND m.entity_type_id = '4'
-                    AND m.STORE_ID = 0
-                    AND def.entity_id = m.entity_id
-                LEFT JOIN eav_attribute_option_value mB
-                    ON mB.option_id = m.value
-                    AND mB.STORE_ID = 0
+                catalog_category_product AS cat,
+                catalog_product_entity AS product
             WHERE
-                def.attribute_id = 102 
-                AND def.store_id = 0
+                cat.product_id = product.entity_id
+            GROUP BY
+                cat.product_id
+            ) AS cats ON cats.product_id = def.entity_id
+            left join
+            catalog_product_entity_int AS m ON m.attribute_id = 81
+                AND m.entity_type_id = '4'
+                AND m.STORE_ID = 0
+                AND def.entity_id = m.entity_id
+                LEFT JOIN
+            eav_attribute_option_value mB ON mB.option_id = m.value
+                AND mB.STORE_ID = 0
+        WHERE
+            def.attribute_id = 102
+            AND def.store_id = 0
             ORDER BY cpe.sku ASC
-            
         ";
 
         $select = $this->db->prepare($sql);
         $select->execute();
         $progress = $this->CLImate->progress()->total($select->rowCount());
+        $ftBrzRegex = "/2013(\+|[\s]?-[\s]?[\d]{4})[\s]FR-?S[\s]\/[\s]BRZ([\s]\/[\s]86)?/";
+        // $subiBrzRegex = "/2013\+[\s]?BRZ/";
+        $subiBrzRegex = "/[\d]{4}(\+|[\s]?-[\s]?[\d]{4})[\s]?BRZ/";
 
         while ($row = $select->fetch()) {
             $netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($row['id']);
             if (!$netsuiteProduct) {
                 $progress->advance(1, $row['model']);
+                $failures['notInNS'][] = $row['id'];
                 continue;
             }
 
@@ -453,39 +475,64 @@ class Magento
                 $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
                 }));
-                $hasYmmSuffix = strpos($row['default_title'], '-');//Does the title have a YMM suffixeses?
+                // $hasYmmSuffix = strpos($row['default_title'], '-');//Does the title have a YMM suffixeses?
                 //If there is a ymmSuffix get substring to first instance of '-' else use default_title.
-                $title = $hasYmmSuffix > 0 ? substr($row['default_title'], 0, $hasYmmSuffix) : $row['default_title'];
+                preg_match("/.*(?=[\s]?-[\s][\d]{4})/", $row['default_title'], $titleMatches);
 
                 $product
                     ->set('magento.id', $row['id'])
-                    ->set('title', $title)
+                    ->set('title', !empty($titleMatches) ? $titleMatches[0] : $row['default_title'])
                     ->set('copy', $row['long_description'])
                     ->set('short_description', $row['short_description'])
                     ->set('categories', $newProductCategories);
 
                 $productSalesChannels = []; $suffixTitles = [];
-                $kill = FALSE;
-                /** Note: Based on sales channels IF subispeed and ftspeed is set we want title suffix to be concated as
-                 * `subispeed`, `ft86`, `ftspeed` as per David Kouang.
-                 * ELSE it will  fall as either `subispeed` OR `ft86`, `ftspeed`
-                 * */
 
                 if (!empty($row['subispeed'])) {
                     $productSalesChannels[] = $salesChannels['subispeed'];
                     //So we don't add things we don't need to only add suffix if in sales channel
-                    $suffixTitles[] = $this->stripYmmFromTitle($title, $row['subispeed_title']);//If this channel is active then put in suffixTitles array FIRST!
+                    $suffixTitles['subi'] = $this->stripYmmFromTitle($title, $row['subispeed_title']);//If this channel is active then put in suffixTitles array FIRST!
                 }
 
                 if (!empty($row['ftspeed'])) {
                     $productSalesChannels[] = $salesChannels['ftspeed'];
                     //So we don't add things we don't need to only add suffix if in sales channel
-                    $suffixTitles[] = $this->stripYmmFromTitle($title, $row['ft86_title']);//If this channel is active then put in suffixTitles array SECOND!
-                    $suffixTitles[] = $this->stripYmmFromTitle($title, $row['ftspeed_title']);//If this channel is active then put in suffixTitles array LAST!
+                    $suffixTitles['ft86'] = $this->stripYmmFromTitle($title, $row['ft86_title']);//If this channel is active then put in suffixTitles array SECOND!
+                    $suffixTitles['ftspeed'] = $this->stripYmmFromTitle($title, $row['ftspeed_title']);//If this channel is active then put in suffixTitles array LAST!
                 }
 
                 if (!empty($suffixTitles)) {
-                    $suffixString = implode(', ', array_unique(array_filter($suffixTitles)));//Get valid unique suffixes and convert to csv.
+                    if(count(array_unique(array_filter(array_values($suffixTitles)))) > 1){
+                        //Ftspeed format
+                        preg_match($ftBrzRegex, $suffixTitles['ft86'], $ft86BrzMatches);
+                        preg_match($ftBrzRegex, $suffixTitles['ftspeed'], $ftBrzMatches);
+                        //Subispeed format
+                        preg_match($subiBrzRegex, $suffixTitles['subi'], $subiBrzMatches);
+                        preg_match($subiBrzRegex, $suffixTitles['ft86'], $subiFt86BrzMatches);
+                        preg_match($subiBrzRegex, $suffixTitles['ftspeed'], $subiFtspeedBrzMatches);
+                        //if ft86 format matches subi replace subi and erase from ft86
+                        if(!empty($ft86BrzMatches) && !empty($subiBrzMatches)){
+                            $suffixTitles['subi'] = preg_replace($subiBrzRegex, $ft86BrzMatches[0], $suffixTitles['subi']);
+                            $suffixTitles['ft86'] = preg_replace($ftBrzRegex, "", $suffixTitles['ft86']);
+                        }
+
+                        //if ft86 matches ftspeed 
+                        if(!empty($ft86BrzMatches) && !empty($ftBrzMatches)){
+                            $suffixTitles['ftspeed'] = preg_replace($ftBrzRegex, $ft86BrzMatches[0], $suffixTitles['subi']);
+                            $suffixTitles['ft86'] = preg_replace($ftBrzRegex, "", $suffixTitles['ft86']);
+                        }
+                        //if either of them match subi speed regex then lets remove
+                        if(!empty($subiFt86BrzMatches) || !empty($subiFtspeedBrzMatches)){
+                            //remove from both if it exists in subi
+                            if(!empty($subiBrzMatches)){
+                                $suffixTitles['ftspeed'] = preg_replace($subiBrzRegex, "", $suffixTitles['ftspeed']);
+                            }
+                            
+                            $suffixTitles['ft86'] = preg_replace($subiBrzRegex, "", $suffixTitles['ft86']);
+                        }
+                    }
+                    //glue all sites together by ' / '
+                    $suffixString = implode(' / ', array_unique(array_filter(array_filter($suffixTitles))));//Get valid unique suffixes and convert to csv.
                     $product->set('title_suffix', !empty($suffixString) ? $suffixString : NULL);//if there is a suffix string then set it else leave as null.
                 }
 
@@ -503,6 +550,7 @@ class Magento
                 try{
                     $product->save();
                 }catch(Exception $e){
+                    $failures['exceptions'][$row['model']] = $e->getMessage();
                     if($e->getMessage() !== 'Not a group item'){
                         throw $e;
                     }
@@ -511,6 +559,7 @@ class Magento
 
             $progress->advance(1, $row['model']);
         }
+        $this->CLImate->red(count($failures['exceptions']) . " products failed, " . count($failures['notInNS']) . " products not found in NS.");
     }
 
     public function syncProductImages()
@@ -943,8 +992,10 @@ class Magento
      *So assuming that $title = [PRODUCT_NAME] and $ymm = [PRODUCT_NAME] - [YMM] and there for this function will return [YMM] from the $ymmTitle.*/
     private function stripYmmFromTitle($title, $ymmTitle)
     {
+        preg_match('/-[\s][\d]{4}.*/', $ymmTitle, $titleMatches);
         //strip out the title and any remaining  - separator from start of string.
-        return trim(preg_replace('/^[\s]?-/', '', str_replace($title, "", $ymmTitle)));
+        
+        return trim(preg_replace('/^[\s]?-/', '', !empty($titleMatches) ? $titleMatches[0] : null));
     }
 
 }
