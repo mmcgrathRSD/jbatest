@@ -120,7 +120,7 @@
                      echo 'wide';
                 } 
                  
-                echo ' parent parent-fake parent"><a href="' . urlencode($top->slug) . '" class=""><span>' . $top->title . '</span></a>';
+                echo ' parent parent-fake parent"><a href="/scp/' . urlencode($top->slug) . '" class=""><span>' . $top->title . '</span></a>';
 
                if(!empty($top->details['content'])) {
                   echo '<div class="megamenu-dropdown">' . $top->details['content'] . '</div>';

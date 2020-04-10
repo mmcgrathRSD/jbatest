@@ -1,4 +1,4 @@
-<pre><?php
+<?php
 //Adding item if this view was called from the reviews page, not the product page.
 if(empty($item)) {
 	$item = $product;
@@ -465,39 +465,19 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                   <div class="clear"></div>
                </div>
                <ol class="reviews-list">
-                  <li>
-                     <h3 class="review-title">Subaru OEM replacement part. Looks awesome</h3>
-                     <div class="review-info">
-                        <div class="rating-box">
-                           <div class="rating" style="width:86.666666666667%;"></div>
+                  <?php foreach($reviews as $review) : ?>
+                     <li>
+                        <h3 class="review-title"><?php echo $review['title']; ?></h3>
+                        <div class="review-info">
+                           <div class="rating-box">
+                              <div class="rating" style="width:<?php echo $review->rating * 20; ?>%;"></div>
+                           </div>
+                           By <b><?php echo !empty($review->user_name) ? $review->user_name : 'Anonymous'; ?></b>	            <span class="separator"></span>
+                           <b><?php echo \DateTime::createFromFormat('Y-m-d H:i:s', $review->get('metadata.created.local'))->format('F j, Y'); ?></b>
                         </div>
-                        By <b>Blue STI</b>	            <span class="separator"></span>
-                        <b>November 16, 2018</b>
-                     </div>
-                     <p>Really makes the interior look better and a more black look. They're great just expensive </p>
-                  </li>
-                  <li>
-                     <h3 class="review-title">Looks great</h3>
-                     <div class="review-info">
-                        <div class="rating-box">
-                           <div class="rating" style="width:93.333333333333%;"></div>
-                        </div>
-                        By <b>Jordan</b>	            <span class="separator"></span>
-                        <b>December 29, 2017</b>
-                     </div>
-                     <p>Pretty simple install, the red pieces are a little difficult to remove from the black rings but the edge of the rings on that side are not visible when installed. The red ring in the pictures shown are not part of this product. Those are a separate part. But overall is nice look over the chrome and they seem to be genuine subaru parts from the boxes they came in. </p>
-                  </li>
-                  <li>
-                     <h3 class="review-title">Nice touch</h3>
-                     <div class="review-info">
-                        <div class="rating-box">
-                           <div class="rating" style="width:100%;"></div>
-                        </div>
-                        By <b>David</b>	            <span class="separator"></span>
-                        <b>December 28, 2017</b>
-                     </div>
-                     <p>I did not like the sliver accents in the interior, the flat black looks great. You will have to remove the red rings which was easy just need to pry the tab on the inside. </p>
-                  </li>
+                        <p><?php echo $review->copy; ?></p>
+                     </li>
+                  <?php endforeach; ?>
                </ol>
             </div>
             <div class="add-review">
