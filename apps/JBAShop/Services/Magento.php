@@ -764,6 +764,7 @@ class Magento
                         ->set('copy', $rating['detail'])
                         ->set('title', $rating['title'])
                         ->set('product_title', $mongoProduct['title'])
+                        ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($rating['created_at']))
                         ->set('product_slug', $mongoProduct['slug'])
                         ->set('username', $user['username'])
                         ->set('role', 'user')
