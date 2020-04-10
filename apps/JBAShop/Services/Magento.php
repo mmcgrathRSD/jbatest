@@ -653,9 +653,6 @@ class Magento
 
     public function syncProductRatings()
     {
-        //Delete all previous usercontent ratings before running since there isnt that many
-        //\Shop\Models\UserContent::collection()->deleteMany(['type' => 'review']);
-
         //Store the sales channels for assignment when we write the review to mongo
         $salesChannels = [
             'ftspeed' => [
@@ -879,20 +876,24 @@ class Magento
                 'price_level' => 'Retail-JBA'
             ]);
         }
-        
-        $sql = 
+
+        $sql =
             "SELECT
                 CONCAT('https://www.subispeed.com/media/catalog/product/customerimg', file) AS image_url,
                 product_id,
                 customer_id,
-                guest_email,
+                IF(guest_email = 'chrisngrod@gmail.com' OR guest_email = 'chris@jbautosports.com', 'guest@jbautosports.com', guest_email) AS guest_email,
                 title,
                 `status`,
                 IF(store_id = 1, 'subispeed', 'ftspeed') AS store,
                 created_at
             FROM amasty_amcustomerimg_image
             WHERE store_id IN (1, 4, 5)
-                AND `status` != 'declined'";
+            AND `status` != 'declined'
+            AND `file` NOT IN (
+                SELECT `value`
+                FROM catalog_product_entity_media_gallery
+            )";    
 
         $select = $this->db->prepare($sql);
         $select->execute();
