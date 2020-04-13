@@ -7,7 +7,7 @@
 
 	  e.preventDefault();
 	  
-    cloudinary.openUploadWidget({ cloud_name: 'rallysportdirect', upload_preset: 'mdfo7dix'}, 
+    cloudinary.openUploadWidget({ cloud_name: 'rallysportdirect', upload_preset: <?php echo \Base::instance()->get('cloudinary.preset_1');?>}, 
       function(error, result) { console.log(error, result) });
 
   }, false);
