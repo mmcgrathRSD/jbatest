@@ -130,7 +130,7 @@ class GoogleProductsFeed
 				    'g:gtin'                    => $gtin,
 					'g:mpn'                     => $mpn, //TODO: Get with David to see why they don't send this info
 					'g:price'                   => $price,
-					'g:image_link'              => $product->productFeedsImage(),
+					'g:image_link'              => $product->productFeedsImage(!empty($product->get('google_image')) ? 'google_image' : 'featured_image.slug'),
 					'g:manufacturer'            => $product->get('manufacturer.title'),//See line 136
 					'g:brand'                   => $product->get('manufacturer.title'),
 					'g:condition'               => 'new',
