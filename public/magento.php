@@ -40,7 +40,7 @@ $app->route('GET /sync-product-info', function() {
 
 $app->route('GET /sync-product-images', function() {
 	$input = $CLImate->confirm('Have you cleared the product_images folder in Cloudinary?');
-	if ($input->confirmed) {
+	if ($input->confirmed()) {
 		(new JBAShop\Services\Magento)->syncProductImages();
 	} else {
 		$CLImate->error('Well, what are you waiting for?!');
@@ -49,7 +49,7 @@ $app->route('GET /sync-product-images', function() {
 
 $app->route('GET /sync-category-images', function() {
 	$input = $CLImate->confirm('Have you cleared the category_images folder in Cloudinary?');
-	if ($input->confirmed) {
+	if ($input->confirmed()) {
 		(new JBAShop\Services\Magento)->syncCategoryImages();
 	} else {
 		$CLImate->error('Well, what are you waiting for?!');
@@ -58,13 +58,30 @@ $app->route('GET /sync-category-images', function() {
 
 $app->route('GET /sync-usercontent-images', function() use ($CLImate) {
 	$input = $CLImate->confirm('Have you cleared the user_content folder in Cloudinary?');
-	if ($input->confirmed) {
+	if ($input->confirmed()) {
 		(new JBAShop\Services\Magento)->syncUserContentImages();
 	} else {
 		$CLImate->error('Well, what are you waiting for?!');
 	}
 });
 
+$app->route('GET /move-product-description-images', function() use ($CLImate) {
+	$input = $CLImate->confirm('Have you cleared the content folder in Cloudinary?');
+	if ($input->confirmed()) {
+		(new JBAShop\Services\Magento)->moveProductDescriptionImages();
+	} else {
+		$CLImate->error('Well, what are you waiting for?!');
+	}
+});
+
+$app->route('GET /move-category-description-images', function() use ($CLImate) {
+	$input = $CLImate->confirm('Have you cleared the content folder in Cloudinary?');
+	if ($input->confirmed()) {
+		(new JBAShop\Services\Magento)->moveCategoryDescriptionImages();
+	} else {
+		$CLImate->error('Well, what are you waiting for?!');
+	}
+});
 
 $app->route('GET /sync-ymms', function() {
 	(new JBAShop\Services\Magento)->syncYmmsFromRally();
