@@ -13,9 +13,7 @@
         { "type": "vcs", "url": "git@github.com:premierperformance/Redirect.git" },
         { "type": "vcs", "url": "git@github.com:premierperformance/Search.git" },
         { "type": "vcs", "url": "git@github.com:premierperformance/Users.git" },
-        { "type": "vcs", "url": "git@github.com:premierperformance/DealerPortal.git" },
-        { "type": "vcs", "url": "git@github.com:premierperformance/Netsuite.git" },
-        { "type": "vcs", "url": "git@github.com:premierperformance/DealerPortalTheme.git" }
+        { "type": "vcs", "url": "git@github.com:premierperformance/Netsuite.git" }
     ],
     "require-dev": {
         "phpunit/phpunit": "5.5.*",
@@ -48,8 +46,6 @@
         "premierperformance/toolbox": "dev-jba2020",
         "premierperformance/users": "dev-jba2020",
         "premierperformance/netsuite": "dev-jba2020",
-        "premierperformance/dealerportal": "dev-master",
-        "premierperformance/dealerportaltheme": "dev-master",
         "snowplow/referer-parser": "0.1.0",
         "tedivm/jshrink": "~1.0",
         "theiconic/php-ga-measurement-protocol": "^2.0",
