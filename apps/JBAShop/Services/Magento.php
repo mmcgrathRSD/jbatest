@@ -788,7 +788,7 @@ class Magento
                         $userContent->save();
                         $data[] = ['New Review Created For Product', $rating['entity_pk_value'], "✅"];
                     }catch(Exception $e){
-                        $this->CLImate->red('MONGO PRODUCT: ' . $mongoProduct['_id'] . $e->getMessage());
+                        $this->CLImate->red($e->getMessage());
                     }
                     
                 }else{
