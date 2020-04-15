@@ -1106,4 +1106,144 @@ class Magento
             $this->CLImate->table($data);
         }
     }
+
+    public function moveProductDescriptionImages()
+    {
+        $productDocs = \Shop\Models\Products::collection()->find([
+            'copy' => new \MongoDB\BSON\Regex('<img\s', 'i')
+        ], [
+            'projection' => [
+                'copy' => true,
+                'tracking.model_number' => true
+            ]
+        ]);
+
+        foreach ($productDocs as $doc) {
+            $description = $doc['copy'];
+            $this->CLImate->blue('Checking ' . $doc['tracking']['model_number'] . ' for images we can move to Cloudinary...');
+
+            $xpath = new \DOMXPath(@\DOMDocument::loadHTML($description));
+            $images = $xpath->evaluate("//img/@src");
+
+            $changed = false;
+            foreach ($images as $image) {
+                $originalImg = $image->value;
+                $img = $image->value;
+
+                if (strpos($img, '/') === 0) {
+                    $img = 'https://subispeed.com' . $img;
+                } else if (strpos($img, 'images/') === 0) {
+                    $img = 'https://subispeed.com/' . $img;
+                }
+
+                if (!filter_var($img, FILTER_VALIDATE_URL)) {
+                    continue;
+                }
+
+                $this->CLImate->yellow('Found image: ' . $img);
+
+                try {
+                    $upload = \Cloudinary\Uploader::upload($img, [
+                        'type' => 'upload',
+                        'folder' => 'content'
+                    ]);
+
+                    // TODO: use CNAME when Justin sets these up
+                    $newImg = \cloudinary_url($upload['public_id'], [
+                        'fetch_format' => 'auto',
+                        'sign_url' => true,
+	                    'secure' => true
+                    ]);
+
+                    $this->CLImate->yellow('New image uploaded: ' . $newImg);
+                } catch (\Exception $e) {
+                    continue;
+                }
+
+                $description = str_replace($originalImg, $newImg, $description);
+                $changed = true;
+            }
+
+            if ($changed) {
+                \Shop\Models\Products::collection()->updateOne(
+                    ['_id' => $doc['_id']],
+                    ['$set' => [
+                        'copy' => $description
+                    ]]
+                );
+
+                $this->CLImate->green('Product updated!');
+            }
+        }
+    }
+
+    public function moveCategoryDescriptionImages()
+    {
+        $categoryDocs = \Shop\Models\Categories::collection()->find([
+            'description' => new \MongoDB\BSON\Regex('<img\s', 'i')
+        ], [
+            'projection' => [
+                'description' => true,
+                'hierarchical_categories' => true
+            ]
+        ]);
+
+        foreach ($categoryDocs as $doc) {
+            $description = $doc['description'];
+            $this->CLImate->blue('Checking ' . $doc['hierarchical_categories'] . ' for images we can move to Cloudinary...');
+
+            $xpath = new \DOMXPath(@\DOMDocument::loadHTML($description));
+            $images = $xpath->evaluate("//img/@src");
+
+            $changed = false;
+            foreach ($images as $image) {
+                $originalImg = $image->value;
+                $img = $image->value;
+
+                if (strpos($img, '/') === 0) {
+                    $img = 'https://subispeed.com' . $img;
+                } else if (strpos($img, 'images/') === 0) {
+                    $img = 'https://subispeed.com/' . $img;
+                }
+
+                if (!filter_var($img, FILTER_VALIDATE_URL)) {
+                    continue;
+                }
+
+                $this->CLImate->yellow('Found image: ' . $img);
+
+                try {
+                    $upload = \Cloudinary\Uploader::upload($img, [
+                        'type' => 'upload',
+                        'folder' => 'content'
+                    ]);
+
+                    // TODO: use CNAME when Justin sets these up
+                    $newImg = \cloudinary_url($upload['public_id'], [
+                        'fetch_format' => 'auto',
+                        'sign_url' => true,
+	                    'secure' => true
+                    ]);
+
+                    $this->CLImate->yellow('New image uploaded: ' . $newImg);
+                } catch (\Exception $e) {
+                    continue;
+                }
+
+                $description = str_replace($originalImg, $newImg, $description);
+                $changed = true;
+            }
+
+            if ($changed) {
+                \Shop\Models\Categories::collection()->updateOne(
+                    ['_id' => $doc['_id']],
+                    ['$set' => [
+                        'description' => $description
+                    ]]
+                );
+
+                $this->CLImate->green('Category updated!');
+            }
+        }
+    }
 }
