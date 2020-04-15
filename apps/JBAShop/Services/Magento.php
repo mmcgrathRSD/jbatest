@@ -1049,4 +1049,88 @@ class Magento
             $this->CLImate->table($data);
         }
     }
+
+    public function syncMatrixItems(){
+        $sql = "
+        SELECT cpe.entity_id as 'parent_id',
+        cpe.type_id,
+        cpe.has_options,
+        cpe.required_options,
+        relation.child_id,
+        specs.attribute_id,
+        specs.value,
+        labels.value as 'title',
+        spec_label.spec_value as 'value',
+        sorting.sort_order as 'ordering',
+        'pending' as 'variant enabled/ disabled'
+        from catalog_product_entity as cpe
+        left join catalog_product_relation relation on cpe.entity_id = relation.parent_id
+        left join(
+            SELECT * from (
+                SELECT
+                ce.entity_id,
+                ce.sku,
+                ea.attribute_id,
+                ea.attribute_code,
+            CASE
+                ea.backend_type
+                WHEN 'varchar' THEN ce_varchar.value
+                WHEN 'int' THEN ce_int.value
+                WHEN 'text' THEN ce_text.value
+                WHEN 'decimal' THEN ce_decimal.value
+                WHEN 'datetime' THEN ce_datetime.value
+                ELSE ea.backend_type
+            END AS value
+            FROM (SELECT
+                    sku,
+                    entity_type_id,
+                    entity_id
+                FROM
+                    catalog_product_entity
+                WHERE
+                    type_id = 'simple') AS ce
+            LEFT JOIN eav_attribute AS ea ON
+                ce.entity_type_id = ea.entity_type_id
+            LEFT JOIN catalog_product_entity_varchar AS ce_varchar ON
+                ce.entity_id = ce_varchar.entity_id
+                AND ea.attribute_id = ce_varchar.attribute_id
+                AND ea.backend_type = 'varchar'
+            LEFT JOIN catalog_product_entity_int AS ce_int ON
+                ce.entity_id = ce_int.entity_id
+                AND ea.attribute_id = ce_int.attribute_id
+                AND ea.backend_type = 'int'
+            LEFT JOIN catalog_product_entity_text AS ce_text ON
+                ce.entity_id = ce_text.entity_id
+                AND ea.attribute_id = ce_text .attribute_id
+                AND ea.backend_type = 'text'
+            LEFT JOIN catalog_product_entity_decimal AS ce_decimal ON
+                ce.entity_id = ce_decimal.entity_id
+                AND ea.attribute_id = ce_decimal.attribute_id
+                AND ea.backend_type = 'decimal'
+            LEFT JOIN catalog_product_entity_datetime AS ce_datetime ON
+                ce.entity_id = ce_datetime.entity_id
+                AND ea.attribute_id = ce_datetime.attribute_id
+                AND ea.backend_type = 'datetime'
+            WHERE ea.attribute_id in (239, 234, 233, 232, 231, 230, 229, 226, 225, 223, 222, 219, 218, 214, 212, 211, 210, 209, 208, 190, 183, 179, 92,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177)) data
+            WHERE value <> ''
+            ) specs on specs.entity_id = relation.child_id
+            join (select super.product_id,super.attribute_id,label.value from catalog_product_super_attribute as super 
+            left join catalog_product_super_attribute_label label ON super.product_super_attribute_id = label.product_super_attribute_id
+            where label.store_id = 0) labels on labels.product_id = relation.parent_id and specs.attribute_id = labels.attribute_id
+            left join (select option_id,value as 'spec_value' from eav_attribute_option_value as eaov where store_id = 0) spec_label on spec_label.option_id = specs.value
+            left join (select option_id ,@rownum := @rownum + 1 AS sort_order from
+            (
+            SELECT eao.option_id,value from eav_attribute_option eao
+            left join eav_attribute_option_value label on label.option_id = eao.option_id
+            WHERE store_id = 0
+            order by eao.attribute_id ,eao.sort_order,label.value asc) data ,  (SELECT @rownum := 0) row ) sorting on sorting.option_id = specs.value
+            WHERE cpe.type_id = 'configurable'
+        ";
+
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        $temp = $select->fetchAll(\PDO::FETCH_ASSOC);
+        die;
+    }
 }

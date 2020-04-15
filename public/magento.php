@@ -78,6 +78,12 @@ $app->route('GET /sync-product-ratings', function($f3){
 	(new JBAShop\Services\Magento)->syncProductRatings();
 });
 
+/**
+ * This method builds and syncs matrix items
+ */
+$app->route('GET /sync-matrix-items', function($f3){
+	(new JBAShop\Services\Magento)->syncMatrixItems();
+});
 /**************************/
 
 
