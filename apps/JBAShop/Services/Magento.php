@@ -975,8 +975,10 @@ class Magento
                 def.attribute_id = 102 
             AND def.store_id = 0 
             ) DATA ON DATA.id = dgroups.magento_id
-            WHERE magento_id IN(5459, 6101, 6341)
+            WHERE magento_id IN(5459)
         ";
+
+        //TESTING: WHERE magento_id IN(5459, 6101, 6341)
 
         //This query returns 1 record for each dynamic group member. the PDO::FETCH_GROUP is a helper to group all magento for a given dynamic group together
         //For example, $productGroup will contain all recrods for a given dynamic group
@@ -1010,6 +1012,7 @@ class Magento
                     $options[$productOption['option_id']]['values'][] = [
                         'id' => new \MongoDB\BSON\ObjectID(),
                         'model_number' => (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOption['value_model_number']))->itemId,
+                        'magento_id' => $productOption['value_model_number'],
                         'option_id' => $productOption['option_id'],
                         'title' => $productOption['option_title']
                     ];
@@ -1028,9 +1031,9 @@ class Magento
 
                 //The next two lines check to see if the product already exists based on magento ID
                 //So we dont create the same dynamic kit twice. Instead, update it if it exists
-                $newProduct = (new \Shop\Models\ProductTest)->setCondition('magento.id', $magentoID)->getItem();
+                $newProduct = (new \Shop\Models\Products)->setCondition('magento.id', $magentoID)->getItem();
                 if(empty($newProduct)){
-                    $newProduct = new \Shop\Models\ProductTest();
+                    $newProduct = new \Shop\Models\Products();
                 }
 
                 //Build/Update the dyanmic kit and save it to mongo
@@ -1041,8 +1044,7 @@ class Magento
                     ])
                     ->set('magento_test', true)
                     ->set('magento', ['id' => $magentoID])
-                    ->set('slug', 'some-slug')
-                    ->set('title', 'some-title')
+                    ->set('title', 'dont forget to update me!')
                     ->set('kit_options', array_values($options))
                     ->set('publication.sales_channels', array_unique($productSalesChannels))
                     //Kit level discount
