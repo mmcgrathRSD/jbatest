@@ -443,11 +443,20 @@ class Magento
 
             // TODO: query all categories once and get their full arrays for setting in products, key by magento id
             // TODO: discontinued?
-            // TODO: redirect
             // TODO: brands
 
             if (!empty($product->id)) {
                 $api = new \Cloudinary\Api();
+                $productRedirect = (new \Shop\Models\ProductRedirects);
+                
+                try {
+                    (new \Redirect\Admin\Models\Routes)->bind([
+                        'product_id' => $product->id,
+                        'title' => "Magento redirect for product " . (string)$product->id,
+                        'old_slug'   => $row['default url path'],
+                        'url' => $product->url()
+                    ])->store();
+                } catch (\Exception $e) {}
 
                 if (!empty($row['brand_id'])) {
                     $brand = (new \Shop\Models\Manufacturers)
