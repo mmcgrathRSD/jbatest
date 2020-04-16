@@ -354,59 +354,76 @@ class Magento
         }
 
         $sql = "
+        SELECT
+            def.entity_id AS 'id',
+            youtube.value as 'youtube video',
+            install.value as 'install instructions',
+            meta_title.value as 'meta title',
+            is_carb.value as 'is carb',
+            url_key.value as 'default url key',
+            url_path.value as 'default url path',
+            coupon.value as 'qualifies for coupon',
+            warranty.value as 'warranty',
+            mB.option_id as 'brand_id,mfg_id',
+            mB.value as 'brand/manufacturer',
+            cpe.sku AS 'model',
+            `status`.`value` AS 'enabled',
+            ! ISNULL( subi.`value` ) AS 'subispeed',
+            IF (! ISNULL( ft86.`value` ) OR ! ISNULL( ftspeed.`value` ), 1, 0 ) AS 'ftspeed',
+            default_name.`value` AS 'default_title',
+            subi_name.`value` AS 'subispeed_title',
+            ft86_name.`value` AS 'ft86_title',
+            ftspeed_name.`value` AS 'ftspeed_title',
+            cats.categories,
+            default_desc.`value` AS 'long_description',
+            default_short_desc.`value` AS 'short_description'
+        FROM
+            catalog_product_entity_int def
+            INNER JOIN catalog_product_entity_int AS `status` ON ( def.entity_id = `status`.entity_id AND `status`.store_id = 0 AND `status`.attribute_id = 96 AND `status`.`value` = 1 )
+            LEFT JOIN catalog_product_entity cpe ON def.entity_id = cpe.entity_id
+            LEFT JOIN catalog_product_entity_varchar AS default_name ON ( def.entity_id = default_name.entity_id AND default_name.store_id = 0 AND default_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_text AS default_desc ON ( def.entity_id = default_desc.entity_id AND default_desc.store_id = 0 AND default_desc.attribute_id = 72 )
+            LEFT JOIN catalog_product_entity_text AS default_short_desc ON ( def.entity_id = default_short_desc.entity_id AND default_short_desc.store_id = 0 AND default_short_desc.attribute_id = 73 )
+            LEFT JOIN catalog_product_entity_varchar subi_name ON ( def.entity_id = subi_name.entity_id AND subi_name.store_id = 1 AND subi_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_varchar ft86_name ON ( def.entity_id = ft86_name.entity_id AND ft86_name.store_id = 4 AND ft86_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_varchar ftspeed_name ON ( def.entity_id = ftspeed_name.entity_id AND ftspeed_name.store_id = 5 AND ftspeed_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_int AS subi ON ( def.entity_id = subi.entity_id AND subi.store_id = 1 AND subi.attribute_id = 102 )
+            LEFT JOIN catalog_product_entity_int AS ft86 ON ( def.entity_id = ft86.entity_id AND ft86.store_id = 4 AND ft86.attribute_id = 102 )
+            LEFT JOIN catalog_product_entity_int AS ftspeed ON ( def.entity_id = ftspeed.entity_id AND ftspeed.store_id = 5 AND ftspeed.attribute_id = 102 )
+        
+            LEFT JOIN catalog_product_entity_int AS youtube ON ( def.entity_id = youtube.entity_id AND youtube.store_id = 0 AND youtube.attribute_id = 180)
+            LEFT JOIN catalog_product_entity_text AS install ON ( def.entity_id = install.entity_id AND install.store_id = 0 AND install.attribute_id = 144)
+            LEFT JOIN catalog_product_entity_varchar meta_title ON ( def.entity_id = meta_title.entity_id AND meta_title.store_id = 0 AND meta_title.attribute_id = 82)
+            LEFT JOIN catalog_product_entity_int AS is_carb ON ( def.entity_id = is_carb.entity_id AND is_carb.store_id = 0 AND is_carb.attribute_id = 268)
+            LEFT JOIN catalog_product_entity_varchar AS url_key ON ( def.entity_id = url_key.entity_id AND url_key.store_id = 0 AND url_key.attribute_id = 97)
+            LEFT JOIN catalog_product_entity_varchar AS url_path ON ( def.entity_id = url_path.entity_id AND url_path.store_id = 0 AND url_path.attribute_id = 98)
+            LEFT JOIN catalog_product_entity_int AS coupon ON ( def.entity_id = coupon.entity_id AND coupon.store_id = 0 AND coupon.attribute_id = 237)
+            LEFT JOIN catalog_product_entity_text AS warranty ON ( def.entity_id = warranty.entity_id AND warranty.store_id = 0 AND warranty.attribute_id = 236 )
+            LEFT JOIN (
             SELECT
-                def.entity_id AS 'id',
-                mB.option_id as 'brand_id',
-                cpe.sku AS 'model',
-                `status`.`value` AS 'enabled',
-                !ISNULL(subi.`value`) AS 'subispeed',
-                IF (!ISNULL(ft86.`value`) OR !ISNULL(ftspeed.`value`), 1, 0) AS 'ftspeed',
-                default_name.`value` AS 'default_title',
-                subi_name.`value` AS 'subispeed_title',
-                ft86_name.`value` AS 'ft86_title',
-                ftspeed_name.`value` AS 'ftspeed_title',
-                cats.categories,
-                default_desc.`value` AS 'long_description',
-                default_short_desc.`value` AS 'short_description'
+                cat.product_id,
+                GROUP_CONCAT( cat.category_id ) AS categories,
+                product.sku
             FROM
-                catalog_product_entity_int def
-                INNER JOIN catalog_product_entity_int AS `status` ON ( def.entity_id = `status`.entity_id AND `status`.store_id = 0 AND `status`.attribute_id = 96 AND `status`.`value` = 1 )
-                LEFT JOIN catalog_product_entity cpe ON def.entity_id = cpe.entity_id
-                LEFT JOIN catalog_product_entity_varchar AS default_name ON ( def.entity_id = default_name.entity_id AND default_name.store_id = 0 AND default_name.attribute_id = 71 )
-                LEFT JOIN catalog_product_entity_text AS default_desc ON ( def.entity_id = default_desc.entity_id AND default_desc.store_id = 0 AND default_desc.attribute_id = 72 )
-                LEFT JOIN catalog_product_entity_text AS default_short_desc ON ( def.entity_id = default_short_desc.entity_id AND default_short_desc.store_id = 0 AND default_short_desc.attribute_id = 73 )
-                LEFT JOIN catalog_product_entity_varchar subi_name ON ( def.entity_id = subi_name.entity_id AND subi_name.store_id = 1 AND subi_name.attribute_id = 71 )
-                LEFT JOIN catalog_product_entity_varchar ft86_name ON ( def.entity_id = ft86_name.entity_id AND ft86_name.store_id = 4 AND ft86_name.attribute_id = 71 )
-                LEFT JOIN catalog_product_entity_varchar ftspeed_name ON ( def.entity_id = ftspeed_name.entity_id AND ftspeed_name.store_id = 4 AND ftspeed_name.attribute_id = 71 )
-                LEFT JOIN catalog_product_entity_int AS subi ON ( def.entity_id = subi.entity_id AND subi.store_id = 1 AND subi.attribute_id = 102 )
-                LEFT JOIN catalog_product_entity_int AS ft86 ON ( def.entity_id = ft86.entity_id AND ft86.store_id = 4 AND ft86.attribute_id = 102 )
-                LEFT JOIN catalog_product_entity_int AS ftspeed ON ( def.entity_id = ftspeed.entity_id AND ftspeed.store_id = 5 AND ftspeed.attribute_id = 102 )
-                LEFT JOIN (
-                    SELECT
-                        cat.product_id,
-                        GROUP_CONCAT( cat.category_id ) AS categories,
-                        product.sku 
-                    FROM
-                        catalog_category_product AS cat,
-                        catalog_product_entity AS product 
-                    WHERE
-                        cat.product_id = product.entity_id 
-                    GROUP BY
-                        cat.product_id 
-                ) AS cats ON cats.product_id = def.entity_id
-                LEFT JOIN catalog_product_entity_int AS m
-                    ON m.attribute_id = 81
-                    AND m.entity_type_id = '4'
-                    AND m.STORE_ID = 0
-                    AND def.entity_id = m.entity_id
-                LEFT JOIN eav_attribute_option_value mB
-                    ON mB.option_id = m.value
-                    AND mB.STORE_ID = 0
+                catalog_category_product AS cat,
+                catalog_product_entity AS product
             WHERE
-                def.attribute_id = 102 
-                AND def.store_id = 0
+                cat.product_id = product.entity_id
+            GROUP BY
+                cat.product_id
+            ) AS cats ON cats.product_id = def.entity_id
+            left join
+            catalog_product_entity_int AS m ON m.attribute_id = 81
+                AND m.entity_type_id = '4'
+                AND m.STORE_ID = 0
+                AND def.entity_id = m.entity_id
+                LEFT JOIN
+            eav_attribute_option_value mB ON mB.option_id = m.value
+                AND mB.STORE_ID = 0
+        WHERE
+            def.attribute_id = 102
+            AND def.store_id = 0
             ORDER BY cpe.sku ASC
-            
         ";
 
         $select = $this->db->prepare($sql);
@@ -430,6 +447,8 @@ class Magento
             // TODO: brands
 
             if (!empty($product->id)) {
+                $api = new \Cloudinary\Api();
+
                 if (!empty($row['brand_id'])) {
                     $brand = (new \Shop\Models\Manufacturers)
                         ->setCondition('magento.id', $row['brand_id'])
@@ -441,9 +460,9 @@ class Magento
                 }
 
                 $productCategories = array_values(array_intersect_key($categories, array_flip(explode(',', $row['categories']))));
-
                 $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
                 $remove = \Dsc\ArrayHelper::getColumn($productCategories, 'remove');
+                
                 if (count($remove)) {
                     $toRemove = array_merge(...\Dsc\ArrayHelper::getColumn($productCategories, 'remove'));
                 } else {
@@ -454,8 +473,6 @@ class Magento
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
                 }));
 
-
-
                 $product
                     ->set('magento.id', $row['id'])
                     ->set('title', $row['default_title'])
@@ -464,6 +481,7 @@ class Magento
                     ->set('categories', $newProductCategories);
 
                 $productSalesChannels = [];
+
                 if (!empty($row['subispeed'])) {
                     $productSalesChannels[] = $salesChannels['subispeed'];
                 }
@@ -473,6 +491,7 @@ class Magento
                 }
 
                 $product->set('publication.sales_channels', $productSalesChannels);
+
                 if (!empty($row['enabled'])) {
                     $product->set('publication.status', 'published');
                 }
@@ -481,6 +500,44 @@ class Magento
                     $product->set('product_type', 'group');
                 }else{
                     $product->set('product_type', 'standard');
+                }
+
+                $results = $api->resources_by_tag($product->getCouldinaryTag(), ['folder' =>  'product_install_instructions','context' => true, 'max_results' => 100]);
+                //If there is install instructions in the row and cloudinary doesn't have this install instruction.
+                if(!empty($row['install instructions']) && empty($results['resources'])){
+                    //extract href value from tag.
+                    preg_match('/href="(.*?)"/', $row['install instructions'], $instructionMatches);
+                    //if we have a group match parse url
+                    if(!empty($instructionMatches[1])){
+                        //parse hrefness
+                        $instructionUrl = parse_url($instructionMatches[1]);
+                        //start building valid link.
+                        $link = !empty($instructionUrl['scheme']) ? $instructionUrl['scheme'] : 'http://';//set scheme if not found
+                        $link .= !empty($instructionUrl['host']) ? $instructionUrl['host'] : 'www.subispeed.com';//set host if not found
+                        //this shouldn't happen but just in case they are using odd stuff in href="" break out and abort upload
+                        if(empty($instructionUrl['path'])){
+                            continue;
+                        }
+                        //append path to link
+                        $link .= $instructionUrl['path']; 
+                        //attempt to upload pdf from link we just built
+                        try{
+                            //upload to cloudinary
+                            $upload = \Cloudinary\Uploader::upload(trim($link), [
+                                'tags' => $product->get('tracking.model_number_flat'),
+                                'format' => 'pdf',
+                                'folder' => 'product_install_instructions',
+                            ]);
+                            //TODO: change to images.jbautosports.com/ if CNAME is set up.
+                            //set the install_instructions value to the secure url from cloudinary.
+                            $product->set('install_instructions', $upload['secure_url']);//set the path to cloudinary
+                        }catch(\Exception $e){
+                            //do nothing.
+                            // var_dump($e->getMessage());die('Failed to upload to cloudinary.');
+                        }
+                    }
+                }else if(!empty($results['resources'])){
+                    $product->set('install_instructions', $results['resources'][0]['secure_url']);
                 }
 
                 try{
@@ -653,144 +710,54 @@ class Magento
 
     public function syncProductRatings()
     {
-        \Shop\Models\UserContent::collection()->deleteMany(['type' => 'review']);
+        //Store the sales channels for assignment when we write the review to mongo
+        $salesChannels = [
+            'ftspeed' => [
+                'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
+                'title' => 'FTSpeed',
+                'slug' => 'ftspeed'
+            ],
+            'subispeed' => [
+                'id' => new \MongoDB\BSON\ObjectID('5841b1deb38c50ba028b4567'),
+                'title' => 'SubiSpeed',
+                'slug' => 'subispeed'
+            ]
+        ];
 
         //Get all the produt ratings from Magento
         $sql = "
-            SELECT
-                rd.review_id,
-                r.created_at,
-                rd.title,
-                rv_overall.entity_pk_value,
-                rd.detail,
-                rd.customer_id,
-                rd.nickname,
-                rv_overall.`value` as 'overall_satisfaction',
-                rv_ease.`value` as 'ease_of_installation',
-                rv_fit.`value` as 'fit_and_quality',
-                r.status_id,
-                'subispeed' AS channel,
-                default_name.`value` AS 'product_title',
-                url_key.`value` AS 'url_key',
-                url_path.`value` AS 'url_path'
-            FROM
-                review_detail rd
-            LEFT JOIN rating_option_vote rv_overall ON
-                rd.review_id = rv_overall.review_id
-                AND rv_overall.rating_id = 3
-            JOIN review r ON
-                r.review_id = rv_overall.review_id
-                AND r.status_id = 1
-            LEFT JOIN rating_option_vote rv_ease ON
-                rd.review_id = rv_ease.review_id
-                AND rv_ease.rating_id = 4
-            LEFT JOIN rating_option_vote rv_fit ON
-                rd.review_id = rv_fit.review_id
-                AND rv_fit.rating_id = 5
-            LEFT JOIN catalog_product_entity_varchar AS url_key ON
-                ( rv_overall.entity_pk_value = url_key.entity_id
-                AND url_key.store_id = 0
-                AND url_key.attribute_id = 97 )
-            LEFT JOIN catalog_product_entity_varchar AS url_path ON
-                ( rv_overall.entity_pk_value = url_path.entity_id
-                AND url_path.store_id = 0
-                AND url_path.attribute_id = 98 )
-            LEFT JOIN catalog_product_entity_varchar AS default_name ON
-                ( rv_overall.entity_pk_value = default_name.entity_id
-                AND default_name.store_id = 0
-                AND default_name.attribute_id = 71 )
-            WHERE
-                rd.store_id = 1
-            UNION
-            SELECT
-                rd.review_id,
-                r.created_at,
-                rd.title,
-                rv_overall.entity_pk_value,
-                rd.detail,
-                rd.customer_id,
-                rd.nickname,
-                rv_overall.`value` as 'overall_satisfaction',
-                rv_ease.`value` as 'ease_of_installation',
-                rv_fit.`value` as 'fit_and_quality',
-                r.status_id,
-                'ft86' AS channel,
-                default_name.`value` AS 'product_title',
-                url_key.`value` AS 'url_key',
-                url_path.`value` AS 'url_path'
-            FROM
-                review_detail rd
-            LEFT JOIN rating_option_vote rv_overall ON
-                rd.review_id = rv_overall.review_id
-                AND rv_overall.rating_id = 3
-            JOIN review r ON
-                r.review_id = rv_overall.review_id
-                AND r.status_id = 1
-            LEFT JOIN rating_option_vote rv_ease ON
-                rd.review_id = rv_ease.review_id
-                AND rv_ease.rating_id = 4
-            LEFT JOIN rating_option_vote rv_fit ON
-                rd.review_id = rv_fit.review_id
-                AND rv_fit.rating_id = 5
-            LEFT JOIN catalog_product_entity_varchar AS url_key ON
-                ( rv_overall.entity_pk_value = url_key.entity_id
-                AND url_key.store_id = 0
-                AND url_key.attribute_id = 97 )
-            LEFT JOIN catalog_product_entity_varchar AS url_path ON
-                ( rv_overall.entity_pk_value = url_path.entity_id
-                AND url_path.store_id = 0
-                AND url_path.attribute_id = 98 )
-            LEFT JOIN catalog_product_entity_varchar AS default_name ON
-                ( rv_overall.entity_pk_value = default_name.entity_id
-                AND default_name.store_id = 0
-                AND default_name.attribute_id = 71 )
-            WHERE
-                rd.store_id = 4
-            UNION
-            SELECT
-                rd.review_id,
-                r.created_at,
-                rd.title,
-                rv_overall.entity_pk_value,
-                rd.detail,
-                rd.customer_id,
-                rd.nickname,
-                rv_overall.`value` as 'overall_satisfaction',
-                rv_ease.`value` as 'ease_of_installation',
-                rv_fit.`value` as 'fit_and_quality',
-                r.status_id,
-                'ftspeed' AS channel,
-                default_name.`value` AS 'product_title',
-                url_key.`value` AS 'url_key',
-                url_path.`value` AS 'url_path'
-            FROM
-                review_detail rd
-            LEFT JOIN rating_option_vote rv_overall ON
-                rd.review_id = rv_overall.review_id
-                AND rv_overall.rating_id = 3
-            JOIN review r ON
-                r.review_id = rv_overall.review_id
-                AND r.status_id = 1
-            LEFT JOIN rating_option_vote rv_ease ON
-                rd.review_id = rv_ease.review_id
-                AND rv_ease.rating_id = 4
-            LEFT JOIN rating_option_vote rv_fit ON
-                rd.review_id = rv_fit.review_id
-                AND rv_fit.rating_id = 5
-            LEFT JOIN catalog_product_entity_varchar AS url_key ON
-                ( rv_overall.entity_pk_value = url_key.entity_id
-                AND url_key.store_id = 0
-                AND url_key.attribute_id = 97 )
-            LEFT JOIN catalog_product_entity_varchar AS url_path ON
-                ( rv_overall.entity_pk_value = url_path.entity_id
-                AND url_path.store_id = 0
-                AND url_path.attribute_id = 98 )
-            LEFT JOIN catalog_product_entity_varchar AS default_name ON
-                ( rv_overall.entity_pk_value = default_name.entity_id
-                AND default_name.store_id = 0
-                AND default_name.attribute_id = 71 )
-            WHERE
-                rd.store_id = 5
+        SELECT
+            rd.review_id,
+            r.created_at,
+            rd.title,
+            rv_overall.entity_pk_value,
+            rd.detail,
+            rd.customer_id,
+            rd.nickname,
+            rv_overall.`value` AS 'overall_satisfaction',
+            rv_ease.`value` AS 'ease_of_installation',
+            rv_fit.`value` AS 'fit_and_quality',
+            r.status_id,
+            IF(rd.store_id = 1, 'subispeed', 'ftspeed') AS channel,
+            default_name.`value` AS 'product_title',
+            url_key.`value` AS 'url_key',
+            url_path.`value` AS 'url_path'
+        FROM review_detail rd
+        LEFT JOIN rating_option_vote rv_overall
+        ON rd.review_id = rv_overall.review_id
+        AND rv_overall.rating_id = 3
+        JOIN review r
+        ON r.review_id = rv_overall.review_id
+        AND r.status_id = 1
+        LEFT JOIN rating_option_vote rv_ease
+        ON rd.review_id = rv_ease.review_id
+        AND rv_ease.rating_id = 4
+        LEFT JOIN rating_option_vote rv_fit
+        ON rd.review_id = rv_fit.review_id
+        AND rv_fit.rating_id = 5
+        LEFT JOIN catalog_product_entity_varchar AS url_key ON ( rv_overall.entity_pk_value = url_key.entity_id AND url_key.store_id = 0 AND url_key.attribute_id = 97 )
+        LEFT JOIN catalog_product_entity_varchar AS url_path ON ( rv_overall.entity_pk_value = url_path.entity_id AND url_path.store_id = 0 AND url_path.attribute_id = 98 )
+        LEFT JOIN catalog_product_entity_varchar AS default_name ON ( rv_overall.entity_pk_value = default_name.entity_id AND default_name.store_id = 0 AND default_name.attribute_id = 71 )
         ";
 
         $select = $this->db->prepare($sql);
@@ -832,7 +799,13 @@ class Magento
                     //For CLI Output
                     $data[] = ['User Was Found!', $user['username'], "✅"];
 
-                    $userContent = new \Shop\Models\UserContent();
+                    //Check to see if the rating already exists, so we can just update it if does
+                    $userContent = (new \Shop\Models\UserContent)->setCondition('magento.id', $rating['review_id'])->getItem();
+                    //Rating does not exist yet, create a new UserContent instance 
+                    if(empty($userContent)){
+                        $userContent = new \Shop\Models\UserContent();
+                    }
+
                     //Set all the required properties for the rating. Useres both $mongoProduct, $user and $rating data
                     $userContent
                         ->set('product_id', $mongoProduct['_id'])
@@ -840,9 +813,12 @@ class Magento
                         ->set('type', 'review')
                         ->set('user_name', $rating['nickname'])
                         ->set('publication.status', 'published')
+                        ->set('magento.id', $rating['review_id'])
                         ->set('part_number', $mongoProduct['tracking']['model_number'])
                         ->set('copy', $rating['detail'])
+                        ->set('title', $rating['title'])
                         ->set('product_title', $mongoProduct['title'])
+                        ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($rating['created_at']))
                         ->set('product_slug', $mongoProduct['slug'])
                         ->set('username', $user['username'])
                         ->set('role', 'user')
@@ -851,11 +827,23 @@ class Magento
                             'ease_of_installation' => $rating['ease_of_installation'],
                             'fit_and_quality' => $rating['fit_and_quality'],
                         ]);
+
+                        //Assign the sales channel to the rating
+                        $ratingSalesChannels = [];
+                        if ($rating['channel'] === 'subispeed') {
+                            $ratingSalesChannels[] = $salesChannels['subispeed'];
+                        }
+                        if ($rating['channel'] === 'ftspeed') {
+                            $ratingSalesChannels[] = $salesChannels['ftspeed'];
+                        }
+                        if(!empty($ratingSalesChannels)){
+                            $userContent->set('publication.sales_channels', $ratingSalesChannels);
+                        }
                     
                     try{
                         //Save the new review
                         $userContent->save();
-                        $data[] = ['New Review Created For Product', $mongoProduct['title'], "✅"];
+                        $data[] = ['New Review Created For Product', $rating['entity_pk_value'], "✅"];
                     }catch(Exception $e){
                         $this->CLImate->red($e->getMessage());
                     }
@@ -1047,6 +1035,146 @@ class Magento
             }
 
             $this->CLImate->table($data);
+        }
+    }
+
+    public function moveProductDescriptionImages()
+    {
+        $productDocs = \Shop\Models\Products::collection()->find([
+            'copy' => new \MongoDB\BSON\Regex('<img\s', 'i')
+        ], [
+            'projection' => [
+                'copy' => true,
+                'tracking.model_number' => true
+            ]
+        ]);
+
+        foreach ($productDocs as $doc) {
+            $description = $doc['copy'];
+            $this->CLImate->blue('Checking ' . $doc['tracking']['model_number'] . ' for images we can move to Cloudinary...');
+
+            $xpath = new \DOMXPath(@\DOMDocument::loadHTML($description));
+            $images = $xpath->evaluate("//img/@src");
+
+            $changed = false;
+            foreach ($images as $image) {
+                $originalImg = $image->value;
+                $img = $image->value;
+
+                if (strpos($img, '/') === 0) {
+                    $img = 'https://subispeed.com' . $img;
+                } else if (strpos($img, 'images/') === 0) {
+                    $img = 'https://subispeed.com/' . $img;
+                }
+
+                if (!filter_var($img, FILTER_VALIDATE_URL)) {
+                    continue;
+                }
+
+                $this->CLImate->yellow('Found image: ' . $img);
+
+                try {
+                    $upload = \Cloudinary\Uploader::upload($img, [
+                        'type' => 'upload',
+                        'folder' => 'content'
+                    ]);
+
+                    // TODO: use CNAME when Justin sets these up
+                    $newImg = \cloudinary_url($upload['public_id'], [
+                        'fetch_format' => 'auto',
+                        'sign_url' => true,
+	                    'secure' => true
+                    ]);
+
+                    $this->CLImate->yellow('New image uploaded: ' . $newImg);
+                } catch (\Exception $e) {
+                    continue;
+                }
+
+                $description = str_replace($originalImg, $newImg, $description);
+                $changed = true;
+            }
+
+            if ($changed) {
+                \Shop\Models\Products::collection()->updateOne(
+                    ['_id' => $doc['_id']],
+                    ['$set' => [
+                        'copy' => $description
+                    ]]
+                );
+
+                $this->CLImate->green('Product updated!');
+            }
+        }
+    }
+
+    public function moveCategoryDescriptionImages()
+    {
+        $categoryDocs = \Shop\Models\Categories::collection()->find([
+            'description' => new \MongoDB\BSON\Regex('<img\s', 'i')
+        ], [
+            'projection' => [
+                'description' => true,
+                'hierarchical_categories' => true
+            ]
+        ]);
+
+        foreach ($categoryDocs as $doc) {
+            $description = $doc['description'];
+            $this->CLImate->blue('Checking ' . $doc['hierarchical_categories'] . ' for images we can move to Cloudinary...');
+
+            $xpath = new \DOMXPath(@\DOMDocument::loadHTML($description));
+            $images = $xpath->evaluate("//img/@src");
+
+            $changed = false;
+            foreach ($images as $image) {
+                $originalImg = $image->value;
+                $img = $image->value;
+
+                if (strpos($img, '/') === 0) {
+                    $img = 'https://subispeed.com' . $img;
+                } else if (strpos($img, 'images/') === 0) {
+                    $img = 'https://subispeed.com/' . $img;
+                }
+
+                if (!filter_var($img, FILTER_VALIDATE_URL)) {
+                    continue;
+                }
+
+                $this->CLImate->yellow('Found image: ' . $img);
+
+                try {
+                    $upload = \Cloudinary\Uploader::upload($img, [
+                        'type' => 'upload',
+                        'folder' => 'content'
+                    ]);
+
+                    // TODO: use CNAME when Justin sets these up
+                    $newImg = \cloudinary_url($upload['public_id'], [
+                        'fetch_format' => 'auto',
+                        'sign_url' => true,
+	                    'secure' => true
+                    ]);
+
+                    $this->CLImate->yellow('New image uploaded: ' . $newImg);
+                } catch (\Exception $e) {
+                    continue;
+                }
+
+                $description = str_replace($originalImg, $newImg, $description);
+                $changed = true;
+            }
+
+            if ($changed) {
+                \Shop\Models\Categories::collection()->updateOne(
+                    ['_id' => $doc['_id']],
+                    ['$set' => [
+                        'description' => $description
+                    ]]
+                );
+
+                $this->CLImate->green('Category updated!');
+            }
         }
     }
 }
