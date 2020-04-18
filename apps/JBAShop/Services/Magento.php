@@ -357,6 +357,7 @@ class Magento
             SELECT
                 def.entity_id AS 'id',
                 mB.option_id as 'brand_id',
+                cpe.type_id AS 'product_type',
                 cpe.sku AS 'model',
                 `status`.`value` AS 'enabled',
                 !ISNULL(subi.`value`) AS 'subispeed',
@@ -405,6 +406,7 @@ class Magento
             WHERE
                 def.attribute_id = 102 
                 AND def.store_id = 0
+                AND def.entity_id = 23646
             ORDER BY cpe.sku ASC
             
         ";
@@ -415,82 +417,107 @@ class Magento
 
         while ($row = $select->fetch()) {
             $netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($row['id']);
-            if (!$netsuiteProduct) {
-                $progress->advance(1, $row['model']);
-                continue;
-            }
-
-            $product = (new \Shop\Models\Products)
+            
+            //If we found a netsuite product, lookup product in mongo by the netsuite internal id
+            if($netsuiteProduct){
+                $product = (new \Shop\Models\Products)
                 ->setCondition('netsuite.internalId', (string) $netsuiteProduct->internalId)
                 ->getItem();
+            }
+            
+            //If both the above queries didnt find anything, try to lookup by the magento id
+            if(!$netsuiteProduct){
+                $product = (new \Shop\Models\Products)
+                ->setCondition('magento.id', $row['id'])
+                ->getItem();
+            }
+            
+            //If no NS product, and no product, create a new product
+            if(!$netsuiteProduct && !$product){
+                $product = new \Shop\Models\Products();
+            }
 
             // TODO: query all categories once and get their full arrays for setting in products, key by magento id
             // TODO: discontinued?
             // TODO: redirect
             // TODO: brands
 
-            if (!empty($product->id)) {
-                if (!empty($row['brand_id'])) {
-                    $brand = (new \Shop\Models\Manufacturers)
-                        ->setCondition('magento.id', $row['brand_id'])
-                        ->getItem();
+            
+            if (!empty($row['brand_id'])) {
+                $brand = (new \Shop\Models\Manufacturers)
+                    ->setCondition('magento.id', $row['brand_id'])
+                    ->getItem();
 
-                    if (!empty($brand->slug)) {
-                        $product->set('manufacturer.id', $brand->id);
-                    }
-                }
-
-                $productCategories = array_values(array_intersect_key($categories, array_flip(explode(',', $row['categories']))));
-
-                $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
-                $remove = \Dsc\ArrayHelper::getColumn($productCategories, 'remove');
-                if (count($remove)) {
-                    $toRemove = array_merge(...\Dsc\ArrayHelper::getColumn($productCategories, 'remove'));
-                } else {
-                    $toRemove = [];
-                }
-
-                $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
-                    return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
-                }));
-
-
-
-                $product
-                    ->set('magento.id', $row['id'])
-                    ->set('title', $row['default_title'])
-                    ->set('copy', $row['long_description'])
-                    ->set('short_description', $row['short_description'])
-                    ->set('categories', $newProductCategories);
-
-                $productSalesChannels = [];
-                if (!empty($row['subispeed'])) {
-                    $productSalesChannels[] = $salesChannels['subispeed'];
-                }
-
-                if (!empty($row['ftspeed'])) {
-                    $productSalesChannels[] = $salesChannels['ftspeed'];
-                }
-
-                $product->set('publication.sales_channels', $productSalesChannels);
-                if (!empty($row['enabled'])) {
-                    $product->set('publication.status', 'published');
-                }
-
-                if($netsuiteProduct['itemType'] === 'kit'){
-                    $product->set('product_type', 'group');
-                }else{
-                    $product->set('product_type', 'standard');
-                }
-
-                try{
-                    $product->save();
-                }catch(Exception $e){
-                    if($e->getMessage() !== 'Not a group item'){
-                        throw $e;
-                    }
+                if (!empty($brand->slug)) {
+                    $product->set('manufacturer.id', $brand->id);
                 }
             }
+
+            $productCategories = array_values(array_intersect_key($categories, array_flip(explode(',', $row['categories']))));
+
+            $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
+            $remove = \Dsc\ArrayHelper::getColumn($productCategories, 'remove');
+            if (count($remove)) {
+                $toRemove = array_merge(...\Dsc\ArrayHelper::getColumn($productCategories, 'remove'));
+            } else {
+                $toRemove = [];
+            }
+
+            $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
+                return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
+            }));
+
+
+
+            $product
+                ->set('magento.id', $row['id'])
+                ->set('title', $row['default_title'])
+                ->set('copy', $row['long_description'])
+                ->set('short_description', $row['short_description'])
+                ->set('categories', $newProductCategories);
+            
+            //If we are in a situation where we are creating a new product (eg. matrix parent, set the model number)
+            if(!$product->tracking['model_number']){
+                $product->set('tracking.model_number', $row['model']);
+            }
+ 
+            $productSalesChannels = [];
+            if (!empty($row['subispeed'])) {
+                $productSalesChannels[] = $salesChannels['subispeed'];
+            }
+
+            if (!empty($row['ftspeed'])) {
+                $productSalesChannels[] = $salesChannels['ftspeed'];
+            }
+
+            $product->set('publication.sales_channels', $productSalesChannels);
+            if (!empty($row['enabled'])) {
+                $product->set('publication.status', 'published');
+            }
+            
+            //If the product doesnt exist in NS, and is either a regular item or a grouped item, unpublish it
+            //$row['product_type'] configurable = matrix item parent
+            //$row['product_type'] simple = standard item
+            //$row['product_type'] bundle = dynamic group
+            //$row['product_type'] grouped = kit items
+            if( (!$netsuiteProduct && $row['product_type'] === 'simple') || (!$netsuiteProduct && $row['product_type'] === 'grouped')){
+                $product->set('publication.status', 'unpublished');
+            }
+
+            if($netsuiteProduct['itemType'] === 'kit'){
+                $product->set('product_type', 'group');
+            }else{
+                $product->set('product_type', 'standard');
+            }
+
+            try{
+                $product->save();
+            }catch(Exception $e){
+                if($e->getMessage() !== 'Not a group item'){
+                    throw $e;
+                }
+            }
+            
 
             $progress->advance(1, $row['model']);
         }
@@ -1051,43 +1078,68 @@ class Magento
     }
 
     public function syncMatrixItems(){
+        // TODO: ordering, active true/false
+
+        // TODO: remove joins from query that we don't use
+
         $sql = "
-        SELECT cpe.entity_id as 'parent_id',
-        cpe.type_id,
-        cpe.has_options,
-        cpe.required_options,
-        relation.child_id,
-        specs.attribute_id,
-        specs.value,
-        labels.value as 'title',
-        spec_label.spec_value as 'value',
-        sorting.sort_order as 'ordering',
-        'pending' as 'variant enabled/ disabled'
-        from catalog_product_entity as cpe
-        left join catalog_product_relation relation on cpe.entity_id = relation.parent_id
-        left join(
-            SELECT * from (
-                SELECT
+        select cpe.entity_id as 'parent_id',
+            relation.child_id,
+            labels.value as 'attribute_title',
+            specs.attribute_id as attribute_title_id,
+            specs.value as attribute_option_value_id,
+            labels.position as 'attribute_ordering',
+            spec_label.spec_value as 'attribute_option_value',
+            sorting.sort_order as 'attribute_option_ordering'
+            -- status.value as 'variant_enabled'
+            from catalog_product_entity as cpe
+            left join catalog_product_relation relation on cpe.entity_id = relation.parent_id
+            LEFT JOIN catalog_product_entity_varchar AS default_name ON
+                    ( cpe.entity_id = default_name.entity_id
+                    AND default_name.store_id = 0
+                    AND default_name.attribute_id = 71 )
+                    LEFT JOIN catalog_product_entity_text AS default_desc ON
+                    ( cpe.entity_id = default_desc.entity_id
+                    AND default_desc.store_id = 0
+                    AND default_desc.attribute_id = 72 )
+                LEFT JOIN catalog_product_entity_text AS default_short_desc ON
+                    ( cpe.entity_id = default_short_desc.entity_id
+                    AND default_short_desc.store_id = 0
+                    AND default_short_desc.attribute_id = 73 )
+            left join (SELECT
+                        cat.product_id,
+                        Group_concat(cat.category_id) AS categories,
+                        product.sku
+                    FROM
+                        catalog_category_product AS cat,
+                        catalog_product_entity AS product
+                    WHERE
+                        cat.product_id = product.entity_id
+                    GROUP BY
+                        cat.product_id) cats on cats.product_id = cpe.entity_id 
+            left join(select * from (SELECT
                 ce.entity_id,
                 ce.sku,
                 ea.attribute_id,
                 ea.attribute_code,
-            CASE
-                ea.backend_type
-                WHEN 'varchar' THEN ce_varchar.value
-                WHEN 'int' THEN ce_int.value
-                WHEN 'text' THEN ce_text.value
-                WHEN 'decimal' THEN ce_decimal.value
-                WHEN 'datetime' THEN ce_datetime.value
-                ELSE ea.backend_type
-            END AS value
-            FROM (SELECT
-                    sku,
+                CASE
+                    ea.backend_type
+                    WHEN 'varchar' THEN ce_varchar.value
+                    WHEN 'int' THEN ce_int.value
+                    WHEN 'text' THEN ce_text.value
+                    WHEN 'decimal' THEN ce_decimal.value
+                    WHEN 'datetime' THEN ce_datetime.value
+                    ELSE ea.backend_type
+                END AS value
+            FROM
+                (
+                select
+                    sku ,
                     entity_type_id,
                     entity_id
-                FROM
+                from
                     catalog_product_entity
-                WHERE
+                where
                     type_id = 'simple') AS ce
             LEFT JOIN eav_attribute AS ea ON
                 ce.entity_type_id = ea.entity_type_id
@@ -1111,26 +1163,108 @@ class Magento
                 ce.entity_id = ce_datetime.entity_id
                 AND ea.attribute_id = ce_datetime.attribute_id
                 AND ea.backend_type = 'datetime'
-            WHERE ea.attribute_id in (239, 234, 233, 232, 231, 230, 229, 226, 225, 223, 222, 219, 218, 214, 212, 211, 210, 209, 208, 190, 183, 179, 92,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177)) data
-            WHERE value <> ''
+            Where ea.attribute_id in (92,151,152,153,154,158,155,156,157,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,177,183,189,191,213,218,230,222,234,225,232,238,224,243)) data
+
+            where value <> ''
             ) specs on specs.entity_id = relation.child_id
-            join (select super.product_id,super.attribute_id,label.value from catalog_product_super_attribute as super 
+            join (select super.product_id,super.attribute_id,label.value,super.position from catalog_product_super_attribute as super 
             left join catalog_product_super_attribute_label label ON super.product_super_attribute_id = label.product_super_attribute_id
             where label.store_id = 0) labels on labels.product_id = relation.parent_id and specs.attribute_id = labels.attribute_id
             left join (select option_id,value as 'spec_value' from eav_attribute_option_value as eaov where store_id = 0) spec_label on spec_label.option_id = specs.value
             left join (select option_id ,@rownum := @rownum + 1 AS sort_order from
             (
-            SELECT eao.option_id,value from eav_attribute_option eao
+            select eao.option_id,value from eav_attribute_option eao
             left join eav_attribute_option_value label on label.option_id = eao.option_id
-            WHERE store_id = 0
+            where store_id = 0
             order by eao.attribute_id ,eao.sort_order,label.value asc) data ,  (SELECT @rownum := 0) row ) sorting on sorting.option_id = specs.value
-            WHERE cpe.type_id = 'configurable'
+            join catalog_product_entity_int status on status.entity_id = relation.child_id and status.attribute_id = 96 and status.store_id = 0
+            where cpe.type_id = 'configurable'
+            and cpe.entity_id = 23646
+            order by cpe.entity_id, relation.child_id
         ";
 
         $select = $this->db->prepare($sql);
         $select->execute();
 
-        $temp = $select->fetchAll(\PDO::FETCH_ASSOC);
-        die;
+        while($row = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)){
+            foreach($row as $parentId => $value){
+                $magentoOptionsIds = [];
+
+                //The main product query now includes matrix parents, find our parent
+                $product = (new \Shop\Models\Products)
+                    ->setCondition('magento.id', $parentId)
+                    ->getItem();
+
+                // TODO: if product wasn't found?
+                $product->set('product_type', 'matrix');
+                $product->set('variants', [(new \Shop\Models\Prefabs\Variant)->cast()]);
+            
+                $grouped = [];
+                //For each unique attribute title, keep track of all of its options
+                foreach($value as $attributeKey => $attributeValue){
+                    $grouped[$attributeValue['attribute_title']][] = $attributeValue;
+                }
+
+                $children = [];
+                //For each unique attribute title, keep track of all of its options
+                foreach($value as $attributeKey => $attributeValue){
+                    $children[$attributeValue['child_id']][] = (int) $attributeValue['attribute_option_value_id'];
+                }
+
+                $attributes = [];
+                //Grouped now contains an array keyed by unique attribute titles, and all of its options as values
+                foreach ($grouped as $attributeTitle => $attributeOptions) {
+                    //Create the attribute title and id
+                    $attribute = [
+                        'title' => (string) new \MongoDB\BSON\ObjectID()
+                    ];
+                    //for each attribute title, pull out all unique option values
+                    // $options = array_unique(array_column($attributeOptions, 'attribute_option_value'));
+
+
+                    $options = array_combine(array_column($attributeOptions, 'attribute_option_value_id'), array_column($attributeOptions, 'attribute_option_value'));
+                    
+                    //We now have a unique option list for each unique attribute title, create options array
+                    foreach ($options as $k => $option) {
+                        $optionId = (string) new \MongoDB\BSON\ObjectID();
+                        $magentoOptionsIds[$k] = $optionId;
+
+                        $attributeOption = [
+                            'id' => $optionId,
+                            'value' => $option
+                        ];
+
+                        $attribute['options'][] = $attributeOption;
+                    }
+
+                    $attributes[] = $attribute;
+                }
+
+                $product->set('attributes', $attributes);
+                $product->save();
+
+                foreach ($children as $magentoId => $optionIds) {
+                    $mongoIds = array_values(array_intersect_key($magentoOptionsIds, array_flip($optionIds)));
+
+                    foreach ($product->variants as $i => $variant) {
+                        if (
+                            !empty($variant['model_number'])
+                            || count(array_diff($mongoIds, $variant['attributes'])) != 0
+                        ) {
+                            continue;
+                        }
+                        $netsuite = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($magentoId);
+                        $product->set("variants.$i.model_number", $netsuite->itemId);
+                    }
+                }
+
+                $product->save();
+            }
+            //Todo - What to do if items arent found
+            //Todo - Ordering
+            //Todo - Attribute.is_color - Need to set this value (based on the string Color?)
+            //matrix item attributes are unique attribute_titles within 
+        }
+        
     }
 }
