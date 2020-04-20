@@ -1299,8 +1299,21 @@ class Magento
 
     public function syncMatrixItems()
     {
-        $sql = "
-            SELECT cpe.entity_id      AS 'parent_id', 
+        $swatchSQL = 
+            "SELECT
+                eao.option_id,
+                concat( 'https://www.subispeed.com/media/amconf/images/', eao.option_id, '.jpg' ) AS 'swatch_img' 
+            FROM eav_attribute_option eao
+            WHERE eao.attribute_id IN ( SELECT attribute_id FROM amasty_amconf_attribute WHERE use_image = 1 )"
+        ;
+        $swatchSelect = $this->db->prepare($swatchSQL);
+        $swatchSelect->execute();
+        $swatchData = $swatchSelect->fetchAll(\PDO::FETCH_KEY_PAIR);
+        //Loop through swatch data
+        //Upload all image urls to cloudinary
+
+        $sql = 
+            "SELECT cpe.entity_id      AS 'parent_id', 
                 relation.child_id, 
                 labels.value          AS 'attribute_title', 
                 specs.attribute_id    AS attribute_title_id, 
@@ -1407,8 +1420,8 @@ class Magento
                         AND status.store_id = 0 
                         AND status.value = 1 
             WHERE  cpe.type_id = 'configurable' 
-            ORDER  BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title, attribute_option_ordering, attribute_option_value
-        ";
+            AND cpe.entity_id = 23646
+            ORDER  BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title, attribute_option_ordering, attribute_option_value";
 
         $select = $this->db->prepare($sql);
         $select->execute();
@@ -1446,7 +1459,7 @@ class Magento
                 foreach ($grouped as $attributeTitle => $attributeOptions) {
                     //Create the attribute title and id
                     $attribute = [
-                        'title' => (string) new \MongoDB\BSON\ObjectID()
+                        'title' => $attributeTitle
                     ];
                     //for each attribute title, pull out all unique option values
                     // $options = array_unique(array_column($attributeOptions, 'attribute_option_value'));
@@ -1463,6 +1476,16 @@ class Magento
                             'id' => $optionId,
                             'value' => $option
                         ];
+
+                        if (!empty($swatchData[$k])) {
+                            $upload = \Cloudinary\Uploader::upload($swatchData[$k], [
+                                'type' => 'upload',
+                                'format' => 'jpg',
+                                'folder' => 'swatches'
+                            ]);
+
+                            $attributeOption['swatch'] = $upload['public_id'];
+                        }
 
                         $attribute['options'][] = $attributeOption;
                     }
@@ -1496,8 +1519,6 @@ class Magento
 
                 $product->save();
             }
-
-            //Todo - Attribute.is_color - Need to set this value (based on the string Color?)
         }
     }
 
