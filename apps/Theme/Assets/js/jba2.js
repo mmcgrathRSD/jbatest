@@ -18085,7 +18085,8 @@ jQuery(function($){
 		gridAnimateEnter(this);
 	});
 
-	$("ul.products-grid li.item").on({
+/*	$("ul.products-grid li.item").on({
+	$(document).on('mouseenter', 'ul.products-grid li.item', function() {
 		mouseenter: function() {
 			if ( !$('html').hasClass('no-touch') ) { return false; }
 			$(this).toggleClass('hover');
@@ -18097,6 +18098,19 @@ jQuery(function($){
 			gridAnimateLeave(this);
 		}
 	});
+*/
+$(document).on('mouseenter', 'ul.products-grid li.item', function() {
+                        if ( !$('html').hasClass('no-touch') ) { return false; }
+                        $(this).toggleClass('hover');
+                        gridAnimateEnter(this);
+        });
+
+$(document).on('mouseleave', 'ul.products-grid li.item', function() {
+        if ( !$('html').hasClass('no-touch') ) { return false; }
+                        $(this).toggleClass('hover');
+                        gridAnimateLeave(this);
+
+                        });
 	//product hover - list
 	$("ol.products-list li.item a.product-image").hover(function(e) {
 		if ( $('img.additional_img', this).length ) {

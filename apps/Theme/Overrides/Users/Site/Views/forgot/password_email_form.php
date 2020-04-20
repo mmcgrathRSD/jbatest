@@ -12,7 +12,7 @@
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-            <form action="./user/forgot-password" method="post" class="form" role="form">
+            <form action="/user/forgot-password" method="post" class="form" role="form">
                 <div class="form-group paddingTop">
                     <label>Email Address:</label>
                     <input class="form-control" name="email" placeholder="Email Address" type="text" />
