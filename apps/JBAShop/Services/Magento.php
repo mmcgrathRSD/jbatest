@@ -1309,11 +1309,9 @@ class Magento
         $swatchSelect = $this->db->prepare($swatchSQL);
         $swatchSelect->execute();
         $swatchData = $swatchSelect->fetchAll(\PDO::FETCH_KEY_PAIR);
-        //Loop through swatch data
-        //Upload all image urls to cloudinary
 
         $sql = 
-            "SELECT cpe.entity_id      AS 'parent_id', 
+            "SELECT cpe.entity_id     AS 'parent_id', 
                 relation.child_id, 
                 labels.value          AS 'attribute_title', 
                 specs.attribute_id    AS attribute_title_id, 
