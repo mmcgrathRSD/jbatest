@@ -90,15 +90,16 @@ class Magento
     }
 
     // TODO: redirects, photos, etc
-    public function syncMagentoUsersToMongo($magentoEntityId = null)
+    public function syncMagentoUsersToMongo()
     {
-        $sql = "
-            SELECT
+        $sql =
+            "SELECT
                 ce.entity_id,
                 cevf.VALUE as firstname,
                 cevl.VALUE as lastname, 
                 cevp.VALUE as password_hash,
-                ce.email 
+                ce.email,
+                ce.created_at
             FROM
                 customer_entity ce
                 INNER JOIN customer_entity_varchar cevf ON ce.entity_id = cevf.entity_id
@@ -112,8 +113,7 @@ class Magento
                 eet.entity_type_code = 'customer' 
                 AND eaf.attribute_code = 'firstname' 
                 AND eal.attribute_code = 'lastname' 
-                AND eaph.attribute_code = 'password_hash'
-        ";
+                AND eaph.attribute_code = 'password_hash'";
 
         //Get all the users from the magento database
         $select = $this->db->prepare($sql);
