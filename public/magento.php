@@ -110,7 +110,12 @@ $app->route('GET /sync-product-ratings', function($f3){
  * This method builds and syncs matrix items
  */
 $app->route('GET /sync-matrix-items', function($f3){
-	(new JBAShop\Services\Magento)->syncMatrixItems();
+	$input = $CLImate->confirm('Have you cleared the swatches folder in Cloudinary?');
+	if ($input->confirmed()) {
+		(new JBAShop\Services\Magento)->syncMatrixItems();
+	} else {
+		$CLImate->error('Well, what are you waiting for?!');
+	}
 });
 /**************************/
 
