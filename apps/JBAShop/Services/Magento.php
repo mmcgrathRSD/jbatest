@@ -1297,110 +1297,117 @@ class Magento
         }
     }
 
-    public function syncMatrixItems(){
-        // TODO: ordering, active true/false
-
-        // TODO: remove joins from query that we don't use
-
+    public function syncMatrixItems()
+    {
         $sql = "
-        select cpe.entity_id as 'parent_id',
-            relation.child_id,
-            labels.value as 'attribute_title',
-            specs.attribute_id as attribute_title_id,
-            specs.value as attribute_option_value_id,
-            labels.position as 'attribute_ordering',
-            spec_label.spec_value as 'attribute_option_value',
-            sorting.sort_order as 'attribute_option_ordering'
-            -- status.value as 'variant_enabled'
-            from catalog_product_entity as cpe
-            left join catalog_product_relation relation on cpe.entity_id = relation.parent_id
-            LEFT JOIN catalog_product_entity_varchar AS default_name ON
-                    ( cpe.entity_id = default_name.entity_id
-                    AND default_name.store_id = 0
-                    AND default_name.attribute_id = 71 )
-                    LEFT JOIN catalog_product_entity_text AS default_desc ON
-                    ( cpe.entity_id = default_desc.entity_id
-                    AND default_desc.store_id = 0
-                    AND default_desc.attribute_id = 72 )
-                LEFT JOIN catalog_product_entity_text AS default_short_desc ON
-                    ( cpe.entity_id = default_short_desc.entity_id
-                    AND default_short_desc.store_id = 0
-                    AND default_short_desc.attribute_id = 73 )
-            left join (SELECT
-                        cat.product_id,
-                        Group_concat(cat.category_id) AS categories,
-                        product.sku
-                    FROM
-                        catalog_category_product AS cat,
-                        catalog_product_entity AS product
-                    WHERE
-                        cat.product_id = product.entity_id
-                    GROUP BY
-                        cat.product_id) cats on cats.product_id = cpe.entity_id 
-            left join(select * from (SELECT
-                ce.entity_id,
-                ce.sku,
-                ea.attribute_id,
-                ea.attribute_code,
-                CASE
-                    ea.backend_type
-                    WHEN 'varchar' THEN ce_varchar.value
-                    WHEN 'int' THEN ce_int.value
-                    WHEN 'text' THEN ce_text.value
-                    WHEN 'decimal' THEN ce_decimal.value
-                    WHEN 'datetime' THEN ce_datetime.value
-                    ELSE ea.backend_type
-                END AS value
-            FROM
-                (
-                select
-                    sku ,
-                    entity_type_id,
-                    entity_id
-                from
-                    catalog_product_entity
-                where
-                    type_id = 'simple') AS ce
-            LEFT JOIN eav_attribute AS ea ON
-                ce.entity_type_id = ea.entity_type_id
-            LEFT JOIN catalog_product_entity_varchar AS ce_varchar ON
-                ce.entity_id = ce_varchar.entity_id
-                AND ea.attribute_id = ce_varchar.attribute_id
-                AND ea.backend_type = 'varchar'
-            LEFT JOIN catalog_product_entity_int AS ce_int ON
-                ce.entity_id = ce_int.entity_id
-                AND ea.attribute_id = ce_int.attribute_id
-                AND ea.backend_type = 'int'
-            LEFT JOIN catalog_product_entity_text AS ce_text ON
-                ce.entity_id = ce_text.entity_id
-                AND ea.attribute_id = ce_text .attribute_id
-                AND ea.backend_type = 'text'
-            LEFT JOIN catalog_product_entity_decimal AS ce_decimal ON
-                ce.entity_id = ce_decimal.entity_id
-                AND ea.attribute_id = ce_decimal.attribute_id
-                AND ea.backend_type = 'decimal'
-            LEFT JOIN catalog_product_entity_datetime AS ce_datetime ON
-                ce.entity_id = ce_datetime.entity_id
-                AND ea.attribute_id = ce_datetime.attribute_id
-                AND ea.backend_type = 'datetime'
-            Where ea.attribute_id in (92,151,152,153,154,158,155,156,157,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,177,183,189,191,213,218,230,222,234,225,232,238,224,243)) data
-
-            where value <> ''
-            ) specs on specs.entity_id = relation.child_id
-            join (select super.product_id,super.attribute_id,label.value,super.position from catalog_product_super_attribute as super 
-            left join catalog_product_super_attribute_label label ON super.product_super_attribute_id = label.product_super_attribute_id
-            where label.store_id = 0) labels on labels.product_id = relation.parent_id and specs.attribute_id = labels.attribute_id
-            left join (select option_id,value as 'spec_value' from eav_attribute_option_value as eaov where store_id = 0) spec_label on spec_label.option_id = specs.value
-            left join (select option_id ,@rownum := @rownum + 1 AS sort_order from
-            (
-            select eao.option_id,value from eav_attribute_option eao
-            left join eav_attribute_option_value label on label.option_id = eao.option_id
-            where store_id = 0
-            order by eao.attribute_id ,eao.sort_order,label.value asc) data ,  (SELECT @rownum := 0) row ) sorting on sorting.option_id = specs.value
-            join catalog_product_entity_int status on status.entity_id = relation.child_id and status.attribute_id = 96 and status.store_id = 0
-            where cpe.type_id = 'configurable'
-            and cpe.entity_id = 23646
-            order by cpe.entity_id, relation.child_id
+            SELECT cpe.entity_id      AS 'parent_id', 
+                relation.child_id, 
+                labels.value          AS 'attribute_title', 
+                specs.attribute_id    AS attribute_title_id, 
+                specs.value           AS attribute_option_value_id, 
+                labels.position       AS 'attribute_ordering', 
+                spec_label.spec_value AS 'attribute_option_value', 
+                sorting.sort_order    AS 'attribute_option_ordering', 
+                status.value          AS 'variant_enabled' 
+            FROM   catalog_product_entity AS cpe 
+                LEFT JOIN catalog_product_relation relation 
+                        ON cpe.entity_id = relation.parent_id 
+                LEFT JOIN(SELECT * 
+                            FROM   (SELECT ce.entity_id, 
+                                            ce.sku, 
+                                            ea.attribute_id, 
+                                            ea.attribute_code, 
+                                            CASE ea.backend_type 
+                                            WHEN 'varchar' THEN ce_varchar.value 
+                                            WHEN 'int' THEN ce_int.value 
+                                            WHEN 'text' THEN ce_text.value 
+                                            WHEN 'decimal' THEN ce_decimal.value 
+                                            WHEN 'datetime' THEN ce_datetime.value 
+                                            ELSE ea.backend_type 
+                                            end AS value 
+                                    FROM   (SELECT sku, 
+                                                    entity_type_id, 
+                                                    entity_id 
+                                            FROM   catalog_product_entity 
+                                            WHERE  type_id = 'simple') AS ce 
+                                            LEFT JOIN eav_attribute AS ea 
+                                                ON ce.entity_type_id = ea.entity_type_id 
+                                            LEFT JOIN catalog_product_entity_varchar AS 
+                                                    ce_varchar 
+                                                ON ce.entity_id = ce_varchar.entity_id 
+                                                    AND ea.attribute_id = 
+                                                        ce_varchar.attribute_id 
+                                                    AND ea.backend_type = 'varchar' 
+                                            LEFT JOIN catalog_product_entity_int AS ce_int 
+                                                ON ce.entity_id = ce_int.entity_id 
+                                                    AND ea.attribute_id = 
+                                                        ce_int.attribute_id 
+                                                    AND ea.backend_type = 'int' 
+                                            LEFT JOIN catalog_product_entity_text AS ce_text 
+                                                ON ce.entity_id = ce_text.entity_id 
+                                                    AND ea.attribute_id = 
+                                                        ce_text .attribute_id 
+                                                    AND ea.backend_type = 'text' 
+                                            LEFT JOIN catalog_product_entity_decimal AS 
+                                                    ce_decimal 
+                                                ON ce.entity_id = ce_decimal.entity_id 
+                                                    AND ea.attribute_id = 
+                                                        ce_decimal.attribute_id 
+                                                    AND ea.backend_type = 'decimal' 
+                                            LEFT JOIN catalog_product_entity_datetime AS 
+                                                    ce_datetime 
+                                                ON ce.entity_id = ce_datetime.entity_id 
+                                                    AND ea.attribute_id = 
+                                                        ce_datetime.attribute_id 
+                                                    AND ea.backend_type = 'datetime' 
+                                    WHERE  ea.attribute_id IN ( 92, 151, 152, 153, 
+                                                                154, 158, 155, 156, 
+                                                                157, 159, 160, 161, 
+                                                                162, 163, 164, 165, 
+                                                                166, 167, 168, 169, 
+                                                                170, 171, 172, 173, 
+                                                                174, 177, 183, 189, 
+                                                                191, 213, 218, 230, 
+                                                                222, 234, 225, 232, 
+                                                                238, 224, 243 )) data 
+                            WHERE  value <> '') specs 
+                        ON specs.entity_id = relation.child_id 
+                JOIN (SELECT super.product_id, 
+                                super.attribute_id, 
+                                label.value, 
+                                super.position 
+                        FROM   catalog_product_super_attribute AS super 
+                                LEFT JOIN catalog_product_super_attribute_label label 
+                                    ON super.product_super_attribute_id = 
+                                        label.product_super_attribute_id 
+                        WHERE  label.store_id = 0) labels 
+                    ON labels.product_id = relation.parent_id 
+                        AND specs.attribute_id = labels.attribute_id 
+                LEFT JOIN (SELECT option_id, 
+                                    value AS 'spec_value' 
+                            FROM   eav_attribute_option_value AS eaov 
+                            WHERE  store_id = 0) spec_label 
+                        ON spec_label.option_id = specs.value 
+                LEFT JOIN (SELECT option_id, 
+                                    @rownum := @rownum + 1 AS sort_order 
+                            FROM   (SELECT eao.option_id, 
+                                            value 
+                                    FROM   eav_attribute_option eao 
+                                            LEFT JOIN eav_attribute_option_value label 
+                                                    ON label.option_id = eao.option_id 
+                                    WHERE  store_id = 0 
+                                    ORDER  BY eao.attribute_id, 
+                                                eao.sort_order, 
+                                                label.value ASC) data, 
+                                    (SELECT @rownum := 0) row) sorting 
+                        ON sorting.option_id = specs.value 
+                JOIN catalog_product_entity_int status 
+                    ON status.entity_id = relation.child_id 
+                        AND status.attribute_id = 96 
+                        AND status.store_id = 0 
+                        AND status.value = 1 
+            WHERE  cpe.type_id = 'configurable' 
+            ORDER  BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title, attribute_option_ordering, attribute_option_value
         ";
 
         $select = $this->db->prepare($sql);
@@ -1415,7 +1422,10 @@ class Magento
                     ->setCondition('magento.id', $parentId)
                     ->getItem();
 
-                // TODO: if product wasn't found?
+                if (empty($product->_id)) {
+                    continue;
+                }
+
                 $product->set('product_type', 'matrix');
                 $product->set('variants', [(new \Shop\Models\Prefabs\Variant)->cast()]);
 
@@ -1473,19 +1483,23 @@ class Magento
                         ) {
                             continue;
                         }
+
                         $netsuite = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($magentoId);
+                        //If the matrix variant doesnt exist in the external mapping talbe, skip it
+                        shutup mike
+                        if (empty($netsuite->itemId)) {
+                            continue;
+                        }
+
                         $product->set("variants.$i.model_number", $netsuite->itemId);
                     }
                 }
 
                 $product->save();
             }
-            //Todo - What to do if items arent found
-            //Todo - Ordering
-            //Todo - Attribute.is_color - Need to set this value (based on the string Color?)
-            //matrix item attributes are unique attribute_titles within
-        }
 
+            //Todo - Attribute.is_color - Need to set this value (based on the string Color?)
+        }
     }
 
     public function moveProductDescriptionImages()
