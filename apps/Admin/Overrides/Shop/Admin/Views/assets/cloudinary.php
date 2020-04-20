@@ -45,7 +45,7 @@
 <script type="text/javascript">
     $('#upload').cloudinary_upload_widget({
         cloud_name: 'rallysport',
-        upload_preset: 'xmgr9x79',
+        upload_preset: '<?php echo \Base::instance()->get('cloudinary.product_preset'); ?>',
         folder: 'product_images',
         theme: 'white',
         sources: ['local'],
