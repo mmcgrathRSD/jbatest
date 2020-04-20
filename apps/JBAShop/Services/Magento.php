@@ -1486,7 +1486,6 @@ class Magento
 
                         $netsuite = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($magentoId);
                         //If the matrix variant doesnt exist in the external mapping talbe, skip it
-                        shutup mike
                         if (empty($netsuite->itemId)) {
                             continue;
                         }
