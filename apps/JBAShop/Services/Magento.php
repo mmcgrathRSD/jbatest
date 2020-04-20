@@ -426,7 +426,6 @@ class Magento
         WHERE
             def.attribute_id = 102
             AND def.store_id = 0
-                AND def.entity_id = 23646
             ORDER BY cpe.sku ASC
         ";
 
