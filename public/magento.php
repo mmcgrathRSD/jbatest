@@ -38,6 +38,9 @@ $app->route('GET /sync-product-info', function() {
     (new JBAShop\Services\Magento)->syncProductInfo();
 });
 
+$app->route('GET /sync-dynamic-group-products', function() {
+	(new JBAShop\Services\Magento)->syncDynamicGroupProducts();
+});
 $app->route('GET /sync-product-images', function() {
 	$input = $CLImate->confirm('Have you cleared the product_images folder in Cloudinary?');
 	if ($input->confirmed()) {
