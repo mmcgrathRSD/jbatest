@@ -1510,10 +1510,6 @@ class Magento
                         }
                         $product->set("variants.$i.model_number", $netsuite->itemId);
 
-                        //Update the product type on the matrix children
-                        $matrixChild = (new \Shop\Models\Products)->setCondition('tracking.model_number', (string) $netsuite->itemId)
-                        ->getItem();
-                        die;
                     }
                 }
 
