@@ -426,7 +426,6 @@ class Magento
         WHERE
             def.attribute_id = 102
             AND def.store_id = 0
-                AND def.entity_id = 23646
             ORDER BY cpe.sku ASC
         ";
 
@@ -1418,7 +1417,6 @@ class Magento
                         AND status.store_id = 0 
                         AND status.value = 1 
             WHERE  cpe.type_id = 'configurable' 
-            AND cpe.entity_id = 23646
             ORDER  BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title, attribute_option_ordering, attribute_option_value";
 
         $select = $this->db->prepare($sql);
@@ -1510,7 +1508,6 @@ class Magento
                         if (empty($netsuite->itemId)) {
                             continue;
                         }
-
                         $product->set("variants.$i.model_number", $netsuite->itemId);
                     }
                 }
