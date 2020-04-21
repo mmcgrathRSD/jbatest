@@ -90,16 +90,17 @@ class Magento
     }
 
     // TODO: redirects, photos, etc
-    public function syncMagentoUsersToMongo()
+    public function syncMagentoUsersToMongo($minutes = 0)
     {
+        $and = $minutes > 0 ?  "AND updated_at BETWEEN NOW() - INTERVAL {$minutes} MINUTE AND NOW()" : '';
+        //Note: The use of "udpated_at" as "created_at" is to solve a magento bug of created_dates being wrong
         $sql =
             "SELECT
                 ce.entity_id,
                 cevf.VALUE as firstname,
                 cevl.VALUE as lastname, 
                 cevp.VALUE as password_hash,
-                ce.email,
-                ce.created_at
+                ce.updated_at as user_created_at
             FROM
                 customer_entity ce
                 INNER JOIN customer_entity_varchar cevf ON ce.entity_id = cevf.entity_id
@@ -113,12 +114,15 @@ class Magento
                 eet.entity_type_code = 'customer' 
                 AND eaf.attribute_code = 'firstname' 
                 AND eal.attribute_code = 'lastname' 
-                AND eaph.attribute_code = 'password_hash'";
+                AND eaph.attribute_code = 'password_hash'
+            {$and}    
+            ORDER BY user_created_at";
+            
 
         //Get all the users from the magento database
         $select = $this->db->prepare($sql);
         $select->execute();
-        $users = $select->fetchall();
+        $users = $select->fetchall(\PDO::FETCH_ASSOC);
 
 
         foreach ($users as $user) {
