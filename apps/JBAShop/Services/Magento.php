@@ -1509,7 +1509,6 @@ class Magento
                             continue;
                         }
                         $product->set("variants.$i.model_number", $netsuite->itemId);
-
                     }
                 }
 
