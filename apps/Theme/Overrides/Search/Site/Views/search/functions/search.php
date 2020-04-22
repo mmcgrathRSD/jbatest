@@ -31,11 +31,7 @@ $clear_all_exclusions = '';
             filters += ' AND ymm_hashs: ' + hash + ' OR universal_item: true';
         }
 
-        <?php if(\Base::instance()->get('SITE_TYPE') != 'wholesale') : ?>
-            filters += ' AND default_price > 0 AND NOT product_type: Subitem'
-
-        <?php else : ?>
-        filters += ' AND NOT product_type: Matrix'
+        filters += ' AND default_price > 0 AND NOT product_type: Subitem';
 
         <?php if(!empty($dns_auth) && \Base::instance()->get('SITE_TYPE') == 'wholesale') : ?>
         var dns_auth = <?php echo json_encode($dns_auth); ?>;
@@ -47,10 +43,6 @@ $clear_all_exclusions = '';
             });
         }
         <?php endif; ?>
-        <?php endif; ?>
-
-
-        filters = '';
 
         return filters;
     }
@@ -315,8 +307,8 @@ $clear_all_exclusions = '';
 
 
             } else {
-                <?php if($type == 'shop.categories') : ?>
-                <?php foreach((array) $item->product_specs as $key => $spec) : ?>
+                <?php if($type == 'shop.categories') : //echo '/*';  var_dump($this->app->get('product_specs')); echo '*/'; ?>
+                <?php foreach((array) $this->app->get('product_specs') as $key => $spec) : ?>
 				<?php if($spec['hidden'] != 'on') : ?>
                 <?php if(!empty($spec['custom_atf'])) : ?>
                     search.addWidget(
@@ -353,7 +345,8 @@ $clear_all_exclusions = '';
                         container: '#search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); ?>' + instance_id,
                         attributeName: 'specs.<?php echo $key; ?>',
                         templates: {
-                            header: '<h4 class="collapsible_facet"><?php echo $key; ?><i class="fa fa-chevron-right" aria-hidden="true"></i><i class="fa fa-chevron-down" aria-hidden="true"></i></h4>'
+                            header: '<div class="block-title"><strong><span><div><em class="toggle toggle-plus"></em><div class="new_toggle"></div><a href="#" class="collapsible_facet_header_link"><span><?php echo $key; ?></span></a></div></span></strong></div>',
+                            item: '<?php echo trim(preg_replace("/[\n\r]/","",$this->renderLayout('Search/Site/Views::search/refinement_item_template.php')));?>'
                         },
                         cssClasses: {
                             root: ''
@@ -828,5 +821,9 @@ $clear_all_exclusions = '';
         $('.limiter li[data="' + hit_count + '"]').addClass('selected');
         $('.limiter .current').html(hit_count);
     });
+
+    $(document).on('click', '.collapsible_facet_header_link', function(e) {
+        e.preventDefault();
+    })
 </script>
 <?php endif; ?>

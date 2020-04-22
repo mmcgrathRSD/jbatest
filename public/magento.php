@@ -41,53 +41,38 @@ $app->route('GET /sync-product-info', function() {
 $app->route('GET /sync-dynamic-group-products', function() {
 	(new JBAShop\Services\Magento)->syncDynamicGroupProducts();
 });
-$app->route('GET /sync-product-images', function() {
-	$input = $CLImate->confirm('Have you cleared the product_images folder in Cloudinary?');
-	if ($input->confirmed()) {
-		(new JBAShop\Services\Magento)->syncProductImages();
-	} else {
-		$CLImate->error('Well, what are you waiting for?!');
-	}
+
+$app->route('GET /sync-product-images', function() use($CLImate) {
+	$CLImate->red('Have you cleared the product_images folder in Cloudinary?');
+	(new JBAShop\Services\Magento)->syncProductImages();
 });
 
-$app->route('GET /sync-category-images', function() {
-	$input = $CLImate->confirm('Have you cleared the category_images folder in Cloudinary?');
-	if ($input->confirmed()) {
-		(new JBAShop\Services\Magento)->syncCategoryImages();
-	} else {
-		$CLImate->error('Well, what are you waiting for?!');
-	}
+$app->route('GET /sync-category-images', function() use($CLImate) {
+	$CLImate->red('Have you cleared the category_images folder in Cloudinary?');
+	(new JBAShop\Services\Magento)->syncCategoryImages();
 });
 
 $app->route('GET /sync-usercontent-images', function() use ($CLImate) {
-	$input = $CLImate->confirm('Have you cleared the user_content folder in Cloudinary?');
-	if ($input->confirmed()) {
-		(new JBAShop\Services\Magento)->syncUserContentImages();
-	} else {
-		$CLImate->error('Well, what are you waiting for?!');
-	}
+	$CLImate->red('Have you cleared the user_content folder in Cloudinary?');
+	(new JBAShop\Services\Magento)->syncUserContentImages();
 });
 
 $app->route('GET /move-product-description-images', function() use ($CLImate) {
-	$input = $CLImate->confirm('Have you cleared the content folder in Cloudinary?');
-	if ($input->confirmed()) {
-		(new JBAShop\Services\Magento)->moveProductDescriptionImages();
-	} else {
-		$CLImate->error('Well, what are you waiting for?!');
-	}
+	$CLImate->red('Have you cleared the content folder in Cloudinary?');
+	(new JBAShop\Services\Magento)->moveProductDescriptionImages();
 });
 
 $app->route('GET /move-category-description-images', function() use ($CLImate) {
-	$input = $CLImate->confirm('Have you cleared the content folder in Cloudinary?');
-	if ($input->confirmed()) {
-		(new JBAShop\Services\Magento)->moveCategoryDescriptionImages();
-	} else {
-		$CLImate->error('Well, what are you waiting for?!');
-	}
+	$CLImate->red('Have you cleared the content folder in Cloudinary?');
+	(new JBAShop\Services\Magento)->moveCategoryDescriptionImages();
 });
 
 $app->route('GET /sync-ymms', function() {
 	(new JBAShop\Services\Magento)->syncYmmsFromRally();
+});
+
+$app->route('GET /sync-specs', function() {
+	(new JBAShop\Services\Magento)->syncSpecs();
 });
 
 /**
@@ -110,13 +95,9 @@ $app->route('GET /sync-product-ratings', function($f3){
 /**
  * This method builds and syncs matrix items
  */
-$app->route('GET /sync-matrix-items', function($f3) use($CLImate){
-	$input = $CLImate->confirm('Have you cleared the swatches folder in Cloudinary?');
-	if ($input->confirmed()) {
-		(new JBAShop\Services\Magento)->syncMatrixItems();
-	} else {
-		$CLImate->error('Well, what are you waiting for?!');
-	}
+$app->route('GET /sync-matrix-items', function($f3) use($CLImate) {
+	$CLImate->red('Have you cleared the swatches folder in Cloudinary?');
+	(new JBAShop\Services\Magento)->syncMatrixItems();
 });
 /**************************/
 

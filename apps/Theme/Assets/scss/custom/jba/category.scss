@@ -26,7 +26,7 @@
     padding-left: 32px;
 }
 
-.new_toggle {
+.new_toggle, .ais-root__collapsible.ais-root__collapsed .new_toggle {
     content: '';
     display: block;
     float: right;
@@ -45,7 +45,7 @@
 
 }
 
-.new_toggle:hover {
+.new_toggle:hover, .ais-root__collapsible .new_toggle:hover {
     background-position: 0 0;
     color: #ffffff;
     background-color: #000000;
@@ -89,9 +89,27 @@ span:before {
     -o-transition: all 50ms ease-in-out;
 }
 
-.active > div > li .new_toggle 
+.active > div > li .new_toggle, .ais-root__collapsible .new_toggle
   {
       background-image: url(/theme/img/jba/arrow_toggle_sidebar_minus.gif);
+}
+
+.ais-root__collapsible li {
+    list-style-type:none;
+}
+
+.ais-root__collapsible .ais-refinement-list--list {
+    margin-left: 8px;
+}
+
+.ais-root__collapsible .block-title > strong > span > div {
+    position: relative; 
+}
+
+.ais-root__collapsible .block-title .new_toggle {
+    top: -3px;
+    background-position: 0 1px;
+    height: 27px;
 }
 
 .ais-pagination--item {
