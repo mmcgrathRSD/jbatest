@@ -673,13 +673,17 @@ class Magento
                     $meta['caption'] = $image['caption'];
                 }
 
-                \Cloudinary\Uploader::upload(trim($image), [
-                    'tags' => $model,
-                    'type' => 'private',
-                    'format' => 'jpg',
-                    'folder' => 'product_images',
-                    'context' => $meta
-                ]);
+                try {
+                    \Cloudinary\Uploader::upload(trim($image), [
+                        'tags' => $model,
+                        'type' => 'private',
+                        'format' => 'jpg',
+                        'folder' => 'product_images',
+                        'context' => $meta
+                    ]);
+                } catch (\Exception $e) {
+                    // do nothing
+                }
             }
 
             if (count($links['images'])) {
