@@ -86,8 +86,9 @@ if (empty($checkoutExpiration)) {
     $app->set('shop.checkout_expiration', 1440); // 24 hours
 }
 
-// get possible specs on all pages
-// TODO: cache this shit
+// TODO: make admin page to ADD filterable specs (text, number) with the ability to quickly disable/enable
+// TODO: cache the query to get this to front end on every page
+// TODO: add all attributes as specs in algolia doc (remove duplicates)... or add all attributes automatically to specs array in mongo doc
 $allSpecs = \Shop\Models\Products::collection()->aggregate([
     [
         '$project' => [
@@ -117,7 +118,7 @@ if (!empty($specsArray[0]['specs'])) {
     foreach($specNames as $specName) {
         $specs[$specName] = [
             'type' => 'text',
-            'hidden' => 'on'
+            'hidden' => 'off'
         ];
     }
 }

@@ -1677,7 +1677,7 @@ class Magento
                 cpe.entity_type_id = 4 
                 AND `value`.`value` IS NOT NULL 
                 AND cpe.attribute_id IN ( SELECT attribute_id FROM catalog_eav_attribute WHERE is_filterable = 1 ) 
-                AND `names`.frontend_label NOT IN ('Manufacturer', 'Kit Package', 'QTY', 'Sub Model', 'Awesome Gift', 'Email Delivery')
+                AND `names`.frontend_label NOT IN ('Manufacturer', 'Sub Model')
                 AND cpe.store_id = 0";
 
         $select = $this->db->prepare($sql);
