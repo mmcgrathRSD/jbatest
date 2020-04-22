@@ -95,8 +95,11 @@ $app->route('GET /sync-ymms', function() {
  * @param int $magentoId - the user primary key from magento database (customer_entity.entity_id)
  * @return void
  */
-$app->route('GET /sync-magento-users-to-mongo', function($f3){
-	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo();
+
+
+$app->route(['GET /sync-magento-users-to-mongo', 'GET /sync-magento-users-to-mongo/@minutes'], function($f3, $params){
+	$mins = $params['minutes'] ?? 0;
+	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo((int) $mins);
 });
 
 /**
