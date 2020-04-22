@@ -532,8 +532,8 @@ class Magento
 
             if($netsuiteProduct['itemType'] === 'kit'){
                 $product->set('product_type', 'group');
-            }else{
-                $product->set('product_type', $product->product_type);
+            }else if(!in_array($product->get('product_type'), ['group', 'matrix', 'matrix_subitem', 'dynamic_group'])){
+                $product->set('product_type', 'standard');
             }
 
                 $results = $api->resources_by_tag($product->getCouldinaryTag(), ['folder' =>  'product_install_instructions','context' => true, 'max_results' => 100]);
