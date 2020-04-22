@@ -384,7 +384,8 @@ class Magento
             ftspeed_name.`value` AS 'ftspeed_title',
             cats.categories,
             default_desc.`value` AS 'long_description',
-            default_short_desc.`value` AS 'short_description'
+            default_short_desc.`value` AS 'short_description',
+            cpe.created_at
         FROM
             catalog_product_entity_int def
             INNER JOIN catalog_product_entity_int AS `status` ON ( def.entity_id = `status`.entity_id AND `status`.store_id = 0 AND `status`.attribute_id = 96 AND `status`.`value` = 1 )
@@ -495,7 +496,8 @@ class Magento
                 ->set('title', $row['default_title'])
                 ->set('copy', $row['long_description'])
                 ->set('short_description', $row['short_description'])
-                ->set('categories', $newProductCategories);
+                ->set('categories', $newProductCategories)
+                ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($row['created_at']));
 
             //If we are in a situation where we are creating a new product (eg. matrix parent, set the model number)
             if(!$product->tracking['model_number']){
@@ -527,9 +529,10 @@ class Magento
                 $product->set('publication.status', 'unpublished');
             }
 
+
             if($netsuiteProduct['itemType'] === 'kit'){
                 $product->set('product_type', 'group');
-            }else{
+            }else if(!in_array($product->get('product_type'), ['group', 'matrix', 'matrix_subitem', 'dynamic_group'])){
                 $product->set('product_type', 'standard');
             }
 
