@@ -85,3 +85,41 @@ $checkoutExpiration = (int) $app->get('shop.checkout_expiration');
 if (empty($checkoutExpiration)) {
     $app->set('shop.checkout_expiration', 1440); // 24 hours
 }
+
+// get possible specs on all pages
+// TODO: cache this shit
+$allSpecs = \Shop\Models\Products::collection()->aggregate([
+    [
+        '$project' => [
+            'specs' => [
+                '$objectToArray' => '$specs'
+            ]
+        ]
+    ],
+    [
+        '$unwind' => '$specs'
+    ],
+    [
+        '$group' => [
+            '_id' => null,
+            'specs' => [
+                '$addToSet' => '$specs.k'
+            ]
+        ]
+    ]
+]);
+
+$specsArray = $allSpecs->toArray();
+$specs = [];
+if (!empty($specsArray[0]['specs'])) {
+    $specNames = $specsArray[0]['specs'];
+
+    foreach($specNames as $specName) {
+        $specs[$specName] = [
+            'type' => 'text',
+            'hidden' => 'on'
+        ];
+    }
+}
+
+$app->set('product_specs', $specs);

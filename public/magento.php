@@ -90,6 +90,10 @@ $app->route('GET /sync-ymms', function() {
 	(new JBAShop\Services\Magento)->syncYmmsFromRally();
 });
 
+$app->route('GET /sync-specs', function() {
+	(new JBAShop\Services\Magento)->syncSpecs();
+});
+
 /**
  * This method syncs all users from magento to mongo
  * @param int $minutes - Optionally pass amount of minuets, to only sync users created within that timeframe

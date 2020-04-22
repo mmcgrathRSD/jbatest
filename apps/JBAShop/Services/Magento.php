@@ -1661,4 +1661,50 @@ class Magento
             }
         }
     }
+
+    public function syncSpecs()
+    {
+        $sql = 
+            "SELECT
+                cpe.entity_id AS product_id,
+                `names`.frontend_label AS label,
+                `value`.`value` 
+            FROM
+                `catalog_product_entity_int` AS cpe
+                LEFT JOIN eav_attribute AS `names` ON cpe.attribute_id = `names`.attribute_id
+                LEFT JOIN eav_attribute_option_value AS `value` ON cpe.`value` = `value`.option_id 
+            WHERE
+                cpe.entity_type_id = 4 
+                AND `value`.`value` IS NOT NULL 
+                AND cpe.attribute_id IN ( SELECT attribute_id FROM catalog_eav_attribute WHERE is_filterable = 1 ) 
+                AND `names`.frontend_label NOT IN ('Manufacturer', 'Kit Package', 'QTY', 'Sub Model', 'Awesome Gift', 'Email Delivery')
+                AND cpe.store_id = 0";
+
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        while ($row = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)) {
+            foreach ($row as $magentoId => $specs) {
+                $product = (new \Shop\Models\Products)
+                    ->setCondition('magento.id', $magentoId)
+                    ->getItem();
+
+                if (empty($product->id)) {
+                    continue;
+                }
+
+                $mongoSpecs = array_combine(str_replace('.', '', array_column($specs, 'label')), array_column($specs, 'value'));
+                $product->set('specs', $mongoSpecs);
+                
+                try {
+                    $product->save();
+                } catch (\Exception $e) {
+                    if ($product->get('product_type') == 'group') {
+                        $product->set('product_type', 'standard');
+                        $product->save();
+                    }
+                }
+            }
+        }
+    }
 }
