@@ -323,6 +323,7 @@ class Magento
 
     public function syncProductInfo()
     {
+        $failures = [['Failures']];
         $salesChannels = [
             'ftspeed' => [
                 'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
@@ -431,67 +432,67 @@ class Magento
         $select->execute();
         $progress = $this->CLImate->progress()->total($select->rowCount());
         $ftBrzRegex = "/2013(\+|[\s]?-[\s]?[\d]{4})[\s]FR-?S[\s]\/[\s]BRZ([\s]\/[\s]86)?/";
-        // $subiBrzRegex = "/2013\+[\s]?BRZ/";
         $subiBrzRegex = "/[\d]{4}(\+|[\s]?-[\s]?[\d]{4})[\s]?BRZ/";
 
         $api = new \Cloudinary\Api();
         while ($row = $select->fetch()) {
-            $netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($row['id']);
-
-            //If we found a netsuite product, lookup product in mongo by the netsuite internal id
-            if($netsuiteProduct){
-                $product = (new \Shop\Models\Products)
-                ->setCondition('netsuite.internalId', (string) $netsuiteProduct->internalId)
-                ->getItem();
-            }
-
-            //If both the above queries didnt find anything, try to lookup by the magento id
-            if(!$netsuiteProduct){
-                $product = (new \Shop\Models\Products)
-                ->setCondition('magento.id', $row['id'])
-                ->getItem();
-            }
-
-            //If no NS product, and no product, create a new product
-            if(!$netsuiteProduct && !$product){
-                $product = new \Shop\Models\Products();
-            }
-
-            // TODO: query all categories once and get their full arrays for setting in products, key by magento id
-            // TODO: discontinued?
-            // TODO: redirect
-            // TODO: brands
-
-            if (!empty($row['brand_id'])) {
-                $brand = (new \Shop\Models\Manufacturers)
-                    ->setCondition('magento.id', $row['brand_id'])
+            try{
+                $netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($row['id']);
+                //If we found a netsuite product, lookup product in mongo by the netsuite internal id
+                if($netsuiteProduct){
+                    $product = (new \Shop\Models\Products)
+                    ->setCondition('netsuite.internalId', (string) $netsuiteProduct->internalId)
                     ->getItem();
-
-                if (!empty($brand->slug)) {
-                    $product->set('manufacturer.id', $brand->id);
                 }
-            }
 
-            $productCategories = array_values(array_intersect_key($categories, array_flip(explode(',', $row['categories']))));
-            $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
-            $remove = \Dsc\ArrayHelper::getColumn($productCategories, 'remove');
+                //If both the above queries didnt find anything, try to lookup by the magento id
+                if(!$netsuiteProduct){
+                    $product = (new \Shop\Models\Products)
+                    ->setCondition('magento.id', $row['id'])
+                    ->getItem();
+                }
 
-            if (count($remove)) {
-                $toRemove = array_merge(...\Dsc\ArrayHelper::getColumn($productCategories, 'remove'));
-            } else {
-                $toRemove = [];
-            }
+                //If no NS product, and no product, create a new product
+                if(!$netsuiteProduct && !$product){
+                    $product = new \Shop\Models\Products();
+                }
+                if(empty($product)){
+                    throw new \Exception('Product is null ' . $row['model']);
+                }
+                $progress->advance(0, $row['model']);//push model to progress without progressing the count.
+
+                // TODO: query all categories once and get their full arrays for setting in products, key by magento id
+                // TODO: discontinued?
+                // TODO: redirect
+                // TODO: brands
+
+                if (!empty($row['brand_id'])) {
+                    $brand = (new \Shop\Models\Manufacturers)
+                        ->setCondition('magento.id', $row['brand_id'])
+                        ->getItem();
+
+                    if (!empty($brand->slug)) {
+                        $product->set('manufacturer.id', $brand->id);
+                    }
+                }
+
+                $productCategories = array_values(array_intersect_key($categories, array_flip(explode(',', $row['categories']))));
+                $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
+                $remove = \Dsc\ArrayHelper::getColumn($productCategories, 'remove');
+                if (count($remove)) {
+                    $toRemove = array_merge(...\Dsc\ArrayHelper::getColumn($productCategories, 'remove'));
+                } else {
+                    $toRemove = [];
+                }
 
                 $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
                 }));
-                // $hasYmmSuffix = strpos($row['default_title'], '-');//Does the title have a YMM suffixeses?
                 //If there is a ymmSuffix get substring to first instance of '-' else use default_title.
                 preg_match("/.*(?=[\s]?-[\s][\d]{4})/", $row['default_title'], $titleMatches);
-
                 $product
                     ->set('magento.id', $row['id'])
-                    ->set('title', !empty($titleMatches) ? $titleMatches[0] : $row['default_title'])
+                    ->set('title', !empty($titleMatches) ? trim($titleMatches[0]) : $row['default_title'])
                     ->set('copy', $row['long_description'])
                     ->set('short_description', $row['short_description'])
                     ->set('categories', $newProductCategories);
@@ -549,29 +550,29 @@ class Magento
                     }
                     //glue all sites together by ' / '
                     $suffixString = implode(' / ', array_unique(array_filter(array_filter($suffixTitles))));//Get valid unique suffixes and convert to csv.
-                    $product->set('title_suffix', !empty($suffixString) ? $suffixString : NULL);//if there is a suffix string then set it else leave as null.
+                    $product->set('title_suffix', !empty($suffixString) ? preg_replace("/[\s]{2,}/", " ", rtrim(ltrim($suffixString, ' /') , ' /')): NULL);//if there is a suffix string then set it else leave as null.
                 }
 
-            $product->set('publication.sales_channels', $productSalesChannels);
+                $product->set('publication.sales_channels', $productSalesChannels);
 
-            if (!empty($row['enabled'])) {
-                $product->set('publication.status', 'published');
-            }
+                if (!empty($row['enabled'])) {
+                    $product->set('publication.status', 'published');
+                }
 
-            //If the product doesnt exist in NS, and is either a regular item or a grouped item, unpublish it
-            //$row['product_type'] configurable = matrix item parent
-            //$row['product_type'] simple = standard item
-            //$row['product_type'] bundle = dynamic group
-            //$row['product_type'] grouped = kit items
-            if( (!$netsuiteProduct && $row['product_type'] === 'simple') || (!$netsuiteProduct && $row['product_type'] === 'grouped')){
-                $product->set('publication.status', 'unpublished');
-            }
+                //If the product doesnt exist in NS, and is either a regular item or a grouped item, unpublish it
+                //$row['product_type'] configurable = matrix item parent
+                //$row['product_type'] simple = standard item
+                //$row['product_type'] bundle = dynamic group
+                //$row['product_type'] grouped = kit items
+                if( (!$netsuiteProduct && $row['product_type'] === 'simple') || (!$netsuiteProduct && $row['product_type'] === 'grouped')){
+                    $product->set('publication.status', 'unpublished');
+                }
 
-            if($netsuiteProduct['itemType'] === 'kit'){
-                $product->set('product_type', 'group');
-            }else{
-                $product->set('product_type', 'standard');
-            }
+                if($netsuiteProduct['itemType'] === 'kit'){
+                    $product->set('product_type', 'group');
+                }else if(empty($product->get('product_type'))){
+                    $product->set('product_type', 'standard');
+                }
 
                 $results = $api->resources_by_tag($product->getCouldinaryTag(), ['folder' =>  'product_install_instructions','context' => true, 'max_results' => 100]);
                 //If there is install instructions in the row and cloudinary doesn't have this install instruction.
@@ -611,17 +612,18 @@ class Magento
                     $product->set('install_instructions', $results['resources'][0]['secure_url']);
                 }
 
-            try{
                 $product->save();
             }catch(Exception $e){
                 if($e->getMessage() !== 'Not a group item'){
-                    throw $e;
+                    // throw $e;
+                    $failures[] = [$row['model']];
                 }
             }
 
 
             $progress->advance(1, $row['model']);
         }
+        $this->CLImate->table($failures);
     }
 
     public function syncProductImages()
