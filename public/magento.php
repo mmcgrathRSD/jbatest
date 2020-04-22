@@ -41,7 +41,8 @@ $app->route('GET /sync-product-info', function() {
 $app->route('GET /sync-dynamic-group-products', function() {
 	(new JBAShop\Services\Magento)->syncDynamicGroupProducts();
 });
-$app->route('GET /sync-product-images', function() {
+
+$app->route('GET /sync-product-images', function() use($CLImate) {
 	$input = $CLImate->confirm('Have you cleared the product_images folder in Cloudinary?');
 	if ($input->confirmed()) {
 		(new JBAShop\Services\Magento)->syncProductImages();
@@ -50,7 +51,7 @@ $app->route('GET /sync-product-images', function() {
 	}
 });
 
-$app->route('GET /sync-category-images', function() {
+$app->route('GET /sync-category-images', function() use($CLImate) {
 	$input = $CLImate->confirm('Have you cleared the category_images folder in Cloudinary?');
 	if ($input->confirmed()) {
 		(new JBAShop\Services\Magento)->syncCategoryImages();
@@ -114,7 +115,7 @@ $app->route('GET /sync-product-ratings', function($f3){
 /**
  * This method builds and syncs matrix items
  */
-$app->route('GET /sync-matrix-items', function($f3) use($CLImate){
+$app->route('GET /sync-matrix-items', function($f3) use($CLImate) {
 	$input = $CLImate->confirm('Have you cleared the swatches folder in Cloudinary?');
 	if ($input->confirmed()) {
 		(new JBAShop\Services\Magento)->syncMatrixItems();
