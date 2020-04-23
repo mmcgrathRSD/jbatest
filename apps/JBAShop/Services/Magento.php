@@ -492,7 +492,7 @@ class Magento
                     return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
                 }));
                 //If there is a ymmSuffix get substring to first instance of '-' else use default_title.
-                preg_match("/.*(?=[\s]?-[\s][\d]{4})/", $row['default_title'], $titleMatches);
+                preg_match("/.*(?=[\s]-(.*[\s]\/[\s].*|[\s]{1,}[12][\d]{3}|[\s]Universal))/", $row['default_title'], $titleMatches);
                 $product
                     ->set('magento.id', $row['id'])
                     ->set('title', !empty($titleMatches) ? trim($titleMatches[0]) : $row['default_title'])
@@ -554,7 +554,7 @@ class Magento
                     }
                     //glue all sites together by ' / '
                     $suffixString = implode(' / ', array_unique(array_filter($suffixTitles)));//Get valid unique suffixes and convert to csv.
-                    $product->set('title_suffix', !empty($suffixString) ? preg_replace("/[\s]{2,}/", " ", rtrim(ltrim($suffixString, ' /') , ' /')): NULL);//if there is a suffix string then set it else leave as null.
+                    $product->set('title_suffix', !empty($suffixString) ? preg_replace("/\/[\s]\//", " ", rtrim(ltrim($suffixString, ' /') , ' /')): NULL);//if there is a suffix string then set it else leave as null.
                 }
 
                 $product->set('publication.sales_channels', $productSalesChannels);
@@ -1771,11 +1771,6 @@ class Magento
                 ->getItem();
             }
 
-            //If no NS product, and no product, create a new product
-            if(!$netsuiteProduct && !$product){
-                $product = new \Shop\Models\Products();
-            }
-            var_dump($product);die('prodz');
             $results = $api->resources_by_tag($product->getCouldinaryTag(), ['folder' =>  'product_install_instructions','context' => true, 'max_results' => 100]);
             //If there is install instructions in the row and cloudinary doesn't have this install instruction.
             if(!empty($row['install instructions']) && empty($results['resources']) && !empty($product)){
