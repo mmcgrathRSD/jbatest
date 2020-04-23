@@ -328,6 +328,7 @@ class Magento
 
     public function syncProductInfo()
     {
+        $failures = [['Failures']];
         $salesChannels = [
             'ftspeed' => [
                 'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
@@ -362,10 +363,7 @@ class Magento
         $sql = "
         SELECT
             def.entity_id AS 'id',
-            mB.option_id as 'brand_id',
-            cpe.type_id AS 'product_type',
-            youtube.value as 'youtube             video',
-            install.value as 'install instructions',
+            youtube.value as 'youtube video',
             meta_title.value as 'meta title',
             is_carb.value as 'is carb',
             url_key.value as 'default url key',
@@ -375,6 +373,7 @@ class Magento
             mB.option_id as 'brand_id,mfg_id',
             mB.value as 'brand/manufacturer',
             cpe.sku AS 'model',
+            cpe.type_id AS 'product_type',
             `status`.`value` AS 'enabled',
             ! ISNULL( subi.`value` ) AS 'subispeed',
             IF (! ISNULL( ft86.`value` ) OR ! ISNULL( ftspeed.`value` ), 1, 0 ) AS 'ftspeed',
@@ -401,7 +400,7 @@ class Magento
             LEFT JOIN catalog_product_entity_int AS ftspeed ON ( def.entity_id = ftspeed.entity_id AND ftspeed.store_id = 5 AND ftspeed.attribute_id = 102 )
         
             LEFT JOIN catalog_product_entity_int AS youtube ON ( def.entity_id = youtube.entity_id AND youtube.store_id = 0 AND youtube.attribute_id = 180)
-            LEFT JOIN catalog_product_entity_text AS install ON ( def.entity_id = install.entity_id AND install.store_id = 0 AND install.attribute_id = 144)
+            
             LEFT JOIN catalog_product_entity_varchar meta_title ON ( def.entity_id = meta_title.entity_id AND meta_title.store_id = 0 AND meta_title.attribute_id = 82)
             LEFT JOIN catalog_product_entity_int AS is_carb ON ( def.entity_id = is_carb.entity_id AND is_carb.store_id = 0 AND is_carb.attribute_id = 268)
             LEFT JOIN catalog_product_entity_varchar AS url_key ON ( def.entity_id = url_key.entity_id AND url_key.store_id = 0 AND url_key.attribute_id = 97)
@@ -438,153 +437,161 @@ class Magento
         $select = $this->db->prepare($sql);
         $select->execute();
         $progress = $this->CLImate->progress()->total($select->rowCount());
+        $ftBrzRegex = "/2013(\+|[\s]?-[\s]?[\d]{4})[\s]FR-?S[\s]\/[\s]BRZ([\s]\/[\s]86)?/";
+        $subiBrzRegex = "/[\d]{4}(\+|[\s]?-[\s]?[\d]{4})[\s]?BRZ/";
 
-        $api = new \Cloudinary\Api();
         while ($row = $select->fetch()) {
-            $netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($row['id']);
-
-            //If we found a netsuite product, lookup product in mongo by the netsuite internal id
-            if($netsuiteProduct){
-                $product = (new \Shop\Models\Products)
-                ->setCondition('netsuite.internalId', (string) $netsuiteProduct->internalId)
-                ->getItem();
-            }
-
-            //If both the above queries didnt find anything, try to lookup by the magento id
-            if(!$netsuiteProduct){
-                $product = (new \Shop\Models\Products)
-                ->setCondition('magento.id', $row['id'])
-                ->getItem();
-            }
-
-            //If no NS product, and no product, create a new product
-            if(!$netsuiteProduct && !$product){
-                $product = new \Shop\Models\Products();
-            }
-
-            // TODO: query all categories once and get their full arrays for setting in products, key by magento id
-            // TODO: discontinued?
-            // TODO: redirect
-            // TODO: brands
-
-            if (!empty($row['brand_id'])) {
-                $brand = (new \Shop\Models\Manufacturers)
-                    ->setCondition('magento.id', $row['brand_id'])
+            try{
+                $netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($row['id']);
+                //If we found a netsuite product, lookup product in mongo by the netsuite internal id
+                if($netsuiteProduct){
+                    $product = (new \Shop\Models\Products)
+                    ->setCondition('netsuite.internalId', (string) $netsuiteProduct->internalId)
                     ->getItem();
-
-                if (!empty($brand->slug)) {
-                    $product->set('manufacturer.id', $brand->id);
                 }
-            }
 
-            $productCategories = array_values(array_intersect_key($categories, array_flip(explode(',', $row['categories']))));
-            $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
-            $remove = \Dsc\ArrayHelper::getColumn($productCategories, 'remove');
+                //If both the above queries didnt find anything, try to lookup by the magento id
+                if(!$netsuiteProduct){
+                    $product = (new \Shop\Models\Products)
+                    ->setCondition('magento.id', $row['id'])
+                    ->getItem();
+                }
 
-            if (count($remove)) {
-                $toRemove = array_merge(...\Dsc\ArrayHelper::getColumn($productCategories, 'remove'));
-            } else {
-                $toRemove = [];
-            }
+                //If no NS product, and no product, create a new product
+                if(!$netsuiteProduct && !$product){
+                    $product = new \Shop\Models\Products();
+                }
+                if(empty($product)){
+                    throw new \Exception('Product is null ' . $row['model']);
+                }
+                $progress->advance(0, $row['model']);//push model to progress without progressing the count.
 
-            $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
-                return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
-            }));
+                // TODO: query all categories once and get their full arrays for setting in products, key by magento id
+                // TODO: discontinued?
+                // TODO: brands
 
-            $product
-                ->set('magento.id', $row['id'])
-                ->set('title', $row['default_title'])
-                ->set('copy', $row['long_description'])
-                ->set('short_description', $row['short_description'])
-                ->set('categories', $newProductCategories)
-                ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($row['created_at']));
+                if (!empty($row['brand_id'])) {
+                    $brand = (new \Shop\Models\Manufacturers)
+                        ->setCondition('magento.id', $row['brand_id'])
+                        ->getItem();
 
-            //If we are in a situation where we are creating a new product (eg. matrix parent, set the model number)
-            if(!$product->tracking['model_number']){
-                $product->set('tracking.model_number', $row['model']);
-            }
+                    if (!empty($brand->slug)) {
+                        $product->set('manufacturer.id', $brand->id);
+                    }
+                }
 
-            $productSalesChannels = [];
+                $productCategories = array_values(array_intersect_key($categories, array_flip(explode(',', $row['categories']))));
+                $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
+                $remove = \Dsc\ArrayHelper::getColumn($productCategories, 'remove');
+                if (count($remove)) {
+                    $toRemove = array_merge(...\Dsc\ArrayHelper::getColumn($productCategories, 'remove'));
+                } else {
+                    $toRemove = [];
+                }
 
-            if (!empty($row['subispeed'])) {
-                $productSalesChannels[] = $salesChannels['subispeed'];
-            }
+                $newProductCategories = array_values(array_filter($toAdd, function ($v) use ($toRemove) {
+                    return !in_array($v['id'], \Dsc\ArrayHelper::getColumn($toRemove, 'id'));
+                }));
+                //If there is a ymmSuffix get substring to first instance of '-' else use default_title.
+                preg_match("/.*(?=[\s]-(.*[\s]\/[\s].*|[\s]{1,}[12][\d]{3}|[\s]Universal))/", $row['default_title'], $titleMatches);
+                $product
+                    ->set('magento.id', $row['id'])
+                    ->set('title', !empty($titleMatches) ? trim($titleMatches[0]) : $row['default_title'])
+                    ->set('copy', $row['long_description'])
+                    ->set('short_description', $row['short_description'])
+                    ->set('categories', $newProductCategories)
+                    ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($row['created_at']));
 
-            if (!empty($row['ftspeed'])) {
-                $productSalesChannels[] = $salesChannels['ftspeed'];
-            }
+                //If we are in a situation where we are creating a new product (eg. matrix parent, set the model number)
+                if(!$product->tracking['model_number']){
+                    $product->set('tracking.model_number', $row['model']);
+                }
 
-            $product->set('publication.sales_channels', $productSalesChannels);
+                $productSalesChannels = [];
+                $suffixTitles = [];
 
-            if (!empty($row['enabled'])) {
-                $product->set('publication.status', 'published');
-            }
+                if (!empty($row['subispeed'])) {
+                    $productSalesChannels[] = $salesChannels['subispeed'];
+                    //So we don't add things we don't need to only add suffix if in sales channel
+                    $suffixTitles['subi'] = $this->stripYmmFromTitle($title, $row['subispeed_title']);//If this channel is active then put in suffixTitles array FIRST!
+                }
 
-            //If the product doesnt exist in NS, and is either a regular item or a grouped item, unpublish it
-            //$row['product_type'] configurable = matrix item parent
-            //$row['product_type'] simple = standard item
-            //$row['product_type'] bundle = dynamic group
-            //$row['product_type'] grouped = kit items
-            if( (!$netsuiteProduct && $row['product_type'] === 'simple') || (!$netsuiteProduct && $row['product_type'] === 'grouped')){
-                $product->set('publication.status', 'unpublished');
-            }
+                if (!empty($row['ftspeed'])) {
+                    $productSalesChannels[] = $salesChannels['ftspeed'];
+                    //So we don't add things we don't need to only add suffix if in sales channel
+                    $suffixTitles['ft86'] = $this->stripYmmFromTitle($title, $row['ft86_title']);//If this channel is active then put in suffixTitles array SECOND!
+                    $suffixTitles['ftspeed'] = $this->stripYmmFromTitle($title, $row['ftspeed_title']);//If this channel is active then put in suffixTitles array LAST!
+                }
 
-
-            if($netsuiteProduct['itemType'] === 'kit'){
-                $product->set('product_type', 'group');
-            }else if(!in_array($product->get('product_type'), ['group', 'matrix', 'matrix_subitem', 'dynamic_group'])){
-                $product->set('product_type', 'standard');
-            }
-
-                $results = $api->resources_by_tag($product->getCouldinaryTag(), ['folder' =>  'product_install_instructions','context' => true, 'max_results' => 100]);
-                //If there is install instructions in the row and cloudinary doesn't have this install instruction.
-                if(!empty($row['install instructions']) && empty($results['resources'])){
-                    //extract href value from tag.
-                    preg_match('/href="(.*?)"/', $row['install instructions'], $instructionMatches);
-                    //if we have a group match parse url
-                    if(!empty($instructionMatches[1])){
-                        //parse hrefness
-                        $instructionUrl = parse_url($instructionMatches[1]);
-                        //start building valid link.
-                        $link = !empty($instructionUrl['scheme']) ? $instructionUrl['scheme'] : 'http://';//set scheme if not found
-                        $link .= !empty($instructionUrl['host']) ? $instructionUrl['host'] : 'www.subispeed.com';//set host if not found
-                        //this shouldn't happen but just in case they are using odd stuff in href="" break out and abort upload
-                        if(empty($instructionUrl['path'])){
-                            continue;
+                if (!empty($suffixTitles)) {
+                    if(count(array_unique(array_filter(array_values($suffixTitles)))) > 1){
+                        //Ftspeed format
+                        preg_match($ftBrzRegex, $suffixTitles['ft86'], $ft86BrzMatches);
+                        preg_match($ftBrzRegex, $suffixTitles['ftspeed'], $ftBrzMatches);
+                        //Subispeed format
+                        preg_match($subiBrzRegex, $suffixTitles['subi'], $subiBrzMatches);
+                        preg_match($subiBrzRegex, $suffixTitles['ft86'], $subiFt86BrzMatches);
+                        preg_match($subiBrzRegex, $suffixTitles['ftspeed'], $subiFtspeedBrzMatches);
+                        //if ft86 format matches subi replace subi and erase from ft86
+                        if(!empty($ft86BrzMatches) && !empty($subiBrzMatches)){
+                            $suffixTitles['subi'] = preg_replace($subiBrzRegex, $ft86BrzMatches[0], $suffixTitles['subi']);
+                            $suffixTitles['ft86'] = preg_replace($ftBrzRegex, "", $suffixTitles['ft86']);
                         }
-                        //append path to link
-                        $link .= $instructionUrl['path'];
-                        //attempt to upload pdf from link we just built
-                        try{
-                            //upload to cloudinary
-                            $upload = \Cloudinary\Uploader::upload(trim($link), [
-                                'tags' => $product->get('tracking.model_number_flat'),
-                                'format' => 'pdf',
-                                'folder' => 'product_install_instructions',
-                            ]);
-                            //TODO: change to images.jbautosports.com/ if CNAME is set up.
-                            //set the install_instructions value to the secure url from cloudinary.
-                            $product->set('install_instructions', $upload['secure_url']);//set the path to cloudinary
-                        }catch(\Exception $e){
-                            //do nothing.
-                            // var_dump($e->getMessage());die('Failed to upload to cloudinary.');
+
+                        //if ft86 matches ftspeed
+                        if(!empty($ft86BrzMatches) && !empty($ftBrzMatches)){
+                            $suffixTitles['ftspeed'] = preg_replace($ftBrzRegex, $ft86BrzMatches[0], $suffixTitles['subi']);
+                            $suffixTitles['ft86'] = preg_replace($ftBrzRegex, "", $suffixTitles['ft86']);
+                        }
+                        //if either of them match subi speed regex then lets remove
+                        if(!empty($subiFt86BrzMatches) || !empty($subiFtspeedBrzMatches)){
+                            //remove from both if it exists in subi
+                            if(!empty($subiBrzMatches)){
+                                $suffixTitles['ftspeed'] = preg_replace($subiBrzRegex, "", $suffixTitles['ftspeed']);
+                            }
+
+                            $suffixTitles['ft86'] = preg_replace($subiBrzRegex, "", $suffixTitles['ft86']);
                         }
                     }
-                }else if(!empty($results['resources'])){
-                    $product->set('install_instructions', $results['resources'][0]['secure_url']);
+                    //glue all sites together by ' / '
+                    $suffixString = implode(' / ', array_unique(array_filter($suffixTitles)));//Get valid unique suffixes and convert to csv.
+                    $product->set('title_suffix', !empty($suffixString) ? preg_replace("/\/[\s]\//", " ", rtrim(ltrim($suffixString, ' /') , ' /')): NULL);//if there is a suffix string then set it else leave as null.
                 }
 
-            try{
+                $product->set('publication.sales_channels', $productSalesChannels);
+
+                if (!empty($row['enabled'])) {
+                    $product->set('publication.status', 'published');
+                }
+
+                //If the product doesnt exist in NS, and is either a regular item or a grouped item, unpublish it
+                //$row['product_type'] configurable = matrix item parent
+                //$row['product_type'] simple = standard item
+                //$row['product_type'] bundle = dynamic group
+                //$row['product_type'] grouped = kit items
+                if( (!$netsuiteProduct && $row['product_type'] === 'simple') || (!$netsuiteProduct && $row['product_type'] === 'grouped')){
+                    $product->set('publication.status', 'unpublished');
+                }
+
+
+                if($netsuiteProduct['itemType'] === 'kit'){
+                    $product->set('product_type', 'group');
+                }else if(empty($product->get('product_type'))){
+                    $product->set('product_type', 'standard');
+                }
+
                 $product->save();
             }catch(Exception $e){
                 if($e->getMessage() !== 'Not a group item'){
-                    throw $e;
+                    // throw $e;
+                    $failures[] = [$row['model']];
                 }
             }
 
 
             $progress->advance(1, $row['model']);
         }
+        $this->CLImate->table($failures);
     }
 
     public function syncProductImages()
@@ -1025,7 +1032,7 @@ class Magento
                 foreach($productGroup as $productOption){
                     //This value is what we'll use for the model number of the dynamic group product itself
                     $modelNumber = $productOption['model'];
-                    
+
                     //Set the categories for the product
                     $categoriesIDs = array_unique(explode(',', $productOption['categories']));
 
@@ -1086,7 +1093,7 @@ class Magento
             }
         }
 
-        
+
     }
 
     public function syncYmmsFromRally()
@@ -1166,10 +1173,10 @@ class Magento
 
         //Anywhere $row['categories'] exists, replace with $categoryIDs
         $productCategories = array_values(array_intersect_key($categories, array_flip($categoryIDs)));
-    
+
         $toAdd = \Dsc\ArrayHelper::getColumn($productCategories, 'add');
         $remove = \Dsc\ArrayHelper::getColumn($productCategories, 'remove');
-        
+
         if (count($remove)) {
             $toRemove = array_merge(...\Dsc\ArrayHelper::getColumn($productCategories, 'remove'));
         } else {
@@ -1182,7 +1189,7 @@ class Magento
 
         return $newProductCategories;
     }
-    
+
     public function syncUserContentImages()
     {
         \Shop\Models\UserContent::collection()->deleteMany(['type' => 'image']);
@@ -1220,7 +1227,7 @@ class Magento
             AND `file` NOT IN (
                 SELECT `value`
                 FROM catalog_product_entity_media_gallery
-            )";    
+            )";
 
         $select = $this->db->prepare($sql);
         $select->execute();
@@ -1291,7 +1298,7 @@ class Magento
                 if (!empty($row['title'])) {
                     $userContent->set('caption', trim($row['title']));
                 }
-                
+
                 try {
                     $userContent->save();
                     $data[] = ['User image added for product', $mongoProduct['tracking']['model_number'], '✅'];
@@ -1310,7 +1317,7 @@ class Magento
 
     public function syncMatrixItems()
     {
-        $swatchSQL = 
+        $swatchSQL =
             "SELECT
                 eao.option_id,
                 concat( 'https://www.subispeed.com/media/amconf/images/', eao.option_id, '.jpg' ) AS 'swatch_img' 
@@ -1320,6 +1327,7 @@ class Magento
         $swatchSelect = $this->db->prepare($swatchSQL);
         $swatchSelect->execute();
         $swatchData = $swatchSelect->fetchAll(\PDO::FETCH_KEY_PAIR);
+
 
         $sql = 
             "SELECT cpe.entity_id     AS 'parent_id', 
@@ -1669,6 +1677,17 @@ class Magento
         }
     }
 
+
+    /** Strip ymm from title. JBA saves their product titles in the format [PRODUCT_NAME] - [YMM].
+     *So assuming that $title = [PRODUCT_NAME] and $ymm = [PRODUCT_NAME] - [YMM] and there for this function will return [YMM] from the $ymmTitle.*/
+    private function stripYmmFromTitle($title, $ymmTitle)
+    {
+        preg_match('/[\s]-(.*[\s]\/[\s].*|[\s]{1,}[12][\d]{3}|[\s]Universal).*/', $ymmTitle, $titleMatches);
+        //strip out the title and any remaining  - separator from start of string.
+
+        return trim(preg_replace('/^[\s]?-/', '', !empty($titleMatches) ? $titleMatches[0] : null));
+    }
+
     public function syncSpecs()
     {
         $sql = 
@@ -1712,6 +1731,89 @@ class Magento
                     }
                 }
             }
+        }
+    }
+
+    public function syncInstallInstructions(){
+
+        $api = new \Cloudinary\Api();
+        $sql = "
+        SELECT 
+            def.entity_id AS 'id',
+            cpe.sku AS 'model',
+            install.value as 'install instructions'
+        FROM
+            catalog_product_entity_int def
+            LEFT JOIN catalog_product_entity cpe ON def.entity_id = cpe.entity_id
+            JOIN catalog_product_entity_text AS install ON ( def.entity_id = install.entity_id AND install.store_id = 0 AND install.attribute_id = 144)
+        WHERE
+            def.attribute_id = 102
+            AND def.store_id = 0
+            AND install.value is not null
+        ORDER BY def.entity_id ASC
+        ";
+        $select = $this->db->prepare($sql);
+        $select->execute();
+        $progress = $this->CLImate->progress()->total($select->rowCount());
+
+        while ($row = $select->fetch()) {
+            $netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($row['id']);
+            //If we found a netsuite product, lookup product in mongo by the netsuite internal id
+            if($netsuiteProduct){
+                $product = (new \Shop\Models\Products)
+                ->setCondition('netsuite.internalId', (string) $netsuiteProduct->internalId)
+                ->getItem();
+            }
+
+            //If both the above queries didnt find anything, try to lookup by the magento id
+            if(!$netsuiteProduct){
+                $product = (new \Shop\Models\Products)
+                ->setCondition('magento.id', $row['id'])
+                ->getItem();
+            }
+
+            $results = $api->resources_by_tag($product->getCouldinaryTag(), ['folder' =>  'product_install_instructions','context' => true, 'max_results' => 100]);
+            //If there is install instructions in the row and cloudinary doesn't have this install instruction.
+            if(!empty($row['install instructions']) && empty($results['resources']) && !empty($product)){
+                //extract href value from tag.
+                preg_match('/href="(.*?)"/', $row['install instructions'], $instructionMatches);
+                //if we have a group match parse url
+                if(!empty($instructionMatches[1])){
+                    //parse hrefness
+                    $instructionUrl = parse_url($instructionMatches[1]);
+                    //start building valid link.
+                    $link = !empty($instructionUrl['scheme']) ? $instructionUrl['scheme'] : 'http://';//set scheme if not found
+                    $link .= !empty($instructionUrl['host']) ? $instructionUrl['host'] : 'www.subispeed.com';//set host if not found
+                    //this shouldn't happen but just in case they are using odd stuff in href="" break out and abort upload
+                    if(empty($instructionUrl['path'])){
+                        continue;
+                    }
+                    //append path to link
+                    $link .= $instructionUrl['path'];
+                    //attempt to upload pdf from link we just built
+                    try{
+                        //upload to cloudinary
+                        $upload = \Cloudinary\Uploader::upload(trim($link), [
+                            'tags' => $product->get('tracking.model_number_flat'),
+                            'format' => 'pdf',
+                            'folder' => 'product_install_instructions',
+                        ]);
+                        //TODO: change to images.jbautosports.com/ if CNAME is set up.
+                        //set the install_instructions value to the secure url from cloudinary.
+                        $product->set('install_instructions', $upload['secure_url']);//set the path to cloudinary
+                    }catch(\Exception $e){
+                        //do nothing.
+                        // var_dump($e->getMessage());die('Failed to upload to cloudinary.');
+                    }
+                }
+            }else if(!empty($results['resources'])){
+                $product->set('install_instructions', $results['resources'][0]['secure_url']);
+            }
+            try{
+                $product->save();
+            }catch(\Exception $e){}
+
+            $progress->advance(1, $row['model']);
         }
     }
 }
