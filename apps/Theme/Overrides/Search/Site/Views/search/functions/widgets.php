@@ -168,11 +168,6 @@
             </div>
             <div class="map-popup-msrp" id="map-popup-msrp-box"><strong>Price:</strong> <span style="text-decoration:line-through;" id="map-popup-msrp"></span></div>
             <div class="map-popup-price" id="map-popup-price-box"><strong>Actual Price:</strong> <span id="map-popup-price"></span></div>
-            <script type="text/javascript">
-               //<![CDATA[
-                   document.observe("dom:loaded", Catalog.Map.bindProductForm);
-               //]]>
-            </script>
          </div>
          <div class="map-popup-text" id="map-popup-text">Our price is lower than the manufacturer's "minimum advertised price."  As a result, we cannot show you the price in catalog or the product page. <br><br> You have no obligation to purchase the product once you know the price. You can simply remove the item from your cart.</div>
          <div class="map-popup-text" id="map-popup-text-what-this">Our price is lower than the manufacturer's "minimum advertised price."  As a result, we cannot show you the price in catalog or the product page. <br><br> You have no obligation to purchase the product once you know the price. You can simply remove the item from your cart.</div>
@@ -219,7 +214,7 @@
                </ol>
             </div>
          </div>
-        <?php if($type == 'shop.categories' && !empty($this->app->get('product_specs'))) : ?>
+        <?php if(!empty($this->app->get('product_specs'))) : ?>
         <div class="side_box mobile_side_box"  data-id="search_filter_specs<?php echo $instance_id; ?>">
          <div class="block block-layered-nav block-layered-color">
          <?php foreach($this->app->get('product_specs') as $key => $spec) : ?>

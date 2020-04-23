@@ -48,20 +48,22 @@ $clear_all_exclusions = '';
     }
 
 	function stickyEval(elem, row, add) {
-		if((elem.outerHeight(true) + add) >= row.outerHeight(true) && elem.outerHeight(true) != 0 && row.outerHeight(true) != 0) {
-			jQuery('.sticky_parent').hcSticky('off');
-			sticky_state = false;
-		} else {
-			if(!sticky_state) {
-				jQuery('.sticky_parent').hcSticky('on');
-				sticky_state = true;
-			}
-			//
+        if(typeof(jQuery('.sticky_parent').hcSticky) == 'function') {
+            if((elem.outerHeight(true) + add) >= row.outerHeight(true) && elem.outerHeight(true) != 0 && row.outerHeight(true) != 0) {
+                jQuery('.sticky_parent').hcSticky('off');
+                sticky_state = false;
+            } else {
+                if(!sticky_state) {
+                    jQuery('.sticky_parent').hcSticky('on');
+                    sticky_state = true;
+                }
+                //
 
-			if(elem.offset().top + elem.outerHeight(true) + add > row.offset().top + row.outerHeight(true)) {
-				elem.css('top', (parseInt(elem.css('top'), 10) - 10 - add) + 'px');
-			}
-		}
+                if(elem.offset().top + elem.outerHeight(true) + add > row.offset().top + row.outerHeight(true)) {
+                    elem.css('top', (parseInt(elem.css('top'), 10) - 10 - add) + 'px');
+                }
+            }
+        }
 	}
 
     function algoliaProductInstance(
@@ -109,7 +111,7 @@ $clear_all_exclusions = '';
 					facetsRefinements: facet_refinements,
 					<?php if($type == 'shop.categories' || !empty($hierarchical_refinement)) : ?>
 					hierarchicalFacets: 'hierarchicalCategories.lvl0',
-					//hierarchicalFacetsRefinements: hierarchical_facet_refinements,
+					hierarchicalFacetsRefinements: hierarchical_facet_refinements,
 					<?php endif; ?>
 				},
 				urlSync: {
