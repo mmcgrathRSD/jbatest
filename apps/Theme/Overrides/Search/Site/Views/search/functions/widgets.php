@@ -208,7 +208,6 @@
             </ol>
          </div>
       </div>
-        <?php if(\Base::instance()->get('SITE_TYPE') != 'wholesale') : ?>
          <div class="block block-layered-nav block-layered-color">
             <div class="block-title">
                <strong><span>
@@ -220,23 +219,15 @@
                </ol>
             </div>
          </div>
-        <?php elseif(\Base::instance()->get('SITE_TYPE') == 'wholesale') : ?>
-        <div class="side_box mobile_side_box" data-id="search_filter_status<?php echo $instance_id; ?>">
-            <h4>Status</h4>
-            <div id="search_filter_status<?php echo $instance_id; ?>"></div>
-        </div>
-        <div class="side_box mobile_side_box" data-id="search_filter_promotions<?php echo $instance_id; ?>">
-            <h4>Promotion</h4>
-            <div id="search_filter_promotions<?php echo $instance_id; ?>"></div>
-        </div>
-        <?php endif; ?>
-        <?php if($type == 'shop.categories' && !$master_search && !empty($item->product_specs)) : ?>
+        <?php if($type == 'shop.categories' && !$master_search && !empty($this->app->get('product_specs'))) : ?>
         <div class="side_box mobile_side_box"  data-id="search_filter_specs<?php echo $instance_id; ?>">
-        <?php foreach($item->product_specs as $key => $spec) : ?>
-        <?php if(empty($spec['custom_atf'])) : ?>
+         <div class="block block-layered-nav block-layered-color">
+         <?php foreach($this->app->get('product_specs') as $key => $spec) : ?>
+         <?php if(empty($spec['custom_atf'])) : ?>
             <div id="search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); echo $instance_id; ?>"></div>
-        <?php endif; ?>
-        <?php endforeach; ?>
+         <?php endif; ?>
+         <?php endforeach; ?>
+         </div>
         </div>
         <?php endif; ?>
       <!-- banner slider BOF -->
