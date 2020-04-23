@@ -1682,7 +1682,7 @@ class Magento
      *So assuming that $title = [PRODUCT_NAME] and $ymm = [PRODUCT_NAME] - [YMM] and there for this function will return [YMM] from the $ymmTitle.*/
     private function stripYmmFromTitle($title, $ymmTitle)
     {
-        preg_match('/-[\s][\d]{4}.*/', $ymmTitle, $titleMatches);
+        preg_match('/[\s]-(.*[\s]\/[\s].*|[\s]{1,}[12][\d]{3}|[\s]Universal).*/', $ymmTitle, $titleMatches);
         //strip out the title and any remaining  - separator from start of string.
 
         return trim(preg_replace('/^[\s]?-/', '', !empty($titleMatches) ? $titleMatches[0] : null));
