@@ -74,8 +74,11 @@
 	</div>
 </div>
 
-<?php if ($this->app->get('DEBUG') && false) { ?>
-<div class="footer-bottom col-lg-12 col-md-12 col-sm-12 col-xs-12">
+<?php if ($this->app->get('DEBUG')) { ?>
+<div class="footer-bottom col-lg-12 col-md-12 col-sm-12 col-xs-12" style="
+    background-color: white;
+    text-align: left;
+">
    <div class="c">
       <div class="stats list-group">
          <h4>Stats</h4>

@@ -306,66 +306,33 @@ $clear_all_exclusions = '';
 				}
 
 
-            } else {
-                <?php if($type == 'shop.categories') : //echo '/*';  var_dump($this->app->get('product_specs')); echo '*/'; ?>
-                <?php foreach((array) $this->app->get('product_specs') as $key => $spec) : ?>
-				<?php if($spec['hidden'] != 'on') : ?>
-                <?php if(!empty($spec['custom_atf'])) : ?>
-                    search.addWidget(
-    				  instantsearch.widgets.menuSelect({
-    					container: '#search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); ?>' + instance_id,
-    					attributeName: 'specs.<?php echo $key; ?>',
-    					autoHideContainer: false,
-    					templates: {
-    					    seeAllOption: 'Select <?php echo $key; ?>...',
-    					    item: '{{label}}'
-    					}
-    				  })
-    				);
-                <?php else : ?>
-                <?php if($spec['type'] == 'number') : ?>
-				search.addWidget(
-				  instantsearch.widgets.rangeSlider({
-					container: '#search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); ?>' + instance_id,
-					attributeName: 'specs.<?php echo $key; ?>',
-					templates: {
-						header: '<h4 class="collapsible_facet"><?php echo $key; ?><i class="fa fa-chevron-right" aria-hidden="true"></i><i class="fa fa-chevron-down" aria-hidden="true"></i></h4>'
-					},
-					cssClasses: {
-						root: 'collapsible_range'
-					},
-					collapsible: {
-						collapsed: true
-					}
-				  })
-				);
-				<?php else : ?>
-				search.addWidget(
-                    instantsearch.widgets.refinementList({
-                        container: '#search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); ?>' + instance_id,
-                        attributeName: 'specs.<?php echo $key; ?>',
-                        templates: {
-                            header: '<div class="block-title"><strong><span><div><em class="toggle toggle-plus"></em><div class="new_toggle"></div><a href="#" class="collapsible_facet_header_link"><span><?php echo $key; ?></span></a></div></span></strong></div>',
-                            item: '<?php echo trim(preg_replace("/[\n\r]/","",$this->renderLayout('Search/Site/Views::search/refinement_item_template.php')));?>'
-                        },
-                        cssClasses: {
-                            root: ''
-                        },
-                        collapsible: {
-                            collapsed: true
-                        },
-                        sortBy: function(a, b) {
-                            return alphanum(a.name, b.name);
-                        },
-                        limit: 200
-                    })
-                );
-				<?php endif; ?>
-                <?php endif; ?>
-				<?php endif; ?>
-                <?php endforeach; ?>
-                <?php endif; ?>
             }
+
+            <?php foreach((array) $this->app->get('product_specs') as $key => $spec) : ?>
+            <?php if($spec['hidden'] != 'on') : ?>
+            search.addWidget(
+                instantsearch.widgets.refinementList({
+                    container: '#search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); ?>' + instance_id,
+                    attributeName: 'specs.<?php echo $key; ?>',
+                    templates: {
+                        header: '<div class="block-title"><strong><span><div><em class="toggle toggle-plus"></em><div class="new_toggle"></div><a href="#" class="collapsible_facet_header_link"><span><?php echo $key; ?></span></a></div></span></strong></div>',
+                        item: '<?php echo trim(preg_replace("/[\n\r]/","",$this->renderLayout('Search/Site/Views::search/refinement_item_template.php')));?>'
+                    },
+                    cssClasses: {
+                        root: ''
+                    },
+                    collapsible: {
+                        collapsed: true
+                    },
+                    sortBy: function(a, b) {
+                        return alphanum(a.name, b.name);
+                    },
+                    limit: 10,
+					showMore: true
+                })
+            );
+            <?php endif; ?>
+            <?php endforeach; ?>
 
 		   //lets make some links if stuffsikins needs it
 		   var additional_links = '';

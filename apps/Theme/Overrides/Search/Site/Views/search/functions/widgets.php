@@ -219,13 +219,11 @@
                </ol>
             </div>
          </div>
-        <?php if($type == 'shop.categories' && !$master_search && !empty($this->app->get('product_specs'))) : ?>
+        <?php if($type == 'shop.categories' && !empty($this->app->get('product_specs'))) : ?>
         <div class="side_box mobile_side_box"  data-id="search_filter_specs<?php echo $instance_id; ?>">
          <div class="block block-layered-nav block-layered-color">
          <?php foreach($this->app->get('product_specs') as $key => $spec) : ?>
-         <?php if(empty($spec['custom_atf'])) : ?>
-            <div id="search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); echo $instance_id; ?>"></div>
-         <?php endif; ?>
+         <div id="search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); echo $instance_id; ?>"></div>
          <?php endforeach; ?>
          </div>
         </div>
