@@ -373,6 +373,7 @@ class Magento
             mB.option_id as 'brand_id,mfg_id',
             mB.value as 'brand/manufacturer',
             cpe.sku AS 'model',
+            cpe.type_id AS 'product_type',
             `status`.`value` AS 'enabled',
             ! ISNULL( subi.`value` ) AS 'subispeed',
             IF (! ISNULL( ft86.`value` ) OR ! ISNULL( ftspeed.`value` ), 1, 0 ) AS 'ftspeed',
