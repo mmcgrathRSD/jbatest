@@ -1808,6 +1808,9 @@ class Magento
             }else if(!empty($results['resources'])){
                 $product->set('install_instructions', $results['resources'][0]['secure_url']);
             }
+            try{
+                $product->save();
+            }catch(\Exception $e){}
 
             $progress->advance(1, $row['model']);
         }
