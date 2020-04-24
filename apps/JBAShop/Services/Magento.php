@@ -1757,59 +1757,66 @@ class Magento
         $progress = $this->CLImate->progress()->total($select->rowCount());
 
         while ($row = $select->fetch()) {
-            $netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($row['id']);
-            //If we found a netsuite product, lookup product in mongo by the netsuite internal id
-            if($netsuiteProduct){
-                $product = (new \Shop\Models\Products)
-                ->setCondition('netsuite.internalId', (string) $netsuiteProduct->internalId)
-                ->getItem();
-            }
-
-            //If both the above queries didnt find anything, try to lookup by the magento id
-            if(!$netsuiteProduct){
-                $product = (new \Shop\Models\Products)
-                ->setCondition('magento.id', $row['id'])
-                ->getItem();
-            }
-
-            $results = $api->resources_by_tag($product->getCouldinaryTag(), ['folder' =>  'product_install_instructions','context' => true, 'max_results' => 100]);
-            //If there is install instructions in the row and cloudinary doesn't have this install instruction.
-            if(!empty($row['install instructions']) && empty($results['resources']) && !empty($product)){
-                //extract href value from tag.
-                preg_match('/href="(.*?)"/', $row['install instructions'], $instructionMatches);
-                //if we have a group match parse url
-                if(!empty($instructionMatches[1])){
-                    //parse hrefness
-                    $instructionUrl = parse_url($instructionMatches[1]);
-                    //start building valid link.
-                    $link = !empty($instructionUrl['scheme']) ? $instructionUrl['scheme'] : 'http://';//set scheme if not found
-                    $link .= !empty($instructionUrl['host']) ? $instructionUrl['host'] : 'www.subispeed.com';//set host if not found
-                    //this shouldn't happen but just in case they are using odd stuff in href="" break out and abort upload
-                    if(empty($instructionUrl['path'])){
-                        continue;
-                    }
-                    //append path to link
-                    $link .= $instructionUrl['path'];
-                    //attempt to upload pdf from link we just built
-                    try{
-                        //upload to cloudinary
-                        $upload = \Cloudinary\Uploader::upload(trim($link), [
-                            'tags' => $product->get('tracking.model_number_flat'),
-                            'format' => 'pdf',
-                            'folder' => 'product_install_instructions',
-                        ]);
-                        //TODO: change to images.jbautosports.com/ if CNAME is set up.
-                        //set the install_instructions value to the secure url from cloudinary.
-                        $product->set('install_instructions', $upload['secure_url']);//set the path to cloudinary
-                    }catch(\Exception $e){
-                        //do nothing.
-                        // var_dump($e->getMessage());die('Failed to upload to cloudinary.');
-                    }
-                }
-            }else if(!empty($results['resources'])){
-                $product->set('install_instructions', $results['resources'][0]['secure_url']);
-            }
             try{
+                $netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($row['id']);
+                //If we found a netsuite product, lookup product in mongo by the netsuite internal id
+                if($netsuiteProduct){
+                    $product = (new \Shop\Models\Products)
+                    ->setCondition('netsuite.internalId', (string) $netsuiteProduct->internalId)
+                    ->getItem();
+                }
+
+                //If both the above queries didnt find anything, try to lookup by the magento id
+                if(!$netsuiteProduct){
+                    $product = (new \Shop\Models\Products)
+                    ->setCondition('magento.id', $row['id'])
+                    ->getItem();
+                }
+                if(empty($product)){
+                    $progress->advance(1, $row['model']);
+                    continue;
+                }
+
+                $results = $api->resources_by_tag('install_' . $product->getCouldinaryTag(), ['folder' =>  'product_install_instructions','context' => true, 'max_results' => 100]);
+                //If there is install instructions in the row and cloudinary doesn't have this install instruction.
+                if(!empty($row['install instructions']) && empty($results['resources'])){
+
+                    //extract href value from tag.
+                    preg_match('/href="(.*?)"/', $row['install instructions'], $instructionMatches);
+                    //if we have a group match parse url
+                    if(!empty($instructionMatches[1])){
+                        //parse hrefness
+                        $instructionUrl = parse_url($instructionMatches[1]);
+                        //start building valid link.
+                        $link = !empty($instructionUrl['scheme']) ? $instructionUrl['scheme'] : 'http://';//set scheme if not found
+                        $link .= !empty($instructionUrl['host']) ? $instructionUrl['host'] : 'www.subispeed.com';//set host if not found
+                        //this shouldn't happen but just in case they are using odd stuff in href="" break out and abort upload
+                        if(empty($instructionUrl['path'])){
+                            continue;
+                        }
+                        //append path to link
+                        $link .= $instructionUrl['path'];
+
+                        //attempt to upload pdf from link we just built
+                        try{
+                            //upload to cloudinary
+                            $upload = \Cloudinary\Uploader::upload(trim($link), [
+                                'tags' => 'install_' . $product->get('tracking.model_number_flat'),
+                                'format' => 'pdf',
+                                'folder' => 'product_install_instructions',
+                            ]);
+                            //TODO: change to images.jbautosports.com/ if CNAME is set up.
+                            //set the install_instructions value to the secure url from cloudinary.
+                            $product->set('install_instructions', $upload['secure_url']);//set the path to cloudinary
+                        }catch(\Exception $e){
+                            //do nothing.
+                            // var_dump($e->getMessage());die('Failed to upload to cloudinary.');
+                        }
+                    }
+                }else if(!empty($results['resources'])){
+                    $product->set('install_instructions', $results['resources'][0]['secure_url']);
+                }
+
                 $product->save();
             }catch(\Exception $e){}
 
