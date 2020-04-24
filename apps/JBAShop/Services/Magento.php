@@ -588,6 +588,9 @@ class Magento
                     $product->set('publication.status', 'unpublished');
                 }
 
+                if(empty($productSalesChannels)){
+                    $product->set('publication.status', 'unpublished');
+                }                
 
                 if($netsuiteProduct['itemType'] === 'kit'){
                     $product->set('product_type', 'group');
