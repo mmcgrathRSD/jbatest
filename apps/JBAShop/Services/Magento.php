@@ -245,6 +245,7 @@ class Magento
                 AND cc_int.`value` = 1 
                 AND (( cce.parent_id = 2 AND cce.children_count > 1 ) OR cce.parent_id > 2 ) 
                 AND ee.entity_model = 'catalog/category' 
+                AND cc1.`value` NOT LIKE '%shop-by-manufacturer%'
             GROUP BY
                 id 
             ORDER BY
@@ -555,7 +556,7 @@ class Magento
                     }
                     //glue all sites together by ' / '
                     $suffixString = implode(' / ', array_unique(array_filter($suffixTitles)));//Get valid unique suffixes and convert to csv.
-                    $product->set('title_suffix', !empty($suffixString) ? preg_replace("/\/[\s]\//", " ", rtrim(ltrim($suffixString, ' /') , ' /')): NULL);//if there is a suffix string then set it else leave as null.
+                    $product->set('title_suffix', !empty($suffixString) ? preg_replace("/\/[\s]{1,}\//", "/", rtrim(ltrim($suffixString, ' /') , ' /')): NULL); //if there is a suffix string then set it else leave as null.
                 }
 
                 $product->set('publication.sales_channels', $productSalesChannels);
