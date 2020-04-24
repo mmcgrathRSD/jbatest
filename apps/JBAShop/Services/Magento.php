@@ -200,7 +200,12 @@ class Magento
                 'id' => new \MongoDB\BSON\ObjectID('5841b1deb38c50ba028b4567'),
                 'title' => 'SubiSpeed',
                 'slug' => 'subispeed'
-            ]
+            ],
+            'ft86speedfactory' => [
+                'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
+                'title' => 'FTSpeed',
+                'slug' => 'ftspeed'
+            ],
         ];
         // TODO: category enabled?
 
@@ -210,34 +215,40 @@ class Magento
                 cc.`value` AS `name`,
                 cc1.`value` AS url_path,
                 channel.channel,
-            IF
-                ( cce.parent_id IN ( 1, 2, 652, 333, 515, 757, 1060, 1425 ), NULL, cce.parent_id ) AS parent_id,
                 position AS sort_order,
-                ccdesc.description AS description 
+                ccdesc.description AS description,
+            IF
+                (
+                    channel.channel = 'ft86speedfactory' 
+                    AND cce.parent_id = 652,
+                    1682,
+                IF
+                    ( cce.parent_id IN ( 1, 2, 652, 333, 515, 757, 1060, 1425 ), NULL, cce.parent_id ) 
+                ) AS parent_id 
             FROM
                 catalog_category_entity_varchar cc
                 JOIN catalog_category_entity_varchar cc1 ON cc.entity_id = cc1.entity_id
                 JOIN catalog_category_entity_int cc_int ON cc1.entity_id = cc_int.entity_id
                 JOIN eav_entity_type ee ON cc.entity_type_id = ee.entity_type_id
                 JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id
-                JOIN ( SELECT entity_id, description FROM catalog_category_flat_store_1 UNION SELECT entity_id, description FROM catalog_category_flat_store_4 UNION SELECT entity_id, description FROM catalog_category_flat_store_5 ) AS ccdesc ON ccdesc.entity_id = cc.entity_id 
+                JOIN ( SELECT entity_id, description FROM catalog_category_flat_store_1 UNION SELECT entity_id, description FROM catalog_category_flat_store_4 UNION SELECT entity_id, description FROM catalog_category_flat_store_5 ) AS ccdesc ON ccdesc.entity_id = cc.entity_id
                 JOIN (
-                    SELECT
-                        entity_id,
-                        'subispeed' AS channel 
-                    FROM
-                        catalog_category_flat_store_1 AS subispeed UNION
-                    SELECT
-                        entity_id,
-                        'ft86speedfactory' AS channel 
-                    FROM
-                        catalog_category_flat_store_4 AS ft86speedfactory UNION
-                    SELECT
-                        entity_id,
-                        'ftspeed' AS channel 
-                    FROM
-                        catalog_category_flat_store_5 AS ftspeed 
-                    ) AS channel ON channel.entity_id = cc.entity_id 
+                SELECT
+                    entity_id,
+                    'subispeed' AS channel 
+                FROM
+                    catalog_category_flat_store_1 AS subispeed UNION
+                SELECT
+                    entity_id,
+                    'ft86speedfactory' AS channel 
+                FROM
+                    catalog_category_flat_store_4 AS ft86speedfactory UNION
+                SELECT
+                    entity_id,
+                    'ftspeed' AS channel 
+                FROM
+                    catalog_category_flat_store_5 AS ftspeed 
+                ) AS channel ON channel.entity_id = cc.entity_id 
             WHERE
                 cc.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'name' ) 
                 AND cc1.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'url_path' ) 
@@ -245,6 +256,10 @@ class Magento
                 AND cc_int.`value` = 1 
                 AND (( cce.parent_id = 2 AND cce.children_count > 1 ) OR cce.parent_id > 2 ) 
                 AND ee.entity_model = 'catalog/category' 
+                AND cc1.`value` NOT LIKE '%shop-by-manufacturer%' 
+                AND cc.`value` != 'SUPRA' -- AND cc.`value` != 'FR-S / BRZ / 86'
+                
+                AND channel.channel = 'ft86speedfactory' 
             GROUP BY
                 id 
             ORDER BY
@@ -555,7 +570,7 @@ class Magento
                     }
                     //glue all sites together by ' / '
                     $suffixString = implode(' / ', array_unique(array_filter($suffixTitles)));//Get valid unique suffixes and convert to csv.
-                    $product->set('title_suffix', !empty($suffixString) ? preg_replace("/\/[\s]\//", " ", rtrim(ltrim($suffixString, ' /') , ' /')): NULL);//if there is a suffix string then set it else leave as null.
+                    $product->set('title_suffix', !empty($suffixString) ? preg_replace("/\/[\s]{1,}\//", "/", rtrim(ltrim($suffixString, ' /') , ' /')): NULL); //if there is a suffix string then set it else leave as null.
                 }
 
                 $product->set('publication.sales_channels', $productSalesChannels);
@@ -573,6 +588,9 @@ class Magento
                     $product->set('publication.status', 'unpublished');
                 }
 
+                if(empty($productSalesChannels)){
+                    $product->set('publication.status', 'unpublished');
+                }                
 
                 if($netsuiteProduct['itemType'] === 'kit'){
                     $product->set('product_type', 'group');
