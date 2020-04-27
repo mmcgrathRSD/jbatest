@@ -71,7 +71,7 @@ class Category extends \Shop\Site\Controllers\Category
 
             $subcategories = \Shop\Models\Categories::getCategoryFilters($category,$state);
             $this->app->set('hierarchical_refinement', end($category->getHierarchy()));
-
+            $this->app->set('category_children', $category->children());
     	} catch (\Exception $e) {
     		$this->app->error('404');
     	}
