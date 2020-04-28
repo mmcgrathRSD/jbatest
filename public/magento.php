@@ -38,7 +38,10 @@ $app->route('GET /sync-product-info', function() {
     (new JBAShop\Services\Magento)->syncProductInfo();
 });
 
-$app->route('GET /sync-product-installations', function(){
+$app->route('GET /sync-product-installations', function() use($CLImate) {
+	$CLImate->red('Have you cleared the product_install_instructions folder in Cloudinary?');
+
+	\JBAShop\Services\Magento::setCloudinaryCNAME('images.jbautosports.com');
 	(new JBAShop\Services\Magento)->syncInstallInstructions();
 });
 
@@ -63,11 +66,15 @@ $app->route('GET /sync-usercontent-images', function() use ($CLImate) {
 
 $app->route('GET /move-product-description-images', function() use ($CLImate) {
 	$CLImate->red('Have you cleared the content folder in Cloudinary?');
+
+	\JBAShop\Services\Magento::setCloudinaryCNAME('images.jbautosports.com');
 	(new JBAShop\Services\Magento)->moveProductDescriptionImages();
 });
 
 $app->route('GET /move-category-description-images', function() use ($CLImate) {
 	$CLImate->red('Have you cleared the content folder in Cloudinary?');
+
+	\JBAShop\Services\Magento::setCloudinaryCNAME('images.jbautosports.com');
 	(new JBAShop\Services\Magento)->moveCategoryDescriptionImages();
 });
 
