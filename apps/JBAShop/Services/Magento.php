@@ -24,6 +24,25 @@ class Magento
         $this->CLImate = new CLImate();
     }
 
+    public static function setCloudinaryCNAME(string $cname)
+    {
+        $app = \Base::instance();
+
+        $app->set('cloudinary.cname', $cname);
+        $app->set('cloudinary.secure_distribution', $cname);
+
+        \Cloudinary::config(array(
+            "cloud_name" => $app->get('cloudinary.cloud_name'),
+            "api_key"    => $app->get('cloudinary.api_key'),
+            "api_secret" => $app->get('cloudinary.api_secret'),
+            "private_cdn" => filter_var($app->get('cloudinary.private_cdn'), FILTER_VALIDATE_BOOLEAN),
+            "cname" => $app->get('cloudinary.cname'),
+            "secure_distribution" => $app->get('cloudinary.secure_distribution'),
+            'cdn_subdomain' => filter_var($app->get('cloudinary.cdn_subdomain'), FILTER_VALIDATE_BOOLEAN),
+            'secure' => true
+        ));
+    }
+
     public static function getDB()
     {
         /** @var SQL $db */
@@ -702,6 +721,8 @@ class Magento
                 }
 
                 try {
+                    // TODO: check if photos are already in Cloudinary with product tag and skip upload (just call getImagesForProductFromCloudinary)
+
                     \Cloudinary\Uploader::upload(trim($image), [
                         'tags' => $model,
                         'type' => 'private',
@@ -1752,53 +1773,53 @@ class Magento
         }
     }
 
-    public function syncInstallInstructions(){
-
+    public function syncInstallInstructions()
+    {
         $api = new \Cloudinary\Api();
-        $sql = "
-        SELECT 
-            def.entity_id AS 'id',
-            cpe.sku AS 'model',
-            install.value as 'install instructions'
-        FROM
-            catalog_product_entity_int def
-            LEFT JOIN catalog_product_entity cpe ON def.entity_id = cpe.entity_id
-            JOIN catalog_product_entity_text AS install ON ( def.entity_id = install.entity_id AND install.store_id = 0 AND install.attribute_id = 144)
-        WHERE
-            def.attribute_id = 102
-            AND def.store_id = 0
-            AND install.value is not null
-        ORDER BY def.entity_id ASC
-        ";
+        $sql = 
+            "SELECT 
+                def.entity_id AS 'id',
+                cpe.sku AS 'model',
+                install.value as 'install instructions'
+            FROM
+                catalog_product_entity_int def
+                LEFT JOIN catalog_product_entity cpe ON def.entity_id = cpe.entity_id
+                JOIN catalog_product_entity_text AS install ON ( def.entity_id = install.entity_id AND install.store_id = 0 AND install.attribute_id = 144)
+            WHERE
+                def.attribute_id = 102
+                AND def.store_id = 0
+                AND install.value is not null
+            ORDER BY def.entity_id ASC";
+
         $select = $this->db->prepare($sql);
         $select->execute();
         $progress = $this->CLImate->progress()->total($select->rowCount());
 
         while ($row = $select->fetch()) {
-            try{
+            try {
                 $netsuiteProduct = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($row['id']);
                 //If we found a netsuite product, lookup product in mongo by the netsuite internal id
-                if($netsuiteProduct){
+                if ($netsuiteProduct) {
                     $product = (new \Shop\Models\Products)
                     ->setCondition('netsuite.internalId', (string) $netsuiteProduct->internalId)
                     ->getItem();
                 }
 
                 //If both the above queries didnt find anything, try to lookup by the magento id
-                if(!$netsuiteProduct){
+                if (!$netsuiteProduct) {
                     $product = (new \Shop\Models\Products)
                     ->setCondition('magento.id', $row['id'])
                     ->getItem();
                 }
-                if(empty($product)){
+                
+                if(empty($product)) {
                     $progress->advance(1, $row['model']);
                     continue;
                 }
 
                 $results = $api->resources_by_tag('install_' . $product->getCouldinaryTag(), ['folder' =>  'product_install_instructions','context' => true, 'max_results' => 100]);
                 //If there is install instructions in the row and cloudinary doesn't have this install instruction.
-                if(!empty($row['install instructions']) && empty($results['resources'])){
-
+                if (!empty($row['install instructions']) && empty($results['resources'])) {
                     //extract href value from tag.
                     preg_match('/href="(.*?)"/', $row['install instructions'], $instructionMatches);
                     //if we have a group match parse url
@@ -1809,34 +1830,48 @@ class Magento
                         $link = !empty($instructionUrl['scheme']) ? $instructionUrl['scheme'] : 'http://';//set scheme if not found
                         $link .= !empty($instructionUrl['host']) ? $instructionUrl['host'] : 'www.subispeed.com';//set host if not found
                         //this shouldn't happen but just in case they are using odd stuff in href="" break out and abort upload
-                        if(empty($instructionUrl['path'])){
+                        if (empty($instructionUrl['path'])) {
                             continue;
                         }
                         //append path to link
                         $link .= $instructionUrl['path'];
 
                         //attempt to upload pdf from link we just built
-                        try{
+                        try {
                             //upload to cloudinary
                             $upload = \Cloudinary\Uploader::upload(trim($link), [
                                 'tags' => 'install_' . $product->get('tracking.model_number_flat'),
                                 'format' => 'pdf',
                                 'folder' => 'product_install_instructions',
                             ]);
-                            //TODO: change to images.jbautosports.com/ if CNAME is set up.
+
+                            $pdfUrl = \cloudinary_url($upload['public_id'], [
+                                'fetch_format' => 'auto',
+                                'sign_url' => true,
+                                'secure' => true
+                            ]);
+
                             //set the install_instructions value to the secure url from cloudinary.
-                            $product->set('install_instructions', $upload['secure_url']);//set the path to cloudinary
-                        }catch(\Exception $e){
-                            //do nothing.
+                            $product->set('install_instructions', $pdfUrl);//set the path to cloudinary
+                        } catch(\Exception $e) {
+                            // do nothing.
                             // var_dump($e->getMessage());die('Failed to upload to cloudinary.');
                         }
                     }
-                }else if(!empty($results['resources'])){
-                    $product->set('install_instructions', $results['resources'][0]['secure_url']);
+                } else if(!empty($results['resources'])) {
+                    $pdfUrl = \cloudinary_url($results['resources'][0]['public_id'], [
+                        'fetch_format' => 'auto',
+                        'sign_url' => true,
+                        'secure' => true
+                    ]);
+
+                    $product->set('install_instructions', $pdfUrl);
                 }
 
                 $product->save();
-            }catch(\Exception $e){}
+            } catch(\Exception $e) {
+                // do nothing
+            }
 
             $progress->advance(1, $row['model']);
         }
