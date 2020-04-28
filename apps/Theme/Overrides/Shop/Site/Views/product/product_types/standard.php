@@ -43,7 +43,7 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
          <div id="messages_product_view"></div>
          <div class="product-view">
             <div class="product-essential">
-               <form action="https://www.subispeed.com/checkout/cart/add/uenc/aHR0cHM6Ly93d3cuc3ViaXNwZWVkLmNvbS9zdWJhcnUtbWF0dGUtYmxhY2stYWMta25vYi1mdWxsLXJlcGxhY2VtZW50LTIwMTUtd3J4LXN0aS0yMDE0LWZvcmVzdGVyLTIwMTMtY3Jvc3N0cmVr/product/13193/form_key/PTT3lpSgzitk4OCG/" method="post" id="product_addtocart_form">
+               <!-- <form action="https://www.subispeed.com/checkout/cart/add/uenc/aHR0cHM6Ly93d3cuc3ViaXNwZWVkLmNvbS9zdWJhcnUtbWF0dGUtYmxhY2stYWMta25vYi1mdWxsLXJlcGxhY2VtZW50LTIwMTUtd3J4LXN0aS0yMDE0LWZvcmVzdGVyLTIwMTMtY3Jvc3N0cmVr/product/13193/form_key/PTT3lpSgzitk4OCG/" method="post" id="product_addtocart_form" class="addToCartForm"> -->
                   <div class="product-category-title">
                      <h3><?php echo $item->manufacturer['title']; ?></h3>
                   </div>
@@ -206,17 +206,20 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                         </div>
                      </div>
                      <div class="add-to-box">
-                        <div class="add-to-cart">
-                           <div class="qty-container">
-                              <div class="f-right">
-                                 <a class="qty-math qty-inc icon-white" href="#"></a>
-                                 <a class="qty-math qty-dec icon-white" href="#"></a>
+                     <form action="/shop/cart/add" method="post" class="addToCartForm">
+		                    <input type="hidden" name="model_number" value="<?php echo $item->tracking['model_number']; ?>" class="variant_id" />
+                           <div class="add-to-cart">
+                              <div class="qty-container">
+                                 <div class="f-right">
+                                    <a class="qty-math qty-inc icon-white" href="#"></a>
+                                    <a class="qty-math qty-dec icon-white" href="#"></a>
+                                 </div>
+                                 <input type="text" name="quantity" id="qty" maxlength="12" value="0" title="Qty" class="input-text qty">
+                                 <label for="qty">Quantity</label>
                               </div>
-                              <input type="text" name="qty" id="qty" maxlength="12" value="0" title="Qty" class="input-text qty">
-                              <label for="qty">Quantity</label>
+                              <button type="submit" title="Add to Cart" class="button btn-cart icon-black addToCartButton" onclick=""><span><span>Add to Cart</span></span></button>
                            </div>
-                           <button type="button" title="Add to Cart" class="button btn-cart icon-black" onclick="" data-click="productAddToCartForm.submit(this)"><span><span>Add to Cart</span></span></button>
-                        </div>
+                     </form>
                      </div>
                      <ul class="add-to-links">
                         <li><a class="link-wishlist  icon-black" href="https://www.subispeed.com/wishlist/index/add/product/13193/form_key/PTT3lpSgzitk4OCG/" onclick=""><span class="link_i"></span>Add to Wishlist</a></li>
@@ -240,7 +243,7 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                      </div>
                   </div>
                   <div class="clearer"></div>
-               </form>
+               <!-- </form> -->
                <script type="text/javascript">
                   //<![CDATA[
                   var productAddToCartForm = new VarienForm('product_addtocart_form');

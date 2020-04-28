@@ -1,3 +1,8 @@
+<?php 
+   $cart = \Shop\Models\Carts::fetch();
+   // var_dump($cart);die('cartz');
+?>
+
 <div class="header-container full-header">
    <div class="header header-2 site-width">
       <div class="table-container">
@@ -13,25 +18,40 @@
                   <!-- cart BOF -->
                   <div class="header-switch header-cart">
                      <a class="header-switch-trigger summary icon-white" href="/shop/cart/">
-                     <span>My Cart</span><span class="qty">1</span>	</a>
+                     <span>My Cart</span><span class="qty"><?php echo count($cart->get('items')); ?></span>	</a>
                      <div class="header-dropdown" style="display: none; opacity: 0;">
                         <div class="cart-promotion"><strong>Shopping Cart</strong></div>
                         <p class="block-subtitle text-recently">Recently added item(s)</p>
                         <ol id="cart-sidebar" class="mini-products-list">
-                           <li class="item clearfix">
-                              <a href="https://www.subispeed.com/olm-retical-style-led-fog-lights-2013-2016-fr-s-2015-wrx-2014-forester-2013-crosstrek-15500" title="OLM Retical Style LED Fog Lights - 15+ WRX / 15-17 STI / 13-16 BRZ / 13+ Crosstrek / 14+ Forester " class="product-image">
-                              <img src="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/120x120/85e4522595efc69f496374d01ef2bf13/o/l/olm_retical_style_led_fog_lights_-_13-16_fr-s_15_wrx_15_sti-1_1.jpg" data-srcx2="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/120x120/85e4522595efc69f496374d01ef2bf13/o/l/olm_retical_style_led_fog_lights_-_13-16_fr-s_15_wrx_15_sti-1_1.jpg" width="60" height="60" alt="OLM Retical Style LED Fog Lights - 15+ WRX / 15-17 STI / 13-16 BRZ / 13+ Crosstrek / 14+ Forester ">		</a>
+                        <?php
+                         $lastThreeItems = array_reverse(array_map(function($item){
+                           return [
+                               'slug' => $item['product']['slug'],//or this?
+                               'hash' => $item['hash'],//or this?
+                               'price' => $item['price'],
+                               'quantity' => $item['quantity'],
+                               'model_number' => $item['model_number'],
+                               'title' => $item['product']['title'],
+                               'title_suffix' => $item['product']['title_suffix'],//umm or this as well?
+                               'image' => \Shop\Models\Products::product_thumb($item['image']),
+                           ];
+                       }, array_splice($cart->get('items'), -3)));
+                        foreach($lastThreeItems as $item){ ?>
+                        <li class="item clearfix">
+                       
+                              <a href="/part/<?php echo $item['slug']; ?>" title="<?php echo "{$item['title']} - {$item['title_suffix']}"; ?>" class="product-image">
+                              <img src="<?php echo \Shop\Models\Products::product_thumb($item['image']); ?>" alt="<?php echo "{$item['title']} - {$item['title_suffix']}"; ?>"></a>
                               <div class="product-details">
-                                 <a href="https://www.subispeed.com/checkout/cart/delete/id/6986151/form_key/Omzpe1e7evRvCiGh/uenc/aHR0cHM6Ly93d3cuc3ViaXNwZWVkLmNvbS8yMDE0LXN1YmFydS1mb3Jlc3Rlci9kZXRhaWxpbmctcHJvZHVjdHM_ZGV0YWlsaW5nPTE0MTQ,/" title="Remove This Item" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" class="btn-remove icon-white">Remove This Item</a>
-                                 <a href="https://www.subispeed.com/checkout/cart/configure/id/6986151/" title="Edit item" class="btn-edit icon-white">Edit item</a>
-                                 <p class="product-name"><a href="https://www.subispeed.com/olm-retical-style-led-fog-lights-2013-2016-fr-s-2015-wrx-2014-forester-2013-crosstrek-15500">OLM Retical Style LED Fog Lights - 15+ WRX / 15-17 STI / 13-16 BRZ / 13+ Crosstrek / 14+ Forester </a>		</p>
-                                 <strong>1</strong> x
-                                 <span class="price">$149.95</span>											
+                                 <a href="#" title="Remove This Item" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" class="btn-remove icon-white">Remove This Item</a>
+                                 <a href="#" title="Edit item" class="btn-edit icon-white">Edit item</a>
+                                 <p class="product-name"><a href="#"><?php echo "{$item['title']} - {$item['title_suffix']}"; ?></a></p>
+                                 <strong><?php echo $item['quantity']; ?></strong> x <span class="price">$<?php echo number_format($item['price'], 2); ?></span>											
                               </div>
-                           </li>
+                        </li>
+                        <?php } ?>
                         </ol>
                         <div class="subtotal">
-                           <span class="label">Total:</span> <span class="price">$149.95</span>												
+                           <span class="label">Total:</span> <span class="price">$<?php echo number_format(array_sum(array_map(function($item){ return $item['price'] * $item['quantity'];}, $cart['items'])), 2); ?></span>												
                         </div>
                         <div class="buttons clearfix">
                            <button type="button" title="View Cart" class="button inverted btn-continue" onclick="setLocation('https://www.subispeed.com/checkout/cart/')"><span><span>View Cart</span></span></button>
