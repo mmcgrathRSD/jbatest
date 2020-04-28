@@ -1,6 +1,11 @@
 <?php
    if(!$master_search) {
        $instance_id = '_'.$item->id;
+
+       $crumbs = $item->getHierarchyTitlePathArray();
+   
+      $last_crumb = array_key_last($crumbs);
+      array_pop($crumbs);
    }
    
    if(!empty($item)) {
@@ -14,42 +19,42 @@
       <div class="category_dynamic_head">
          <div class="breadcrumbs">
             <ul>
+               <?php if(!empty($crumbs)) : ?>
                <li style="display: inline-block;" typeof="v:Breadcrumb">
-                  <a href="#" title="Home" rel="v:url" property="v:title">
-                  Home                </a>
+                  <a href="/" title="Home" rel="v:url" property="v:title">Home</a>
+               </li>
+               <?php foreach($crumbs as $key => $crumb) : ?>
+               <li style="display: inline-block;" typeof="v:Breadcrumb">
                   <span>/</span>
+                  <a href="/scp<?php echo $crumb; ?>" title="<?php echo $key; ?>" rel="v:url" property="v:title"><?php echo $key; ?></a>
                </li>
+               <?php endforeach; ?>
                <li style="display: inline-block;">
-                  <strong>15+ WRX </strong>
+                  <span>/</span>
+                  <strong><?php echo $last_crumb; ?></strong>
                </li>
+               <?php else : //TODO: Put 'Search / [q]' here ?>
+
+               <?php endif; ?>
             </ul>
          </div>
          <div class="page-title category-title">
-            <h1>2015+ Subaru WRX parts</h1>
+            <h1><?php echo $item->title; ?> Parts</h1>
          </div>
          <div class="category-description std">
-            <div class="container">
-               <div class="leftColumn">
-                  <h4 align="center"><a href="#">Subispeed 2015 WRX Showcase</a></h4>
-                  <div class="video-container">
-                     <iframe src="https://www.youtube.com/embed/ZL1q3jLQWNY" frameborder="0" width="560" height="315"></iframe>
-                  </div>
-               </div>
-               <div class="rightColumn">
-                  <h4 align="center"><a href="#">OLM SPEC CR SEQUENTIAL TAIL LIGHTS</a></h4>
-                  <div class="video-container">
-                     <iframe width="560" height="315" src="https://www.youtube.com/embed/yVaD-gqg5_s" frameborder="0" allowfullscreen=""></iframe>
-                  </div>
-               </div>
-            </div>
-            <div id="clear"></div>
-            <strong></strong>
-            <p align="center"><strong>We are your source for Subaru WRX aftermarket and OEM parts. Nobody knows the FA20DIT or the WRX better than we do! Find everything you need from brakes, cooling, wheels, lug nuts, engine mods, exhausts and more here! Take a look below!</strong></p>
-            <hr>
+            <?php echo $item->description; ?>
          </div>
          <!-- no text just picture
             <h2 class="subcategory">Sub Categories</h2><br />  -->
-         <ul class="subcategories3 category-children"></ul>
+         <ul class="subcategories3 category-children">
+            <?php foreach((array) $children as $child) : ?>
+            <li>
+               <a href="<?php echo $child['link']; ?>">
+                  <img src="<?php echo $child['image']; ?>" alt="<?php echo $child['title']; ?>" height="60" width="175" data-algolia-hierarchy="<?php echo $child['hierarchical_category']; ?>">
+               </a>
+            </li>
+            <?php endforeach; ?>
+         </ul>
       </div>
       <div id="clear">
       </div>

@@ -31,6 +31,26 @@ $moneyHtml = '<span class=notranslate><sup>'.$currency.'</sup>'.$priceTag.'</spa
                 <span class="price">${{default_price}}</span>                                    </span>
             </div>
             <div id="insert" style="display:none;"></div>
+            {{#swatches}}
+            <div id="amconf-block">
+                <dl>
+                    <dt id="label-92-12313" style=""><label class="required"><em>*</em> {{key}}</label></dt>
+                    <dd class="last">
+                        <div class="input-box" style="margin: 2px;">
+                            <div class="amconf-images-container">
+                                {{#value}}
+                                <div class="amconf-image-container">
+                                    {{{value}}}
+                                </div>
+                                {{/value}}
+                                <div style="clear: both;"></div>
+                            </div>  
+                        </div>
+                        <div id="requared-attribute92-12313" style="color:red"></div>
+                    </dd>
+                </dl>
+            </div>
+            {{/swatches}}
         </div>
         <div class="name">
         </div>

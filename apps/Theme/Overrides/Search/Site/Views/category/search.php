@@ -42,7 +42,7 @@ if(!empty(\Dsc\ArrayHelper::get($item, 'hierarchical_categories'))) {
         <?php endif; ?>
         <?php if(!empty($hierarchical_refinement)) : ?>
 		{
-			'hierarchicalCategories.lvl0': [
+			'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl0': [
 				'<?php echo addslashes($hierarchical_refinement); ?>'
 			]
 		}, //hierarchical facet refinements (string full path)

@@ -77,6 +77,7 @@
   <?php else :?>
   <script src="/theme/js/scripts.min.js?<?php echo $cachebuster; ?>"></script>
   <?php endif;?>
+  <?php echo $this->renderView('Assets/Site/Views::common/script_variables_post_min.php'); ?>
   <script src="/shop-assets/js/generic_algolia_functions.js?<?php echo $cachebuster; ?>" ></script>
   <?php echo $this->renderView('Search/Site/Views::search/functions/search.php'); ?>
 

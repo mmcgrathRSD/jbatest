@@ -110,8 +110,8 @@ $clear_all_exclusions = '';
 					facets: facets,
 					facetsRefinements: facet_refinements,
 					<?php if($type == 'shop.categories' || !empty($hierarchical_refinement)) : ?>
-					hierarchicalFacets: 'hierarchicalCategories.lvl0',
-					hierarchicalFacetsRefinements: hierarchical_facet_refinements,
+					hierarchicalFacets: 'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.subispeed.lvl0',
+					//hierarchicalFacetsRefinements: hierarchical_facet_refinements,
 					<?php endif; ?>
 				},
 				urlSync: {
@@ -139,7 +139,7 @@ $clear_all_exclusions = '';
                 transformData: {
                     item: function (hit) {
                         console.log('#hits-container' + instance_id);
-                        console.log($);
+                        console.log(hit);
                         jQuery('#hits-container' + instance_id).show();
                         jQuery('#empty-container' + instance_id + ', #empty_clear_all' + instance_id).hide();
                         //dynamic kits checker
@@ -147,71 +147,71 @@ $clear_all_exclusions = '';
                             hit.is_kit = true;
                         }
 
-                    <?php if(\Base::instance()->get('SITE_TYPE') == 'wholesale') : ?>
-                    //prices and discount
-                    <?php if($identity->flatPriceLevel()) : ?>
-                    var upp_auth = <?php echo json_encode($upp_auth); ?>;
-                    if(upp_auth) {
-                        var authorized =
-                            $.grep(upp_auth, function(item) {
-                                return item == hit.Brand;
-                            }).length;
-                    }
-
-                    //price level crap for upp and previous price
-                    if('price_levels' in hit && '<?php echo $identity->flatPriceLevel(); ?>' in hit.price_levels && (!hit.upp_auth || (hit.upp_auth && authorized) || hit.is_kit)) {
-                        hit.default_price = hit.price_levels.<?php echo $identity->flatPriceLevel(); ?>;
-                        if('previous_price_levels' in hit && '<?php echo $identity->flatPriceLevel(); ?>' in hit.previous_price_levels) {
-                            hit.previous_default_price = hit.previous_price_levels.<?php echo $identity->flatPriceLevel(); ?>;
-                        }
-                    }
-                    <?php endif; ?>
-
-                    hit.price_levels = null;
-                    hit.previous_price_levels = null;
-
-                    if('previous_default_price' in hit && hit.previous_default_price <= hit.default_price) {
-                        hit.previous_default_price = null; //setting this to null so that the template doesn't pick it up
-                    } else
-
-                    if('previous_default_price' in hit) {
-                        hit.previous_default_price = hit.previous_default_price.toFixed(2);
-                    }
-
-                    if('additional_prices' in hit) {
-                        if(hit.additional_prices.msrp) {
-                            hit.additional_prices.msrp = Number(hit.additional_prices.msrp).toFixed(2);
+                        <?php if(\Base::instance()->get('SITE_TYPE') == 'wholesale') : ?>
+                        //prices and discount
+                        <?php if($identity->flatPriceLevel()) : ?>
+                        var upp_auth = <?php echo json_encode($upp_auth); ?>;
+                        if(upp_auth) {
+                            var authorized =
+                                $.grep(upp_auth, function(item) {
+                                    return item == hit.Brand;
+                                }).length;
                         }
 
-                        if('pam_backwards' in hit.additional_prices) {
-                            hit.additional_prices.pam_backwards = hit.additional_prices.pam_backwards.toFixed(2);
-                        }
-
-                        if(hit.additional_prices.jobber) {
-                            hit.additional_prices.jobber = Number(hit.additional_prices.jobber).toFixed(2);
-                        }
-
-                        if(hit.default_price && hit.additional_prices.msrp) {
-                            var discount = (((Number(hit.additional_prices.msrp) - Number(hit.default_price))/Number(hit.additional_prices.msrp)) * 100).toFixed(0);
-                            if(discount >= 5) {
-                                hit.additional_prices.user_discount_percent = (((Number(hit.additional_prices.msrp) - Number(hit.default_price))/Number(hit.additional_prices.msrp)) * 100).toFixed(0);;
-                                hit.additional_prices.user_discount_price = (Number(hit.additional_prices.msrp) - Number(hit.default_price)).toFixed(2);
+                        //price level crap for upp and previous price
+                        if('price_levels' in hit && '<?php echo $identity->flatPriceLevel(); ?>' in hit.price_levels && (!hit.upp_auth || (hit.upp_auth && authorized) || hit.is_kit)) {
+                            hit.default_price = hit.price_levels.<?php echo $identity->flatPriceLevel(); ?>;
+                            if('previous_price_levels' in hit && '<?php echo $identity->flatPriceLevel(); ?>' in hit.previous_price_levels) {
+                                hit.previous_default_price = hit.previous_price_levels.<?php echo $identity->flatPriceLevel(); ?>;
                             }
                         }
-                    }
+                        <?php endif; ?>
 
-                    if (hit.warehouse && hit.warehouse.length) {
-                        var houses = '';
+                        hit.price_levels = null;
+                        hit.previous_price_levels = null;
 
-                        Object.keys(hit.warehouse).forEach(function (key) {
-                            house = hit.warehouse[key].name;
-                            houses += house + ', ';
-                        });
+                        if('previous_default_price' in hit && hit.previous_default_price <= hit.default_price) {
+                            hit.previous_default_price = null; //setting this to null so that the template doesn't pick it up
+                        } else
 
-                        hit.warehouse.totalWarehouses = houses.slice(0, -2);
-                    }
+                        if('previous_default_price' in hit) {
+                            hit.previous_default_price = hit.previous_default_price.toFixed(2);
+                        }
 
-    		    //lead times
+                        if('additional_prices' in hit) {
+                            if(hit.additional_prices.msrp) {
+                                hit.additional_prices.msrp = Number(hit.additional_prices.msrp).toFixed(2);
+                            }
+
+                            if('pam_backwards' in hit.additional_prices) {
+                                hit.additional_prices.pam_backwards = hit.additional_prices.pam_backwards.toFixed(2);
+                            }
+
+                            if(hit.additional_prices.jobber) {
+                                hit.additional_prices.jobber = Number(hit.additional_prices.jobber).toFixed(2);
+                            }
+
+                            if(hit.default_price && hit.additional_prices.msrp) {
+                                var discount = (((Number(hit.additional_prices.msrp) - Number(hit.default_price))/Number(hit.additional_prices.msrp)) * 100).toFixed(0);
+                                if(discount >= 5) {
+                                    hit.additional_prices.user_discount_percent = (((Number(hit.additional_prices.msrp) - Number(hit.default_price))/Number(hit.additional_prices.msrp)) * 100).toFixed(0);;
+                                    hit.additional_prices.user_discount_price = (Number(hit.additional_prices.msrp) - Number(hit.default_price)).toFixed(2);
+                                }
+                            }
+                        }
+
+                        if (hit.warehouse && hit.warehouse.length) {
+                            var houses = '';
+
+                            Object.keys(hit.warehouse).forEach(function (key) {
+                                house = hit.warehouse[key].name;
+                                houses += house + ', ';
+                            });
+
+                            hit.warehouse.totalWarehouses = houses.slice(0, -2);
+                        }
+
+    		            //lead times
                         if(hit.inventory_count == 0 && hit.shipping.lead_days) {
                             if (hit.shipping.lead_days.start == hit.shipping.lead_days.end) {
                                 hit.shipping.stock_message = 'Average time to ship: ' + hit.shipping.lead_days.start + ' business days';
@@ -236,6 +236,13 @@ $clear_all_exclusions = '';
                         if('Rating' in hit && hit.Rating) {
                             hit.Rating = (Math.floor(hit.Rating *2) / 2).toFixed(1) * 20;
                         }
+                        console.log(hit);
+                        if('swatches' in hit) {
+                            
+                            hit.swatches.each(function(key) {
+                                alert(key);
+                            });
+                        }
 
                         return hit;
                     },
@@ -259,6 +266,39 @@ $clear_all_exclusions = '';
                         return empty;
                     },
                     allItems: function(allItems) {
+                        //cl.imageTag('product_images/t0xleog0c4mwbsws0igt', {secure: true, sign_url: true, type: "private", transformation: 'jba_category'}).toHtml();
+                        allItems.hits.each(function(hit, key) {
+                            if('swatches' in hit) {
+                                console.log(hit.swatches);
+                                let new_swatches = [];
+
+                                $.each(hit.swatches, function(key, swatch) {
+                                    new_swatch_values = [];
+
+                                    $.each(swatch, function(value_key, value) {
+                                        new_swatch_values.push(
+                                            {
+                                                "key": value_key,
+                                                "value": cl.imageTag(value, {secure: true, sign_url: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.swatch'); ?>', class: "amconf-image", alt: value_key, title: value_key}).toHtml()
+                                            }
+                                        );
+                                    });
+
+                                    new_swatches.push(
+                                        {
+                                            "key": key,
+                                            "value": new_swatch_values
+                                        }
+                                    );
+
+                                    hit.swatches = new_swatches;
+                                });
+
+                                console.log(new_swatches);
+                            };
+                        });
+
+                        console.log(allItems);
                         return allItems;
                     }
                 }
@@ -515,16 +555,16 @@ $clear_all_exclusions = '';
                 instantsearch.widgets.hierarchicalMenu({
                     container: '#search_filter_categories' + instance_id,
                     attributes: [
-                        'hierarchicalCategories.lvl0',
-                        'hierarchicalCategories.lvl1',
-                        'hierarchicalCategories.lvl2',
-                        'hierarchicalCategories.lvl3',
-                        'hierarchicalCategories.lvl4',
-                        'hierarchicalCategories.lvl5',
-                        'hierarchicalCategories.lvl6',
-                        'hierarchicalCategories.lvl7',
-                        'hierarchicalCategories.lvl8',
-                        'hierarchicalCategories.lvl9'
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl0',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl1',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl2',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl3',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl4',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl5',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl6',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl7',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl8',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl9'
                     ],
                     limit: 100,
                     templates: {
@@ -547,31 +587,26 @@ $clear_all_exclusions = '';
                                     });
                                 }
                                 
-                                //if(!hasChildRefinements) {
-                                    $('.category_dynamic_head').css('height', '500px').addClass('category_dynamic_head_loader');
+                                $('.category_dynamic_head').css('height', '500px').addClass('category_dynamic_head_loader');
 
-                                    $('.category-title h1').html(hit.label + ' Parts');
+                                $('.category-title h1').html(hit.label + ' Parts');
 
-                                    $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
-                                        $('.category-description.std').html(data.result.html);
+                                $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
+                                    $('.category-description.std').html(data.result.html);
 
-                                        if(data.result.children) {
-                                            $('ul.category-children').html('');
+                                    if(data.result.children) {
+                                        $('ul.category-children').html('');
 
-                                            data.result.children.each(function(child) {
-                                                if(child.image) {
-                                                    $('ul.category-children').append('<li><a href="' + child.link + '"><img src="' + child.image + '" alt="' + child.title + '" height="60" width="175" data-algolia-hierarchy="' + child.hierarchical_category + '"></a></li>');
-                                                }
-                                                
-                                            });
-
-                                            //$('ul.category-children').show('slow');
+                                        data.result.children.each(function(child) {
+                                            if(child.image) {
+                                                $('ul.category-children').append('<li><a href="' + child.link + '"><img src="' + child.image + '" alt="' + child.title + '" height="60" width="175" data-algolia-hierarchy="' + child.hierarchical_category + '"></a></li>');
+                                            }
                                             
-                                        }
-                                    })).then(function() {
-                                        $('.category_dynamic_head').css('height', 'auto').removeClass('category_dynamic_head_loader').delay(800).fadeIn(400);
-                                    });
-                                //}
+                                        });
+                                    }
+                                })).then(function() {
+                                    $('.category_dynamic_head').css('height', 'auto').removeClass('category_dynamic_head_loader').delay(800).fadeIn(400);
+                                });
                             }
 
                             return hit;
