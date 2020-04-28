@@ -732,35 +732,9 @@ $( document ).ready(function() {
 		      success: function( response ) {
 		          form.find('.ymmLoader').hide();
                   form.find('.add_to_cart_text').show();
-                  var html;
-                  console.log(response.items_summary);
-                  response.items_summary.forEach(function(item){
-                    html += `
-                    <li class="item clearfix">
-                        <a href="/part/${item.slug}" title="${item.title} - ${item.title_suffix}" class="product-image">
-                        <img src="${item.image}" alt="${item.title} - ${item.title_suffix}"></a>
-                        <div class="product-details">
-                            <a href="#" title="Remove This Item" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" class="btn-remove icon-white">Remove This Item</a>
-                            <a href="#" title="Edit item" class="btn-edit icon-white">Edit item</a>
-                            <p class="product-name"><a href="#">${item.title} - ${item.title_suffix}</a></p>
-                            <strong>${item.quantity}</strong> x <span class="price">${item.price}</span>											
-                        </div>
-                    </li>
-                 `
-                  });
-
-                  $('#cart-sidebar').html(html);
-                  $("div.header-switch.header-cart > a > span.qty").html(response.item_count);
-                  $("div.subtotal > span.price").html(response.sub_total);
-                //   $('.header-dropdown').animate({opacity:1, height:'toggle'}, 100);
-			    //   $('.cart_item_count').html(Number(form.find('input[name="quantity"]').val()) + Number($('.cart_item_count').html()));
-		        //   $('#site-modal').modal('show');
-			      $('#cart-modal .modal-body').html('Hello World!!!!');
-			      $('#cart-modal').fadeIn( function() {
-			          timer = setTimeout(function() {
-			              $('#cart-modal').fadeOut();
-			          }, 5000);
-                  });
+                  //Find the my-cart element and replace with refreshed version.
+                  $('#my-cart').html(response.message);
+                  //TODO: make sure we throw up the spinny loady and confirmation modal w/ prod title.
                   
 		      },
 		      error: function( response ) {
