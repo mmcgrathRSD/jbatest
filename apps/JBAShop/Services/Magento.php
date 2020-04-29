@@ -1533,13 +1533,20 @@ class Magento
                         ];
 
                         if (!empty($swatchData[$k])) {
-                            $upload = \Cloudinary\Uploader::upload($swatchData[$k], [
-                                'type' => 'upload',
-                                'format' => 'jpg',
-                                'folder' => 'swatches'
-                            ]);
+                            try{
+                                $upload = \Cloudinary\Uploader::upload($swatchData[$k], [
+                                    'type' => 'upload',
+                                    'format' => 'jpg',
+                                    'folder' => 'swatches'
+                                ]);
+                            }catch(Exception $e){
+                                $this->CLImate->red($e->getMessage());
+                            }
 
-                            $attributeOption['swatch'] = $upload['public_id'];
+                            //If there is no image, dont set the swatch
+                            if($upload){
+                                $attributeOption['swatch'] = $upload['public_id'];
+                            }
                         }
 
                         $attribute['options'][] = $attributeOption;
