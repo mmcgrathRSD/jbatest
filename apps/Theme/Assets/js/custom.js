@@ -716,31 +716,47 @@ var waitForFinalEvent = (function () {
         timers[uniqueId] = setTimeout(callback, ms);
     };
 })();
+function setLocation(url){
+    window.location.href = url;
+}
 
 $( document ).ready(function() {
     var timer;
-
-	$('body').on('submit', '.addToCartForm', function (e){
-			e.preventDefault();
-			var form = $(this);
-			form.find('.ymmLoader').show();
-			form.find('.add_to_cart_text').hide();
-		    $.ajax( {
-		      type: "POST",
-		      url: form.attr( 'action' ),
-		      data: form.serialize(),
-		      success: function( response ) {
-		          form.find('.ymmLoader').hide();
-                  form.find('.add_to_cart_text').show();
-                  //Find the my-cart element and replace with refreshed version.
-                  $('#my-cart').html(response.message);
-                  //TODO: make sure we throw up the spinny loady and confirmation modal w/ prod title.
-                  
-		      },
-		      error: function( response ) {
-		    	  $('#cart-modal .modal-body').html(response.message);
-			      $('#cart-modal').fadeIn();
-			      }
-		    });
+  
+  $('body').on('submit', '.addToCartForm', function (e){
+        e.preventDefault();
+        var form = $(this);
+        form.find('.ymmLoader').show();
+        form.find('.add_to_cart_text').hide();
+        var product_name = form.find('button').attr('product_name');
+        jQuery.fancybox.showActivity();
+        $.ajax( {
+            type: "POST",
+            url: form.attr( 'action' ),
+            data: form.serialize(),
+            success: function( response ) {
+                form.find('.ymmLoader').hide();
+                form.find('.add_to_cart_text').show();
+                //Find the my-cart element and replace with refreshed version.
+                jQuery.fancybox.hideActivity();
+                jQuery.fancybox({
+                    'content'           : '<div class="ajax-message"><p>' + product_name + ' was added to your shopping cart.<br><br> <button class="button" onclick="setLocation(\'/shop/cart/\')"><span><span>View Cart</span></span></button><button class="button" onclick="setLocation(\'/shop/checkout/\')"><span><span>Checkout</span></span></button></p></div>',
+                    'autoDimensions'	: true,
+                    'padding'		    : 30,
+                    'transitionIn'		: 'none',
+                    'transitionOut'		: 'none',
+                    'autoScale'         : true,
+                    'centerOnScroll'	: true
+                }
+            );
+            //TODO: make sure we throw up the spinny loady and confirmation modal w/ prod title.
+                
+            },
+            error: function( response ) {
+                $('#cart-modal .modal-body').html(response.message);
+                $('#cart-modal').fadeIn();
+                jQuery.fancybox.hideActivity();
+            }
+        });
     });
-});
+  });

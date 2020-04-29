@@ -217,7 +217,7 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                                  <input type="text" name="quantity" id="qty" maxlength="12" value="0" title="Qty" class="input-text qty">
                                  <label for="qty">Quantity</label>
                               </div>
-                              <button type="submit" title="Add to Cart" class="button btn-cart icon-black addToCartButton" onclick=""><span><span>Add to Cart</span></span></button>
+                              <button type="submit" title="Add to Cart" class="button btn-cart icon-black addToCartButton" product_name="<?php echo sprintf("%s%s", $item->title, !empty($item->title_suffix) ? " - $item->title_suffix" : ""); ?>" onclick=""><span><span>Add to Cart</span></span></button>
                            </div>
                      </form>
                      </div>
