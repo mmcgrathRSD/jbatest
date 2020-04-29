@@ -527,12 +527,6 @@ class Magento
                 //If there is a ymmSuffix get substring to first instance of '-' else use default_title.
                 preg_match("/.*(?=[\s]-(.*[\s]\/[\s].*|[\s]{1,}[12][\d]{3}|[\s]Universal))/", $row['default_title'], $titleMatches);
 
-                //seo stuff, we might need to split this out later by sales channel 
-                //TBD: might need to strip YMM info out of title, wait on JBA answer
-                $seoTitle = $row['default_title'];
-                $seoKeywords = $row['default_title'];
-                $seoMetaDescription = trim(str_replace(["\r", "\n"],'',strip_tags($row['long_description'])));
-
                 $product
                     ->set('magento.id', $row['id'])
                     ->set('title', !empty($titleMatches) ? trim($titleMatches[0]) : $row['default_title'])
@@ -540,9 +534,10 @@ class Magento
                     ->set('short_description', $row['short_description'])
                     ->set('categories', $newProductCategories)
                     ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($row['created_at']))
-                    ->set('seo.page_title', $seoTitle)
-                    ->set('seo.keywords', $seoKeywords)
-                    ->set('seo.meta_description', $seoMetaDescription);
+                    //seo stuff, we might need to split this out later by sales channel 
+                    ->set('seo.page_title', $row['default_title'])
+                    ->set('seo.keywords', $row['default_title'])
+                    ->set('seo.meta_description', trim(str_replace(["\r", "\n"],'',strip_tags($row['long_description']))));
 
                 //If we are in a situation where we are creating a new product (eg. matrix parent, set the model number)
                 if(!$product->tracking['model_number']){
