@@ -538,7 +538,7 @@ class Magento
 
                 //If we are in a situation where we are creating a new product (eg. matrix parent, set the model number)
                 if(!$product->tracking['model_number']){
-                    $product->set('tracking.model_number', $row['model']);
+                    $product->set('tracking.model_number', strtoupper($row['model']));
                 }
 
                 $productSalesChannels = [];
@@ -1085,7 +1085,7 @@ class Magento
                     //Dynamic Kit option value properties
                     $options[$productOption['option_id']]['values'][] = [
                         'id' => new \MongoDB\BSON\ObjectID(),
-                        'model_number' => (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOption['value_model_number']))->itemId,
+                        'model_number' => strtoupper((\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOption['value_model_number']))->itemId),
                         'magento_id' => $productOption['value_model_number'],
                         'option_id' => $productOption['option_id'],
                         'title' => $productOption['option_title']
@@ -1567,7 +1567,7 @@ class Magento
                         if (empty($netsuite->itemId)) {
                             continue;
                         }
-                        $product->set("variants.$i.model_number", $netsuite->itemId);
+                        $product->set("variants.$i.model_number", strtoupper($netsuite->itemId));
                     }
                 }
 
