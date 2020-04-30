@@ -464,7 +464,6 @@ class Magento
                 AND mB.STORE_ID = 0
         WHERE
             def.attribute_id = 102
-            AND def.entity_id = 9328
             AND def.store_id = 0
             ORDER BY cpe.sku ASC
         ";
@@ -1476,8 +1475,7 @@ class Magento
                         AND status.attribute_id = 96 
                         AND status.store_id = 0 
                         AND status.value = 1 
-            WHERE  cpe.type_id = 'configurable' 
-            AND cpe.entity_id = 9328
+            WHERE  cpe.type_id = 'configurable'
             ORDER  BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title, attribute_option_ordering, attribute_option_value";
 
         $select = $this->db->prepare($sql);
