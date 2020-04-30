@@ -1,41 +1,43 @@
-
 <!-- cart BOF -->
 <?php 
+//if empty try and fetch the cart.
 if(empty($cart)){
     $cart = \Shop\Models\Carts::fetch();
 }
 ?>
-<div id="my-cart">
+<div>
     <a class="header-switch-trigger summary icon-white" href="/shop/cart/">
-    <span>My Cart</span><span class="qty"><?php echo count($cart->get('items')); ?></span>	</a>
+    <span>My Cart</span><span class="qty"><?php echo $cart->get('quantity'); ?></span>	</a>
     <div class="header-dropdown" style="display: none; opacity: 0;">
     <div class="cart-promotion"><strong>Shopping Cart</strong></div>
     <p class="block-subtitle text-recently">Recently added item(s)</p>
     <ol id="cart-sidebar" class="mini-products-list">
     <?php
-        $lastThreeItems = array_reverse(array_map(function($item){
-        return [
-            'slug' => $item['product']['slug'],//or this?
-            'hash' => $item['hash'],//or this?
-            'price' => $item['price'],
-            'quantity' => $item['quantity'],
-            'model_number' => $item['model_number'],
-            'title' => $item['product']['title'],
-            'title_suffix' => $item['product']['title_suffix'],//umm or this as well?
-            'image' => \Shop\Models\Products::product_thumb($item['image']),
-        ];
-    }, array_splice($cart->get('items'), -3)));
+    //get the displayCartItems, which groups products if non standard products.
+    $lastThreeItems = $cart->displayCartItems(true);
+    //get the last three items and reverse the order for display.
+    $lastThreeItems = array_reverse(array_splice($lastThreeItems['items'], -3));
     foreach($lastThreeItems as $item){ ?>
     <li class="item clearfix">
-    
-            <a href="/part/<?php echo $item['slug']; ?>" title="<?php echo "{$item['title']} - {$item['title_suffix']}"; ?>" class="product-image">
-            <img src="<?php echo \Shop\Models\Products::product_thumb($item['image']); ?>" alt="<?php echo "{$item['title']} - {$item['title_suffix']}"; ?>"></a>
+        <?php if($item instanceof \Shop\Models\Products){//if the item is an instance of products assume we are dealing with non standard items. ?>
+            <a href="/part/<?php echo $item->get('slug'); ?>" title="<?php echo "{$item->get('title')} - {$item->get('title_suffix')}"; ?>" class="product-image">
+            <img src="<?php echo \Shop\Models\Products::product_thumb($item->get('featured_image.slug')); ?>" alt="<?php echo "{$item->get('title')} - {$item->get('title_suffix')}"; ?>"></a>
             <div class="product-details">
-                <a href="/shop/cart/remove/<?php echo $item['hash']; ?>" title="Remove This Item" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" class="btn-remove icon-white">Remove This Item</a>
-                <a href="/part/<?php echo $item['slug']; ?>" title="Edit item" class="btn-edit icon-white">Edit item</a>
-                <p class="product-name"><a href="#"><?php echo "{$item['title']} - {$item['product']['title_suffix']}"; ?></a></p>
+                <a href="<?php echo '/shop/cart/remove-group/' . $item->get('__group_id'); ?>" title="Remove This Item" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" class="btn-remove icon-white">Remove This Item</a>
+                <a href="/part/<?php echo $item->get('slug'); ?>" title="Edit item" class="btn-edit icon-white">Edit item</a>
+                <p class="product-name"><a href="#"><?php echo "{$item->get('title')} - {$item->get('title_suffix')}"; ?></a></p>
+                <strong>1</strong> x <span class="price">$<?php echo number_format($item->get('kit_price_with_discount'), 2); ?></span>											
+            </div>
+        <?php }else{ ?>
+            <a href="/part/<?php echo $item['product']['slug']; ?>" title="<?php echo "{$item['product']['title']} - {$item['product']['title_suffix']}"; ?>" class="product-image">
+            <img src="<?php echo \Shop\Models\Products::product_thumb($item['image']); ?>" alt="<?php echo "{$item['product']['title']} - {$item['product']['title_suffix']}"; ?>"></a>
+            <div class="product-details">
+                <a href="<?php echo '/shop/cart/remove/' . $item['hash'];?>" title="Remove This Item" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" class="btn-remove icon-white">Remove This Item</a>
+                <a href="/part/<?php echo $item['product']['slug']; ?>" title="Edit item" class="btn-edit icon-white">Edit item</a>
+                <p class="product-name"><a href="#"><?php echo "{$item['product']['title']} - {$item['product']['title_suffix']}"; ?></a></p>
                 <strong><?php echo $item['quantity']; ?></strong> x <span class="price">$<?php echo number_format($item['price'], 2); ?></span>											
             </div>
+        <?php } ?>
     </li>
     <?php } ?>
     </ol>

@@ -10,7 +10,7 @@
          <div class="table-cell header-info-container">
             <div class="relative">
                <div class="top-links-container ">
-                  <div class="header-switch header-cart" >
+                  <div class="header-switch header-cart" id="my-cart">
                      <?php echo  $this->renderLayout('Shop/Site/Views::cart/myCart.php'); ?>
                   </div>
                   <div class="top-links">
