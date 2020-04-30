@@ -760,3 +760,4 @@ $( document ).ready(function() {
         });
     });
   });
+});
