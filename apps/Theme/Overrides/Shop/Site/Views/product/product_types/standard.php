@@ -207,7 +207,96 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                      </div>
                      <div class="add-to-box">
                      <form action="/shop/cart/add" method="post" class="addToCartForm">
-		                    <input type="hidden" name="model_number" value="<?php echo $item->tracking['model_number']; ?>" class="variant_id" />
+                        <?php if (!empty($item->attributes) || $item->product_type == 'matrix') : ?>
+                           <div class="product-options" id="product-options-wrapper">
+                              <a href="#" onclick="javascript: spConfig.clearConfig(); return false;">Reset Configuration</a>
+                              <dl class="last">
+                              <?php 
+                              foreach($item->attributes as $key => $attribute) : 
+                              $options = '';
+                              ?>
+                                 <dt><label class="required"><em>*</em>Background Color<span class="amconf-label" data-id='<?php echo $attribute['id']; ?>'></span></label></dt>
+                                 <dd data-id='<?php echo $attribute['id']; ?>'>
+                                    <div class="input-box">
+                                       <div class="amconf-images-container" id="amconf-images-92">
+                                          <?php if($key == 0) : ?>
+                                             <?php foreach((array) $attribute['options'] as $option_key => $option) : ?>
+                                                <?php if(!empty($option['swatch'])) : ?>
+                                                   <div class="amconf-image-container" id="" style="float: left; width: 31px;">
+                                                      <img 
+                                                         id="amconf-image-<?php echo $option['id']; ?>" 
+                                                         data-number="<?php echo $option_key; ?>"
+                                                         src="<?php echo \cloudinary_url($option['swatch'], array("height"=> 31, "width"=> 31, "crop"=>"limit", "sign_url"=>true)); ?>" 
+                                                         class="amconf-image amconf-image-<?php echo $option_key; ?>" 
+                                                         alt="<?php echo $option['value']; ?>" 
+                                                         title="<?php echo $option['value']; ?>" 
+                                                         style="margin-bottom: 7px;"
+                                                      />
+                                                   </div>
+                                                <?php endif; ?>
+                                                <?php $options .= '<option data-number="' . $option_key . '"value="' . $option['id'] . '">' . $option['value'] . '</option>'; ?>
+                                             <?php endforeach; ?>
+                                          <?php endif; ?>
+                                       </div>
+                                       <select 
+                                          name="<?php echo $attribute['id']; ?>" 
+                                          id="<?php echo $attribute['id']; ?>" 
+                                          data-name="<?php echo $attribute['id']; ?>" 
+                                          data-number="<?php echo $key; ?>"
+                                          class="required-entry super-attribute-select super-attribute-select-order-<?php echo $key; ?>" 
+                                          <?php echo ($key > 0) ? 'disabled' : ''; ?>
+                                       >
+                                          <option selected disabled>Choose an Option...</option>
+                                          <?php echo $options; ?>
+                                       </select>
+                                    </div>
+                                 </dd>
+                              <?php endforeach; ?>
+                              </dl>
+                           </div>
+                        <?php else : ?>
+                           <input type="hidden" name="model_number" value="<?php echo $item->tracking['model_number']; ?>" class="variant_id" />
+                        <?php endif; ?>
+		                    <script>
+                           $('.super-attribute-select').change(function() {
+                              var option_selected = $("option:selected", this);
+                              var value_selected = this.value;
+                              var select_id = $(this).attr('id');
+                              var next_number = Number($(this).attr('data-number')) + 1;
+
+                              // $('.product-options dd[data-id="' + select_id + '"] .amconf-image').removeClass('amconf-image-selected');
+                              // $('.product-options dd[data-id="' + select_id + '"] .amconf-image#' + select_id).addClass('amconf-image-selected');
+                              
+                              if($('.product-options select[data-number="' + next_number + '"]').length) {
+                                 var next_item_id = $('.product-options select[data-number="' + next_number + '"]').attr('id');
+                                 var next_item = $('#'+ next_item_id);
+
+                                 $.post( "/shop/matrix/rr-inlay-2015-wrx-front-rear/options", { 
+                                    attribute_id: next_item_id,
+                                    option_ids: [
+                                       option_selected.attr('value')
+                                    ]
+                                 }, function(data) {
+                                    console.log(next_item.prev('.amconf-images-container'));
+
+                                    next_item.prop('disabled', null);
+                                    $.each(data.options, function(key, option) {
+                                       
+                                       next_item.append('<option data-number="' + key + '"value="' + option.id + '">' + option.value + '</option>');
+
+                                       if('swatch' in option) {
+                                          next_item.prev('.amconf-images-container').append('<div class="amconf-image-container" id="" style="float: left; width: 31px;"><img id="amconf-image-' + option.id + '" data-number="' + key + '" src="" class="amconf-image amconf-image-' + key + '" alt="' + option.value + '" title="' + option.value + '" style="margin-bottom: 7px;" /></div>');
+                                       }
+                                    });
+                                 });
+                              } else {
+                                 //cart is ready to go 
+                                 console.log("I'm ready to be added to your cart!! :-) ");
+                              }
+                              
+                              
+                           });
+                          </script>
                            <div class="add-to-cart">
                               <div class="qty-container">
                                  <div class="f-right">
