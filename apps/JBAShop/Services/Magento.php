@@ -432,9 +432,7 @@ class Magento
             LEFT JOIN catalog_product_entity_int AS subi ON ( def.entity_id = subi.entity_id AND subi.store_id = 1 AND subi.attribute_id = 102 )
             LEFT JOIN catalog_product_entity_int AS ft86 ON ( def.entity_id = ft86.entity_id AND ft86.store_id = 4 AND ft86.attribute_id = 102 )
             LEFT JOIN catalog_product_entity_int AS ftspeed ON ( def.entity_id = ftspeed.entity_id AND ftspeed.store_id = 5 AND ftspeed.attribute_id = 102 )
-        
             LEFT JOIN catalog_product_entity_int AS youtube ON ( def.entity_id = youtube.entity_id AND youtube.store_id = 0 AND youtube.attribute_id = 180)
-            
             LEFT JOIN catalog_product_entity_varchar meta_title ON ( def.entity_id = meta_title.entity_id AND meta_title.store_id = 0 AND meta_title.attribute_id = 82)
             LEFT JOIN catalog_product_entity_int AS is_carb ON ( def.entity_id = is_carb.entity_id AND is_carb.store_id = 0 AND is_carb.attribute_id = 268)
             LEFT JOIN catalog_product_entity_varchar AS url_key ON ( def.entity_id = url_key.entity_id AND url_key.store_id = 0 AND url_key.attribute_id = 97)
@@ -528,13 +526,18 @@ class Magento
                 }));
                 //If there is a ymmSuffix get substring to first instance of '-' else use default_title.
                 preg_match("/.*(?=[\s]-(.*[\s]\/[\s].*|[\s]{1,}[12][\d]{3}|[\s]Universal))/", $row['default_title'], $titleMatches);
+
                 $product
                     ->set('magento.id', $row['id'])
                     ->set('title', !empty($titleMatches) ? trim($titleMatches[0]) : $row['default_title'])
                     ->set('copy', $row['long_description'])
                     ->set('short_description', $row['short_description'])
                     ->set('categories', $newProductCategories)
-                    ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($row['created_at']));
+                    ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($row['created_at']))
+                    //seo stuff, we might need to split this out later by sales channel 
+                    ->set('seo.page_title', $row['default_title'])
+                    ->set('seo.keywords', $row['default_title'])
+                    ->set('seo.meta_description', trim(str_replace(["\r", "\n"],'',strip_tags($row['long_description']))));
 
                 //If we are in a situation where we are creating a new product (eg. matrix parent, set the model number)
                 if(!$product->tracking['model_number']){
