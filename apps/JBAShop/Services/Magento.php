@@ -464,6 +464,7 @@ class Magento
                 AND mB.STORE_ID = 0
         WHERE
             def.attribute_id = 102
+            AND def.entity_id = 9328
             AND def.store_id = 0
             ORDER BY cpe.sku ASC
         ";
@@ -1476,6 +1477,7 @@ class Magento
                         AND status.store_id = 0 
                         AND status.value = 1 
             WHERE  cpe.type_id = 'configurable' 
+            AND cpe.entity_id = 9328
             ORDER  BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title, attribute_option_ordering, attribute_option_value";
 
         $select = $this->db->prepare($sql);
@@ -1897,8 +1899,8 @@ class Magento
             11344166 => ['subispeed' => 11421639, 'ftspeed' => 11421383],
             11336618 => ['subispeed' => 11419675, 'ftspeed' => 11419674],
             11335975 => ['subispeed' => 11421634, 'ftspeed' => 11421396],
-            11336935 => [ /** TODO: see if "Your order should be delivered" message needs to be created by Whitney, or unpublished and disabled */ ],
-            11335993 => [ /** TODO: see if "Quote" message needs to be created by Whitney, or unpublished and disabled */ ]
+            11336935 => ['subispeed' => 11422468, 'ftspeed' => 11422469],
+            11335993 => ['subispeed' => 11422462, 'ftspeed' => 11422467]
         ];
 
         $fieldIds = [
@@ -1987,8 +1989,6 @@ class Magento
                         }
 
                         $jbaTemplate->set('listrak.messageid', $messageIds[$jbaTemplate->get('listrak.messageid')][$salesChannel]);
-                    } else {
-                        continue; // TODO: remove this later... when we have the other 2 emails
                     }
 
                     foreach ((array) $jbaTemplate->get('listrak.fields') as $fieldId => $value) {
