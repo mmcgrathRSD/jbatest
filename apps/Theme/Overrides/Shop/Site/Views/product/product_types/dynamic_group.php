@@ -179,7 +179,7 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                         }
                      </script>
                      <div class="col-lg-6 col-md-6 col-sm-6 pull-right col-sm-12 col-xs-12 dynLockup sticky_parent">
-                        <form action="./shop/cart/add" method="post" class="addToCartForm" <?php if(\Dsc\ArrayHelper::get($item->policies, 'requires_assembly')) : ?>data-assembled="1"<?php endif; ?>>
+                        <form action="/shop/cart/add" method="post" class="addToCartForm" <?php if(\Dsc\ArrayHelper::get($item->policies, 'requires_assembly')) : ?>data-assembled="1"<?php endif; ?>>
                            <div class="row">
                               <div class="col-xs-12">
                                     <?php
@@ -619,7 +619,7 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
          </div>
          <div class="map-popup-content" id="map-popup-content">
             <div class="map-popup-checkout">
-               <form action="" method="POST" id="product_addtocart_form_from_popup">
+            <form action="/shop/cart/add" method="post" class="addToCartForm">
                   <input type="hidden" name="product" class="product_id" value="" id="map-popup-product-id">
                   <div class="additional-addtocart-box">
                   </div>

@@ -729,6 +729,7 @@ $( document ).ready(function() {
         form.find('.ymmLoader').show();
         form.find('.add_to_cart_text').hide();
         var product_name = form.find('button').attr('product_name');
+        //display loading modal.
         jQuery.fancybox.showActivity();
         $.ajax( {
             type: "POST",
@@ -738,7 +739,10 @@ $( document ).ready(function() {
                 form.find('.ymmLoader').hide();
                 form.find('.add_to_cart_text').show();
                 //Find the my-cart element and replace with refreshed version.
+                $('#my-cart').html(response.message);
+                //hide the loading modal.
                 jQuery.fancybox.hideActivity();
+                //display fancybox modal
                 jQuery.fancybox({
                     'content'           : '<div class="ajax-message"><p>' + product_name + ' was added to your shopping cart.<br><br> <button class="button" onclick="setLocation(\'/shop/cart/\')"><span><span>View Cart</span></span></button><button class="button" onclick="setLocation(\'/shop/checkout/\')"><span><span>Checkout</span></span></button></p></div>',
                     'autoDimensions'	: true,
@@ -747,14 +751,9 @@ $( document ).ready(function() {
                     'transitionOut'		: 'none',
                     'autoScale'         : true,
                     'centerOnScroll'	: true
-                }
-            );
-            //TODO: make sure we throw up the spinny loady and confirmation modal w/ prod title.
-                
+                });
             },
             error: function( response ) {
-                $('#cart-modal .modal-body').html(response.message);
-                $('#cart-modal').fadeIn();
                 jQuery.fancybox.hideActivity();
             }
         });
