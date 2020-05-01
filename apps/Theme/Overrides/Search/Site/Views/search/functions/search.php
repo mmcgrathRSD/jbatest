@@ -137,115 +137,6 @@ $clear_all_exclusions = '';
                 cssClasses: {
                 },
                 transformData: {
-                    item: function (hit) {
-                        console.log('#hits-container' + instance_id);
-                        console.log(hit);
-                        jQuery('#hits-container' + instance_id).show();
-                        jQuery('#empty-container' + instance_id + ', #empty_clear_all' + instance_id).hide();
-                        //dynamic kits checker
-                        if(hit.product_type == 'Package Deal') {
-                            hit.is_kit = true;
-                        }
-
-                        <?php if(\Base::instance()->get('SITE_TYPE') == 'wholesale') : ?>
-                        //prices and discount
-                        <?php if($identity->flatPriceLevel()) : ?>
-                        var upp_auth = <?php echo json_encode($upp_auth); ?>;
-                        if(upp_auth) {
-                            var authorized =
-                                $.grep(upp_auth, function(item) {
-                                    return item == hit.Brand;
-                                }).length;
-                        }
-
-                        //price level crap for upp and previous price
-                        if('price_levels' in hit && '<?php echo $identity->flatPriceLevel(); ?>' in hit.price_levels && (!hit.upp_auth || (hit.upp_auth && authorized) || hit.is_kit)) {
-                            hit.default_price = hit.price_levels.<?php echo $identity->flatPriceLevel(); ?>;
-                            if('previous_price_levels' in hit && '<?php echo $identity->flatPriceLevel(); ?>' in hit.previous_price_levels) {
-                                hit.previous_default_price = hit.previous_price_levels.<?php echo $identity->flatPriceLevel(); ?>;
-                            }
-                        }
-                        <?php endif; ?>
-
-                        hit.price_levels = null;
-                        hit.previous_price_levels = null;
-
-                        if('previous_default_price' in hit && hit.previous_default_price <= hit.default_price) {
-                            hit.previous_default_price = null; //setting this to null so that the template doesn't pick it up
-                        } else
-
-                        if('previous_default_price' in hit) {
-                            hit.previous_default_price = hit.previous_default_price.toFixed(2);
-                        }
-
-                        if('additional_prices' in hit) {
-                            if(hit.additional_prices.msrp) {
-                                hit.additional_prices.msrp = Number(hit.additional_prices.msrp).toFixed(2);
-                            }
-
-                            if('pam_backwards' in hit.additional_prices) {
-                                hit.additional_prices.pam_backwards = hit.additional_prices.pam_backwards.toFixed(2);
-                            }
-
-                            if(hit.additional_prices.jobber) {
-                                hit.additional_prices.jobber = Number(hit.additional_prices.jobber).toFixed(2);
-                            }
-
-                            if(hit.default_price && hit.additional_prices.msrp) {
-                                var discount = (((Number(hit.additional_prices.msrp) - Number(hit.default_price))/Number(hit.additional_prices.msrp)) * 100).toFixed(0);
-                                if(discount >= 5) {
-                                    hit.additional_prices.user_discount_percent = (((Number(hit.additional_prices.msrp) - Number(hit.default_price))/Number(hit.additional_prices.msrp)) * 100).toFixed(0);;
-                                    hit.additional_prices.user_discount_price = (Number(hit.additional_prices.msrp) - Number(hit.default_price)).toFixed(2);
-                                }
-                            }
-                        }
-
-                        if (hit.warehouse && hit.warehouse.length) {
-                            var houses = '';
-
-                            Object.keys(hit.warehouse).forEach(function (key) {
-                                house = hit.warehouse[key].name;
-                                houses += house + ', ';
-                            });
-
-                            hit.warehouse.totalWarehouses = houses.slice(0, -2);
-                        }
-
-    		            //lead times
-                        if(hit.inventory_count == 0 && hit.shipping.lead_days) {
-                            if (hit.shipping.lead_days.start == hit.shipping.lead_days.end) {
-                                hit.shipping.stock_message = 'Average time to ship: ' + hit.shipping.lead_days.start + ' business days';
-                            } else {
-                                hit.shipping.stock_message = 'Average time to ship: ' + hit.shipping.lead_days.start + '-' + hit.shipping.lead_days.end + ' business days';
-                            }
-                        }
-
-                        <?php endif; ?>
-
-                        if(hit.default_price) {
-                            hit.default_price = hit.default_price.toFixed(2);
-                        }
-
-    					//adding the path, right now only using for compare function
-    					<?php if(!empty($item->path)) : ?>
-    					hit.path = '<?php echo $item->path; ?>';
-    					<?php endif; ?>
-
-    					//ymm universal parts condition. we set this toggle in category/search.php and should be removed on first click
-
-                        if('Rating' in hit && hit.Rating) {
-                            hit.Rating = (Math.floor(hit.Rating *2) / 2).toFixed(1) * 20;
-                        }
-                        console.log(hit);
-                        if('swatches' in hit) {
-                            
-                            hit.swatches.each(function(key) {
-                                alert(key);
-                            });
-                        }
-
-                        return hit;
-                    },
                     empty: function(empty) {
                         //jQuery('#hits_container' + instance_id).hide();
                         //jQuery('#empty-container' + instance_id + ', #empty_clear_all' + instance_id).show();
@@ -293,12 +184,9 @@ $clear_all_exclusions = '';
 
                                     hit.swatches = new_swatches;
                                 });
-
-                                console.log(new_swatches);
                             };
                         });
 
-                        console.log(allItems);
                         return allItems;
                     }
                 }

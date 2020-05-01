@@ -280,12 +280,15 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                                     console.log(next_item.prev('.amconf-images-container'));
 
                                     next_item.prop('disabled', null);
+                                    next_item.prev('.amconf-images-container').html('');
+                                    next_item.html('<option selected disabled>Choose an Option...</option>');
+
                                     $.each(data.options, function(key, option) {
-                                       
+                                       console.log(cl);
                                        next_item.append('<option data-number="' + key + '"value="' + option.id + '">' + option.value + '</option>');
 
                                        if('swatch' in option) {
-                                          next_item.prev('.amconf-images-container').append('<div class="amconf-image-container" id="" style="float: left; width: 31px;"><img id="amconf-image-' + option.id + '" data-number="' + key + '" src="" class="amconf-image amconf-image-' + key + '" alt="' + option.value + '" title="' + option.value + '" style="margin-bottom: 7px;" /></div>');
+                                          next_item.prev('.amconf-images-container').append(cl.imageTag(option.swatch, { secure: true, sign_url: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.swatch'); ?>', class: "amconf-image amconf-image-' + key + '", alt: option.value, title: option.value, id: 'amconf-image-"' + option.id + '"', style: "margin-bottom: 7px;" }).toHtml());
                                        }
                                     });
                                  });
