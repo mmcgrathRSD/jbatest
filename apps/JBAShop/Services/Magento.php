@@ -1049,10 +1049,7 @@ class Magento
                 def.attribute_id = 102 
             AND def.store_id = 0 
             ) DATA ON DATA.id = dgroups.magento_id
-            WHERE magento_id IN(5459)
         ";
-
-        //TESTING: WHERE magento_id IN(5459, 6101, 6341)
 
         //This query returns 1 record for each dynamic group member. the PDO::FETCH_GROUP is a helper to group all magento for a given dynamic group together
         //For example, $productGroup will contain all recrods for a given dynamic group
@@ -1060,6 +1057,8 @@ class Magento
         $select->execute();
 
         while($rows = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)){
+            $progress = $this->CLImate->progress()->total(count($rows));
+
             foreach($rows as $magentoID => $productGroup){
                 //Set a few temp variables for product level values
                 $options = [];
@@ -1120,15 +1119,16 @@ class Magento
                     ->set('magento', ['id' => $magentoID])
                     ->set('title', 'dont forget to update me!')
                     ->set('kit_options', array_values($options))
-                    ->set('publication.sales_channels', array_unique($productSalesChannels))
-                    //Kit level discount
-                    ->set('prices.group_discount_percentage', 'TODO DONT FORGET ME!!');
+                    ->set('publication.sales_channels', array_unique($productSalesChannels));
+
 
                 try{
                     $newProduct->save();
                 }catch(Exception $e){
                     $this->CLImate->red($e->getMessage());
                 }
+
+                $progress->advance(1, $modelNumber);
             }
         }
 
