@@ -63,7 +63,7 @@
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script> -->
-
+  <script src="/shop-assets/js/vendor/cloudinary.core.min.js"></script>
   <?php echo $this->renderView('Assets/Site/Views::common/script_variables.php'); ?>
   
  <!-- <script src="/shop-assets/js/vendor/jquery-1.11.2.min.js"></script> -->

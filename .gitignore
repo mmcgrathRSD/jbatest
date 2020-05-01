@@ -1,6 +1,7 @@
 *DS_Store
 .htaccess
 .htpasswd
+.history
 composer.lock
 /vendor
 /logs
