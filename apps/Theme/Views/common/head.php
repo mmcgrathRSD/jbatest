@@ -1,5 +1,5 @@
 <head  <?php if(!empty($metaproduct) && !empty($item)) : ?> prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# product: http://ogp.me/ns/product#" <?php endif; ?>>
-  <?php //echo $this->renderLayout('Assets/Site/Views::common/head_meta.php')?>
+  <?php echo $this->renderLayout('Assets/Site/Views::common/head_meta.php')?>
   <?php //echo $this->renderLayout('Assets/Site/Views::common/head_tags.php')?>
   <?php //echo $this->renderLayout('Assets/Site/Views::common/head_local.php')?>
   <script type="text/javascript">
