@@ -761,33 +761,17 @@ $( document ).ready(function() {
     $('body').on('submit', '.removeFromCartForm', function (e){
         e.preventDefault();
         var form = $(this);
-        // var product_name = form.find('button').attr('product_name');
-        //display loading modal.
-        // jQuery.fancybox.showActivity();
         $.ajax( {
             type: "GET",
             url: form.attr( 'action' ),
             data: form.serialize(),
             success: function( response ) {
-                // form.find('.ymmLoader').hide();
-                // form.find('.add_to_cart_text').show();
                 //Find the my-cart element and replace with refreshed version.
                 $('#my-cart').html(response.message);
-                //hide the loading modal.
-                // jQuery.fancybox.hideActivity();
-                //display fancybox modal
-                // jQuery.fancybox({
-                //     'content'           : '<div class="ajax-message"><p>' + product_name + ' was added to your shopping cart.<br><br> <button class="button" onclick="setLocation(\'/shop/cart/\')"><span><span>View Cart</span></span></button><button class="button" onclick="setLocation(\'/shop/checkout/\')"><span><span>Checkout</span></span></button></p></div>',
-                //     'autoDimensions'	: true,
-                //     'padding'		    : 30,
-                //     'transitionIn'		: 'none',
-                //     'transitionOut'		: 'none',
-                //     'autoScale'         : true,
-                //     'centerOnScroll'	: true
-                // });
             },
             error: function( response ) {
-                console.log('failed to remove', response);
+                // console.log('failed to remove', response);
+                //TODO: Show error message to user when failing to remove from the cart?
             }
         });
     });
