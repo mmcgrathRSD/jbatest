@@ -481,7 +481,6 @@ $clear_all_exclusions = '';
 
                                 $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
                                     $('.category-description.std').html(data.result.html);
-                                    console.log('wtf THIS SHIT', data.result);
                                     if(data.result.children) {
                                         $('ul.category-children').html('');
 
