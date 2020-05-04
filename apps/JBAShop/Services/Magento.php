@@ -1046,7 +1046,6 @@ class Magento
                 WHERE def.attribute_id = 102 
                     AND def.store_id = 0 
             ) DATA ON DATA.id = dgroups.magento_id
-            WHERE magento_id IN(23716)
         ";
 
         //This query returns 1 record for each dynamic group member. the PDO::FETCH_GROUP is a helper to group all magento for a given dynamic group together
