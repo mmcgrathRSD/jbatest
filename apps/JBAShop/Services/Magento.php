@@ -1044,18 +1044,12 @@ class Magento
                 AND m.entity_type_id = '4' 
                 AND m.store_id = 0 
                 AND def.entity_id = m.entity_id
-                LEFT JOIN eav_attribute_option_value mB ON mB.option_id = m.
-            VALUE
-                
-                AND mB.store_id = 0 
-            WHERE
-                def.attribute_id = 102 
-            AND def.store_id = 0 
+                LEFT JOIN eav_attribute_option_value mB ON mB.option_id = m.`value`
+                    AND mB.store_id = 0 
+                WHERE def.attribute_id = 102 
+                    AND def.store_id = 0 
             ) DATA ON DATA.id = dgroups.magento_id
-            WHERE magento_id IN(5459)
         ";
-
-        //TESTING: WHERE magento_id IN(5459, 6101, 6341)
 
         //This query returns 1 record for each dynamic group member. the PDO::FETCH_GROUP is a helper to group all magento for a given dynamic group together
         //For example, $productGroup will contain all recrods for a given dynamic group
@@ -1063,6 +1057,8 @@ class Magento
         $select->execute();
 
         while($rows = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)){
+            $progress = $this->CLImate->progress()->total(count($rows));
+
             foreach($rows as $magentoID => $productGroup){
                 //Set a few temp variables for product level values
                 $options = [];
@@ -1085,14 +1081,20 @@ class Magento
                     $options[$productOption['option_id']]['quantity'] = (int) $productOption['value_required_quantity'];
                     $options[$productOption['option_id']]['discount_percentage'] = 0;
 
-                    //Dynamic Kit option value properties
-                    $options[$productOption['option_id']]['values'][] = [
-                        'id' => new \MongoDB\BSON\ObjectID(),
-                        'model_number' => strtoupper((\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOption['value_model_number']))->itemId),
-                        'magento_id' => $productOption['value_model_number'],
-                        'option_id' => $productOption['option_id'],
-                        'title' => $productOption['option_title']
-                    ];
+                    //Lookup the model number, changed to not fail the whole group if a child doesnt exist in NS.
+                    $netSuiteItemId = (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOption['value_model_number']))->itemId;
+
+                    //Only write the child option to the values array if it exists in NS
+                    if($netSuiteItemId){
+                        //Dynamic Kit option value properties
+                        $options[$productOption['option_id']]['values'][] = [
+                            'id' => new \MongoDB\BSON\ObjectID(),
+                            'model_number' => $netSuiteItemId,
+                            'magento_id' => $productOption['value_model_number'],
+                            'option_id' => $productOption['option_id'],
+                            'title' => $productOption['option_title']
+                        ];
+                    }
 
                     //Set the sales channels for the dyamic kit based on hardcoded array at the top
                     if($productOption['subispeed']){
@@ -1103,6 +1105,11 @@ class Magento
                     }
                 }
 
+                //remove any options that dont have any values
+                $options = array_filter(array_values($options), function($option){
+                    return array_key_exists('values', $option);
+                });
+                
                 //Call The Helper Function to get all the outermost categories for the product
                 $categories = $this->getOuterMostCategories($categoriesIDs);
 
@@ -1122,16 +1129,17 @@ class Magento
                     ->set('magento_test', true)
                     ->set('magento', ['id' => $magentoID])
                     ->set('title', 'dont forget to update me!')
-                    ->set('kit_options', array_values($options))
-                    ->set('publication.sales_channels', array_unique($productSalesChannels))
-                    //Kit level discount
-                    ->set('prices.group_discount_percentage', 'TODO DONT FORGET ME!!');
+                    ->set('kit_options', $options)
+                    ->set('publication.sales_channels', array_unique($productSalesChannels));
+
 
                 try{
                     $newProduct->save();
                 }catch(Exception $e){
                     $this->CLImate->red($e->getMessage());
                 }
+
+                $progress->advance(1, $modelNumber);
             }
         }
 
