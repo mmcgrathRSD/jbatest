@@ -271,7 +271,7 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                                  var next_item_id = $('.product-options select[data-number="' + next_number + '"]').attr('id');
                                  var next_item = $('#'+ next_item_id);
 
-                                 $.post( "/shop/matrix/rr-inlay-2015-wrx-front-rear/options", { 
+                                 $.post( "/shop/matrix/<?php echo $item->tracking['model_number']; ?>/options", { 
                                     attribute_id: next_item_id,
                                     option_ids: [
                                        option_selected.attr('value')
