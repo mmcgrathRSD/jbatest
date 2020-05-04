@@ -114,7 +114,6 @@ class ThemeBootstrap extends \Dsc\Bootstrap
 			'js/vendor/stickyickyicky.js',
 			'js/vendor/simpleMask.js',
             'js/vendor/alphanum.js',
-            'js/vendor/cloudinary.core.min.js',
 			'js/ymm.js',
 			//'js/checkout.js',
             //End shop assets. Start theme assets

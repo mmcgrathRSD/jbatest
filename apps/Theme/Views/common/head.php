@@ -1,5 +1,5 @@
 <head  <?php if(!empty($metaproduct) && !empty($item)) : ?> prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# product: http://ogp.me/ns/product#" <?php endif; ?>>
-  <?php //echo $this->renderLayout('Assets/Site/Views::common/head_meta.php')?>
+  <?php echo $this->renderLayout('Assets/Site/Views::common/head_meta.php')?>
   <?php //echo $this->renderLayout('Assets/Site/Views::common/head_tags.php')?>
   <?php //echo $this->renderLayout('Assets/Site/Views::common/head_local.php')?>
   <script type="text/javascript">
@@ -63,7 +63,7 @@
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script> -->
-
+  <script src="/shop-assets/js/vendor/cloudinary.core.min.js"></script>
   <?php echo $this->renderView('Assets/Site/Views::common/script_variables.php'); ?>
   
  <!-- <script src="/shop-assets/js/vendor/jquery-1.11.2.min.js"></script> -->

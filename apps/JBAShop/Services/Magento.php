@@ -432,9 +432,7 @@ class Magento
             LEFT JOIN catalog_product_entity_int AS subi ON ( def.entity_id = subi.entity_id AND subi.store_id = 1 AND subi.attribute_id = 102 )
             LEFT JOIN catalog_product_entity_int AS ft86 ON ( def.entity_id = ft86.entity_id AND ft86.store_id = 4 AND ft86.attribute_id = 102 )
             LEFT JOIN catalog_product_entity_int AS ftspeed ON ( def.entity_id = ftspeed.entity_id AND ftspeed.store_id = 5 AND ftspeed.attribute_id = 102 )
-        
             LEFT JOIN catalog_product_entity_int AS youtube ON ( def.entity_id = youtube.entity_id AND youtube.store_id = 0 AND youtube.attribute_id = 180)
-            
             LEFT JOIN catalog_product_entity_varchar meta_title ON ( def.entity_id = meta_title.entity_id AND meta_title.store_id = 0 AND meta_title.attribute_id = 82)
             LEFT JOIN catalog_product_entity_int AS is_carb ON ( def.entity_id = is_carb.entity_id AND is_carb.store_id = 0 AND is_carb.attribute_id = 268)
             LEFT JOIN catalog_product_entity_varchar AS url_key ON ( def.entity_id = url_key.entity_id AND url_key.store_id = 0 AND url_key.attribute_id = 97)
@@ -528,17 +526,22 @@ class Magento
                 }));
                 //If there is a ymmSuffix get substring to first instance of '-' else use default_title.
                 preg_match("/.*(?=[\s]-(.*[\s]\/[\s].*|[\s]{1,}[12][\d]{3}|[\s]Universal))/", $row['default_title'], $titleMatches);
+
                 $product
                     ->set('magento.id', $row['id'])
                     ->set('title', !empty($titleMatches) ? trim($titleMatches[0]) : $row['default_title'])
                     ->set('copy', $row['long_description'])
                     ->set('short_description', $row['short_description'])
                     ->set('categories', $newProductCategories)
-                    ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($row['created_at']));
+                    ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($row['created_at']))
+                    //seo stuff, we might need to split this out later by sales channel 
+                    ->set('seo.page_title', $row['default_title'])
+                    ->set('seo.keywords', $row['default_title'])
+                    ->set('seo.meta_description', trim(str_replace(["\r", "\n"],'',strip_tags($row['long_description']))));
 
                 //If we are in a situation where we are creating a new product (eg. matrix parent, set the model number)
                 if(!$product->tracking['model_number']){
-                    $product->set('tracking.model_number', $row['model']);
+                    $product->set('tracking.model_number', strtoupper($row['model']));
                 }
 
                 $productSalesChannels = [];
@@ -1483,7 +1486,7 @@ class Magento
                         AND status.attribute_id = 96 
                         AND status.store_id = 0 
                         AND status.value = 1 
-            WHERE  cpe.type_id = 'configurable' 
+            WHERE  cpe.type_id = 'configurable'
             ORDER  BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title, attribute_option_ordering, attribute_option_value";
 
         $select = $this->db->prepare($sql);
@@ -1541,13 +1544,20 @@ class Magento
                         ];
 
                         if (!empty($swatchData[$k])) {
-                            $upload = \Cloudinary\Uploader::upload($swatchData[$k], [
-                                'type' => 'upload',
-                                'format' => 'jpg',
-                                'folder' => 'swatches'
-                            ]);
+                            try{
+                                $upload = \Cloudinary\Uploader::upload($swatchData[$k], [
+                                    'type' => 'upload',
+                                    'format' => 'jpg',
+                                    'folder' => 'swatches'
+                                ]);
+                            }catch(Exception $e){
+                                $this->CLImate->red($e->getMessage());
+                            }
 
-                            $attributeOption['swatch'] = $upload['public_id'];
+                            //If there is no image, dont set the swatch
+                            if($upload){
+                                $attributeOption['swatch'] = $upload['public_id'];
+                            }
                         }
 
                         $attribute['options'][] = $attributeOption;
@@ -1575,7 +1585,7 @@ class Magento
                         if (empty($netsuite->itemId)) {
                             continue;
                         }
-                        $product->set("variants.$i.model_number", $netsuite->itemId);
+                        $product->set("variants.$i.model_number", strtoupper($netsuite->itemId));
                     }
                 }
 
@@ -1882,6 +1892,132 @@ class Magento
             }
 
             $progress->advance(1, $row['model']);
+        }
+    }
+
+    public function syncEmailsFromRally()
+    {
+        $listIds = [
+            'subispeed' => 350899,
+            'ftspeed'   => 350900
+        ];
+
+        $messageIds = [
+            11365437 => ['subispeed' => 11419668, 'ftspeed' => 11419670],
+            11337429 => ['subispeed' => 11421643, 'ftspeed' => 11421648],
+            11336939 => ['subispeed' => 11421402, 'ftspeed' => 11421389],
+            11335992 => ['subispeed' => 11421404, 'ftspeed' => 11421381],
+            11336619 => ['subispeed' => 11419669, 'ftspeed' => 11419671],
+            11367215 => ['subispeed' => 11421405, 'ftspeed' => 11421384],
+            11335962 => ['subispeed' => 11421407, 'ftspeed' => 11421391],
+            11335974 => ['subispeed' => 11419666, 'ftspeed' => 11419673],
+            11338555 => ['subispeed' => 11421635, 'ftspeed' => 11421382],
+            11344166 => ['subispeed' => 11421639, 'ftspeed' => 11421383],
+            11336618 => ['subispeed' => 11419675, 'ftspeed' => 11419674],
+            11335975 => ['subispeed' => 11421634, 'ftspeed' => 11421396],
+            11336935 => ['subispeed' => 11422468, 'ftspeed' => 11422469],
+            11335993 => ['subispeed' => 11422462, 'ftspeed' => 11422467]
+        ];
+
+        $fieldIds = [
+            7369 => ['subispeed' => 10347, 'ftspeed' => 10409],
+            7373 => ['subispeed' => 10351, 'ftspeed' => 10413],
+            7374 => ['subispeed' => 10352, 'ftspeed' => 10414],
+            7365 => ['subispeed' => 10344, 'ftspeed' => 10406],
+            7372 => ['subispeed' => 10350, 'ftspeed' => 10412],
+            7375 => ['subispeed' => 10353, 'ftspeed' => 10415],
+            7367 => ['subispeed' => 10346, 'ftspeed' => 10408],
+            7371 => ['subispeed' => 10349, 'ftspeed' => 10411],
+            7304 => ['subispeed' => 10329, 'ftspeed' => 10391],
+            7308 => ['subispeed' => 10332, 'ftspeed' => 10394],
+            7309 => ['subispeed' => 10333, 'ftspeed' => 10395],
+            7302 => ['subispeed' => 10327, 'ftspeed' => 10389],
+            7307 => ['subispeed' => 10331, 'ftspeed' => 10393],
+            7310 => ['subispeed' => 10334, 'ftspeed' => 10396],
+            7303 => ['subispeed' => 10328, 'ftspeed' => 10390],
+            7306 => ['subispeed' => 10330, 'ftspeed' => 10392],
+            7315 => ['subispeed' => 10339, 'ftspeed' => 10401],
+            7379 => ['subispeed' => 10357, 'ftspeed' => 10419],
+            7378 => ['subispeed' => 10356, 'ftspeed' => 10418],
+            7301 => ['subispeed' => 10326, 'ftspeed' => 10388],
+            7316 => ['subispeed' => 10340, 'ftspeed' => 10402],
+            7370 => ['subispeed' => 10348, 'ftspeed' => 10410],
+            7314 => ['subispeed' => 10338, 'ftspeed' => 10400],
+            7312 => ['subispeed' => 10336, 'ftspeed' => 10398],
+            7317 => ['subispeed' => 10341, 'ftspeed' => 10403],
+            7318 => ['subispeed' => 10342, 'ftspeed' => 10404],
+            7376 => ['subispeed' => 10354, 'ftspeed' => 10416],
+            7377 => ['subispeed' => 10355, 'ftspeed' => 10417],
+            7366 => ['subispeed' => 10345, 'ftspeed' => 10407],
+            7311 => ['subispeed' => 10335, 'ftspeed' => 10397],
+            7313 => ['subispeed' => 10337, 'ftspeed' => 10399],
+            7364 => ['subispeed' => 10343, 'ftspeed' => 10405],
+            7380 => ['subispeed' => 10358, 'ftspeed' => 10420],
+            7381 => ['subispeed' => 10359, 'ftspeed' => 10421],
+            7382 => ['subispeed' => 10360, 'ftspeed' => 10422],
+            7384 => ['subispeed' => 10361, 'ftspeed' => 10423],
+            7385 => ['subispeed' => 10362, 'ftspeed' => 10424],
+            7386 => ['subispeed' => 10363, 'ftspeed' => 10425],
+            7387 => ['subispeed' => 10364, 'ftspeed' => 10426],
+            7388 => ['subispeed' => 10365, 'ftspeed' => 10427],
+            7389 => ['subispeed' => 10366, 'ftspeed' => 10428],
+            7498 => ['subispeed' => 10367, 'ftspeed' => 10429],
+            7500 => ['subispeed' => 10368, 'ftspeed' => 10430],
+            7501 => ['subispeed' => 10369, 'ftspeed' => 10431],
+            7505 => ['subispeed' => 10370, 'ftspeed' => 10432],
+            7506 => ['subispeed' => 10371, 'ftspeed' => 10433],
+            7507 => ['subispeed' => 10372, 'ftspeed' => 10434],
+            7553 => ['subispeed' => 10373, 'ftspeed' => 10435],
+            7556 => ['subispeed' => 10374, 'ftspeed' => 10436],
+            7564 => ['subispeed' => 10375, 'ftspeed' => 10437],
+            7565 => ['subispeed' => 10376, 'ftspeed' => 10438],
+            7566 => ['subispeed' => 10377, 'ftspeed' => 10439],
+            8223 => ['subispeed' => 10378, 'ftspeed' => 10440],
+            8327 => ['subispeed' => 10379, 'ftspeed' => 10441],
+            8328 => ['subispeed' => 10380, 'ftspeed' => 10442],
+            8329 => ['subispeed' => 10381, 'ftspeed' => 10443],
+            8330 => ['subispeed' => 10382, 'ftspeed' => 10444],
+            'GC' => ['subispeed' => 10516, 'ftspeed' => 10515]
+        ];
+
+        \Mailer\Models\Templates::collection()->deleteMany([]);
+
+        foreach ($listIds as $salesChannel => $listId) {
+            $rallyTemplates = (new \JBAShop\Models\RallyMailerTemplates)
+                ->setCondition('sales_channel', 'rallysport-usa')
+                ->getItems();
+
+            foreach ($rallyTemplates as $rallyTemplate) {
+                $jbaTemplate = (new \Mailer\Models\Templates)->bind($rallyTemplate->cast());
+                $jbaTemplate->set('_id', null);
+                $jbaTemplate->set('sales_channel', $salesChannel);
+                $jbaTemplate->set('event_subject', '');
+                $jbaTemplate->set('event_html', '');
+                $jbaTemplate->set('event_text', '');
+
+                if (!empty($jbaTemplate->get('listrak'))) {
+                    $jbaTemplate->set('listrak.listid', $listId);
+                    
+                    $fields = [];
+                    if (!empty($messageIds[$jbaTemplate->get('listrak.messageid')][$salesChannel])) {
+                        if ($jbaTemplate->get('listrak.messageid') == 11337429) {
+                            $fields[$fieldIds['GC'][$salesChannel]] = '{{@giftcard.originalAmount}';
+                        }
+
+                        $jbaTemplate->set('listrak.messageid', $messageIds[$jbaTemplate->get('listrak.messageid')][$salesChannel]);
+                    }
+
+                    foreach ((array) $jbaTemplate->get('listrak.fields') as $fieldId => $value) {
+                        $fields[$fieldIds[$fieldId][$salesChannel]] = $value;
+                    }
+
+                    $jbaTemplate->set('listrak.fields', $fields);
+                } else {
+                    continue;
+                }
+
+                $jbaTemplate->store();
+            }
         }
     }
 }

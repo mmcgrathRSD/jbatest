@@ -21,14 +21,6 @@
 			"path": "vendor/premierperformance/data"
 		},
 		{
-			"name": "DealerPortal",
-			"path": "vendor/premierperformance/dealerportal"
-		},
-		{
-			"name": "DealerPortalTheme",
-			"path": "vendor/premierperformance/dealerportaltheme"
-		},
-		{
 			"name": "Library",
 			"path": "vendor/premierperformance/library"
 		},
