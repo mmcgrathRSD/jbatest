@@ -27,7 +27,9 @@ class Home extends \Dsc\Controller
     		}
     	}
 
-    	$this->app->set('isHome', true);
+        $this->app->set('page', 'home');
+        $this->app->set('isHome', true);
+        
         echo $this->theme->render('JBA\Site\Views::home/default.php');
     }
 

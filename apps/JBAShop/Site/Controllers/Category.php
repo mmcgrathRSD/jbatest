@@ -24,6 +24,8 @@ class Category extends \Shop\Site\Controllers\Category
 	public function index()
     {
         $this->registerName(__METHOD__);
+        $this->app->set('page', 'category');
+
     	$url_params = $this->app->get('PARAMS');
     	$this->app->set('comparable', false);
     	$param = $this->inputfilter->clean( $this->app->get('PARAMS.*'), 'string' );
