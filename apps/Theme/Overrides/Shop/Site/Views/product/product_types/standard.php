@@ -135,48 +135,48 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                      </div>
                      <script>
                      //NOTE
-                        var magPrice=76.5;
-                        var _affirm_config = {
-                          public_api_key: affirm_api_key, /* Use the PUBLIC API KEY Affirm sent you. */
-                          script: "https://cdn1.affirm.com/js/v2/affirm.js"
-                        };
+                        // var magPrice=76.5;
+                        // var _affirm_config = {
+                        //   public_api_key: affirm_api_key, /* Use the PUBLIC API KEY Affirm sent you. */
+                        //   script: "https://cdn1.affirm.com/js/v2/affirm.js"
+                        // };
                         
                         
                         
                         
                         
                         
-                        (function(l,g,m,e,a,f,b){var d,c=l[m]||{},h=document.createElement(f),n=document.getElementsByTagName(f)[0],k=function(a,b,c){return function(){a[b]._.push([c,arguments])}};c[e]=k(c,e,"set");d=c[e];c[a]={};c[a]._=[];d._=[];c[a][b]=k(c,a,b);a=0;for(b="set add save post open empty reset on off trigger ready setProduct".split(" ");a<b.length;a++)d[b[a]]=k(c,e,b[a]);a=0;for(b=["get","token","url","items"];a<b.length;a++)d[b[a]]=function(){};h.async=!0;h.src=g[f];n.parentNode.insertBefore(h,n);delete g[f];d(g);l[m]=c})(window,_affirm_config,"affirm","checkout","ui","script","ready");
-                        affirm.ui.ready( function() { updateAffirmAsLowAs( magPrice*100 ) } ); // change to your template value for product or cart price
-                        function updateAffirmAsLowAs( amount ){
-                          if ( ( amount == null ) || ( amount < 10000 ) ) { return; } // Only display as low as for items over $10 CHANGE FOR A DIFFERENT LIMIT
-                          // payment estimate options
-                          var options = {
-                            apr: "0.10", // percentage assumed APR for loan
-                            months: 12, // can be 3, 6, or 12
-                            amount: amount // USD cents
-                          };
-                          try {
-                            typeof affirm.ui.payments.get_estimate; /* try and access the function */
-                          }
-                          catch (e) {
-                            return; /* stops this function from going any further - affirm functions are not loaded and will throw an error */
-                          }
-                          // use the payment estimate response
-                          function handleEstimateResponse (payment_estimate) {
-                            // the payment comes back in USD cents
-                            var dollars = ( ( payment_estimate.payment + 99 ) / 100 ) | 0; // get dollars, round up, and convert to int
-                            // Set affirm payment text
-                            var a = document.getElementById('learn-more');
-                            var iText = ('innerText' in a)? 'innerText' : 'textContent';
-                            a[iText] = "Starting at $" + dollars + " a month. Learn More";
-                            // open the customized Affirm learn more modal
-                            a.onclick = payment_estimate.open_modal;
-                            a.style.visibility = "visible";
-                          };
-                          // request a payment estimate
-                          affirm.ui.payments.get_estimate(options, handleEstimateResponse);
-                        }
+                        // (function(l,g,m,e,a,f,b){var d,c=l[m]||{},h=document.createElement(f),n=document.getElementsByTagName(f)[0],k=function(a,b,c){return function(){a[b]._.push([c,arguments])}};c[e]=k(c,e,"set");d=c[e];c[a]={};c[a]._=[];d._=[];c[a][b]=k(c,a,b);a=0;for(b="set add save post open empty reset on off trigger ready setProduct".split(" ");a<b.length;a++)d[b[a]]=k(c,e,b[a]);a=0;for(b=["get","token","url","items"];a<b.length;a++)d[b[a]]=function(){};h.async=!0;h.src=g[f];n.parentNode.insertBefore(h,n);delete g[f];d(g);l[m]=c})(window,_affirm_config,"affirm","checkout","ui","script","ready");
+                        // affirm.ui.ready( function() { updateAffirmAsLowAs( magPrice*100 ) } ); // change to your template value for product or cart price
+                        // function updateAffirmAsLowAs( amount ){
+                        //   if ( ( amount == null ) || ( amount < 10000 ) ) { return; } // Only display as low as for items over $10 CHANGE FOR A DIFFERENT LIMIT
+                        //   // payment estimate options
+                        //   var options = {
+                        //     apr: "0.10", // percentage assumed APR for loan
+                        //     months: 12, // can be 3, 6, or 12
+                        //     amount: amount // USD cents
+                        //   };
+                        //   try {
+                        //     typeof affirm.ui.payments.get_estimate; /* try and access the function */
+                        //   }
+                        //   catch (e) {
+                        //     return; /* stops this function from going any further - affirm functions are not loaded and will throw an error */
+                        //   }
+                        //   // use the payment estimate response
+                        //   function handleEstimateResponse (payment_estimate) {
+                        //     // the payment comes back in USD cents
+                        //     var dollars = ( ( payment_estimate.payment + 99 ) / 100 ) | 0; // get dollars, round up, and convert to int
+                        //     // Set affirm payment text
+                        //     var a = document.getElementById('learn-more');
+                        //     var iText = ('innerText' in a)? 'innerText' : 'textContent';
+                        //     a[iText] = "Starting at $" + dollars + " a month. Learn More";
+                        //     // open the customized Affirm learn more modal
+                        //     a.onclick = payment_estimate.open_modal;
+                        //     a.style.visibility = "visible";
+                        //   };
+                        //   // request a payment estimate
+                        //   affirm.ui.payments.get_estimate(options, handleEstimateResponse);
+                        // }
                      </script>
                      <div class="price-box-wrap">
                         <div class="f-left">
@@ -206,8 +206,9 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                         </div>
                      </div>
                      <div class="add-to-box">
-                     <form action="/shop/cart/add" method="post" class="addToCartForm">
+                     <form action="/shop/cart/add" method="post" class="addToCartForm" autocomplete="off">
                         <?php if (!empty($item->attributes) || $item->product_type == 'matrix') : ?>
+                           <input type="hidden" name="model_number" value="" class="variant_id">
                            <div class="product-options" id="product-options-wrapper">
                               <a href="#" onclick="javascript: spConfig.clearConfig(); return false;">Reset Configuration</a>
                               <dl class="last">
@@ -215,14 +216,14 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                               foreach($item->attributes as $key => $attribute) : 
                               $options = '';
                               ?>
-                                 <dt><label class="required"><em>*</em>Background Color<span class="amconf-label" data-id='<?php echo $attribute['id']; ?>'></span></label></dt>
+                                 <dt><label class="required"><em>*</em><?php echo $attribute['title']; ?><span class="amconf-label" data-id='<?php echo $attribute['id']; ?>'></span></label></dt>
                                  <dd data-id='<?php echo $attribute['id']; ?>'>
                                     <div class="input-box">
                                        <div class="amconf-images-container" id="amconf-images-92">
                                           <?php if($key == 0) : ?>
                                              <?php foreach((array) $attribute['options'] as $option_key => $option) : ?>
                                                 <?php if(!empty($option['swatch'])) : ?>
-                                                   <div class="amconf-image-container" id="" style="float: left; width: 31px;">
+                                                   <div class="amconf-image-container" id="" style="float: left; width: 31px; cursor: pointer;">
                                                       <img 
                                                          id="amconf-image-<?php echo $option['id']; ?>" 
                                                          data-number="<?php echo $option_key; ?>"
@@ -231,6 +232,7 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                                                          alt="<?php echo $option['value']; ?>" 
                                                          title="<?php echo $option['value']; ?>" 
                                                          style="margin-bottom: 7px;"
+                                                         data-option="<?php echo $option['id']; ?>"
                                                       />
                                                    </div>
                                                 <?php endif; ?>
@@ -258,11 +260,21 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                            <input type="hidden" name="model_number" value="<?php echo $item->tracking['model_number']; ?>" class="variant_id" />
                         <?php endif; ?>
 		                    <script>
-                           $('.super-attribute-select').change(function() {
-                              var option_selected = $("option:selected", this);
+                           $(document).on('.super-attribute-select', 'change', function() {
+
+                              
+
                               var value_selected = this.value;
                               var select_id = $(this).attr('id');
                               var next_number = Number($(this).attr('data-number')) + 1;
+
+                              $(this).closest('dd').nextAll().find('.super-attribute-select').html('<option selected disabled>Choose an Option...</option>');
+
+                              var options_selected = [];
+                              
+                              $('.super-attribute-select option:selected:enabled').each(function() {
+                                 options_selected.push($(this).val());
+                              });
 
                               // $('.product-options dd[data-id="' + select_id + '"] .amconf-image').removeClass('amconf-image-selected');
                               // $('.product-options dd[data-id="' + select_id + '"] .amconf-image#' + select_id).addClass('amconf-image-selected');
@@ -273,19 +285,16 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
 
                                  $.post( "/shop/matrix/<?php echo $item->tracking['model_number']; ?>/options", { 
                                     attribute_id: next_item_id,
-                                    option_ids: [
-                                       option_selected.attr('value')
-                                    ]
+                                    option_ids: options_selected
                                  }, function(data) {
-                                    console.log(next_item.prev('.amconf-images-container'));
-
+                                    
                                     next_item.prop('disabled', null);
                                     next_item.prev('.amconf-images-container').html('');
-                                    next_item.html('<option selected disabled>Choose an Option...</option>');
+                                    //next_item.html('<option selected disabled>Choose an Option...</option>');
 
-                                    $.each(data.options, function(key, option) {
-                                       console.log(cl);
-                                       next_item.append('<option data-number="' + key + '"value="' + option.id + '">' + option.value + '</option>');
+                                    $.each(data.result, function(key, option) {
+                                       variant = 'variant' in option ? ' data-model="' + option.variant.model + '"' : ''; 
+                                       next_item.append('<option data-number="' + key + '"value="' + option.id + '"' + variant + '>' + option.value + '</option>');
 
                                        if('swatch' in option) {
                                           next_item.prev('.amconf-images-container').append(cl.imageTag(option.swatch, { secure: true, sign_url: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.swatch'); ?>', class: "amconf-image amconf-image-' + key + '", alt: option.value, title: option.value, id: 'amconf-image-"' + option.id + '"', style: "margin-bottom: 7px;" }).toHtml());
@@ -294,10 +303,29 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                                  });
                               } else {
                                  //cart is ready to go 
-                                 console.log("I'm ready to be added to your cart!! :-) ");
+                                 var model = $('.super-attribute-select option:selected:enabled').last().attr('data-model')
+                                 $('.variant_id').val(model);
+
+                                 $.get( "/shop/product/" + model + "/info", function(data) {
+                                    console.log(data)
+                                    if('image' in data.result) {
+                                       //TODO: once image modal is fixed, auto switch to selected variant
+                                    }
+
+                                    if('price' in data.result) {
+                                       $('.price_actual ').html(currency_format.format(data.result.price));
+                                    }
+                                 });
+
                               }
                               
                               
+                           });
+
+                           $('.amconf-image-container').click(function() {
+                              console.log($(this).closest('.input-box').find('select'));
+                              $(this).closest('.input-box').find('select').val($(this).find('img').attr('data-option')).trigger('change');
+                              $(this).closest('.input-box').find('select').trigger('change');
                            });
                           </script>
                            <div class="add-to-cart">

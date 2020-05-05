@@ -52,6 +52,7 @@
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/magestore/mobilelibrary.css" defer />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/magestore/giftvoucher.css" defer />
   <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800' rel='stylesheet' type='text/css'>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
 
   <?php if($DEBUG) :  ?>
   <link href="/minify/css" rel="stylesheet">
@@ -69,6 +70,10 @@
  <!-- <script src="/shop-assets/js/vendor/jquery-1.11.2.min.js"></script> -->
   <script src="/shop-assets/js/vendor/instantsearch.min.js?<?php echo $cachebuster; ?>" ></script>
   
+  <?php if($checkoutmode) : ?>
+    <link href="/theme/css/bootstrap.css" rel="stylesheet">
+  <?php endif; ?>
+
   <!-- <script src="/theme/js/jba2.js?<?php echo $cachebuster; ?>"></script> -->
   <script src="/shop-assets/js/vendor/jquery-1.11.2.min.js"></script>
  

@@ -120,7 +120,8 @@ class ThemeBootstrap extends \Dsc\Bootstrap
             'js/jba2.js',
             'js/vendor/jquery-1.11.2.min.js',
             'js/custom.js',
-            'js/custom_includes/jba_custom_algolia.js'
+            'js/custom_includes/jba_custom_algolia.js',
+            'js/shop_custom.js'
 		);
 
         foreach ($files as $file)

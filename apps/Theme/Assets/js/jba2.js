@@ -17322,10 +17322,10 @@ jQuery(function($){
 		$('.header-dropdown', this).stop( true, true ).animate({opacity:0, height:'toggle'}, 100);
 	});
 
-	//ios currency switch fix
-	$('.header-switch').click(function(){
-		$('.header-dropdown', this).stop( true, true ).animate({opacity:1, height:'toggle'}, 100);
-	});
+	// //ios currency switch fix
+	// $('.header-switch').click(function(){
+	// 	$('.header-dropdown', this).stop( true, true ).animate({opacity:1, height:'toggle'}, 100);
+	// });
 
 
 
