@@ -490,10 +490,8 @@ $clear_all_exclusions = '';
                                             }
                                             
                                         });
-                                        // only if the data
-                                        // if(data.result.title === hit.label){
-                                            $('title').html(data.result.seo_title);
-                                        // }
+                                        
+                                        $('title').html(data.result.seo_title);
                                     }
                                 })).then(function() {
                                     $('.category_dynamic_head').css('height', 'auto').removeClass('category_dynamic_head_loader').delay(800).fadeIn(400);
