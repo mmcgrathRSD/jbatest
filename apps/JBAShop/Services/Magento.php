@@ -143,7 +143,7 @@ class Magento
         $select = $this->db->prepare($sql);
         $select->execute();
 
-        foreach ($select->fetch(\PDO::FETCH_ASSOC) as $user) {
+        while ($user = $select->fetch(\PDO::FETCH_ASSOC)) {
             //Temp variable for our cli table
             $data = [];
 
