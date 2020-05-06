@@ -168,7 +168,7 @@ class Magento
                 $newUser = (new \Users\Models\Users)->bind($userData);
 
                 //See if we have an existing netsuite user for this email and division
-                $netsuiteUser = \Netsuite\Models\Customer::getCustomerFromEmail($newUser['email']);
+                $netsuiteUser = \Netsuite\Models\Customer::getCustomerFromEmail($newUser->email);
 
                 //If we found a valid netsuite user, update the netsuite object on the corresponding mongo user
                 if ($netsuiteUser) {
