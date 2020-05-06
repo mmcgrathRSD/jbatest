@@ -19,8 +19,23 @@ class JBAShopBootstrap extends \Dsc\Bootstrap
      * */
     protected function preSite()
     {
-    	parent::preSite();
+        parent::preSite();
+
+        $app = \Base::instance();
+        $cache = \Cache::instance();
+        $salesChannel = $app->get('sales_channel');
+        
+        $specs = [];
+        if (!$cache->exists('product_specs.' . $salesChannel, $specs)) {
+            $settings = \Shop\Models\Settings::fetch();
+            $specs = $settings->get('product_specs_new');
+
+            $cache->set('product_specs.' . $salesChannel, $specs, 3600);
+        }
+        
+        $app->set('product_specs', $specs);
     }
+
     /*
      * runSite runs before the postSite methods, each bootstrap will run its down preSite/runSite/postSite
     *

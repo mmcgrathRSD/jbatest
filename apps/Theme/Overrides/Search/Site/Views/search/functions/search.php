@@ -31,11 +31,7 @@ $clear_all_exclusions = '';
             filters += ' AND ymm_hashs: ' + hash + ' OR universal_item: true';
         }
 
-        <?php if(\Base::instance()->get('SITE_TYPE') != 'wholesale') : ?>
-            filters += ' AND default_price > 0 AND NOT product_type: Subitem'
-
-        <?php else : ?>
-        filters += ' AND NOT product_type: Matrix'
+        filters += ' AND default_price > 0 AND NOT product_type: Subitem';
 
         <?php if(!empty($dns_auth) && \Base::instance()->get('SITE_TYPE') == 'wholesale') : ?>
         var dns_auth = <?php echo json_encode($dns_auth); ?>;
@@ -47,29 +43,27 @@ $clear_all_exclusions = '';
             });
         }
         <?php endif; ?>
-        <?php endif; ?>
-
-
-        filters = '';
 
         return filters;
     }
 
 	function stickyEval(elem, row, add) {
-		if((elem.outerHeight(true) + add) >= row.outerHeight(true) && elem.outerHeight(true) != 0 && row.outerHeight(true) != 0) {
-			jQuery('.sticky_parent').hcSticky('off');
-			sticky_state = false;
-		} else {
-			if(!sticky_state) {
-				jQuery('.sticky_parent').hcSticky('on');
-				sticky_state = true;
-			}
-			//
+        if(typeof(jQuery('.sticky_parent').hcSticky) == 'function') {
+            if((elem.outerHeight(true) + add) >= row.outerHeight(true) && elem.outerHeight(true) != 0 && row.outerHeight(true) != 0) {
+                jQuery('.sticky_parent').hcSticky('off');
+                sticky_state = false;
+            } else {
+                if(!sticky_state) {
+                    jQuery('.sticky_parent').hcSticky('on');
+                    sticky_state = true;
+                }
+                //
 
-			if(elem.offset().top + elem.outerHeight(true) + add > row.offset().top + row.outerHeight(true)) {
-				elem.css('top', (parseInt(elem.css('top'), 10) - 10 - add) + 'px');
-			}
-		}
+                if(elem.offset().top + elem.outerHeight(true) + add > row.offset().top + row.outerHeight(true)) {
+                    elem.css('top', (parseInt(elem.css('top'), 10) - 10 - add) + 'px');
+                }
+            }
+        }
 	}
 
     function algoliaProductInstance(
@@ -116,7 +110,7 @@ $clear_all_exclusions = '';
 					facets: facets,
 					facetsRefinements: facet_refinements,
 					<?php if($type == 'shop.categories' || !empty($hierarchical_refinement)) : ?>
-					hierarchicalFacets: 'hierarchicalCategories.lvl0',
+					hierarchicalFacets: 'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.subispeed.lvl0',
 					//hierarchicalFacetsRefinements: hierarchical_facet_refinements,
 					<?php endif; ?>
 				},
@@ -143,108 +137,6 @@ $clear_all_exclusions = '';
                 cssClasses: {
                 },
                 transformData: {
-                    item: function (hit) {
-                        console.log('#hits-container' + instance_id);
-                        console.log($);
-                        jQuery('#hits-container' + instance_id).show();
-                        jQuery('#empty-container' + instance_id + ', #empty_clear_all' + instance_id).hide();
-                        //dynamic kits checker
-                        if(hit.product_type == 'Package Deal') {
-                            hit.is_kit = true;
-                        }
-
-                    <?php if(\Base::instance()->get('SITE_TYPE') == 'wholesale') : ?>
-                    //prices and discount
-                    <?php if($identity->flatPriceLevel()) : ?>
-                    var upp_auth = <?php echo json_encode($upp_auth); ?>;
-                    if(upp_auth) {
-                        var authorized =
-                            $.grep(upp_auth, function(item) {
-                                return item == hit.Brand;
-                            }).length;
-                    }
-
-                    //price level crap for upp and previous price
-                    if('price_levels' in hit && '<?php echo $identity->flatPriceLevel(); ?>' in hit.price_levels && (!hit.upp_auth || (hit.upp_auth && authorized) || hit.is_kit)) {
-                        hit.default_price = hit.price_levels.<?php echo $identity->flatPriceLevel(); ?>;
-                        if('previous_price_levels' in hit && '<?php echo $identity->flatPriceLevel(); ?>' in hit.previous_price_levels) {
-                            hit.previous_default_price = hit.previous_price_levels.<?php echo $identity->flatPriceLevel(); ?>;
-                        }
-                    }
-                    <?php endif; ?>
-
-                    hit.price_levels = null;
-                    hit.previous_price_levels = null;
-
-                    if('previous_default_price' in hit && hit.previous_default_price <= hit.default_price) {
-                        hit.previous_default_price = null; //setting this to null so that the template doesn't pick it up
-                    } else
-
-                    if('previous_default_price' in hit) {
-                        hit.previous_default_price = hit.previous_default_price.toFixed(2);
-                    }
-
-                    if('additional_prices' in hit) {
-                        if(hit.additional_prices.msrp) {
-                            hit.additional_prices.msrp = Number(hit.additional_prices.msrp).toFixed(2);
-                        }
-
-                        if('pam_backwards' in hit.additional_prices) {
-                            hit.additional_prices.pam_backwards = hit.additional_prices.pam_backwards.toFixed(2);
-                        }
-
-                        if(hit.additional_prices.jobber) {
-                            hit.additional_prices.jobber = Number(hit.additional_prices.jobber).toFixed(2);
-                        }
-
-                        if(hit.default_price && hit.additional_prices.msrp) {
-                            var discount = (((Number(hit.additional_prices.msrp) - Number(hit.default_price))/Number(hit.additional_prices.msrp)) * 100).toFixed(0);
-                            if(discount >= 5) {
-                                hit.additional_prices.user_discount_percent = (((Number(hit.additional_prices.msrp) - Number(hit.default_price))/Number(hit.additional_prices.msrp)) * 100).toFixed(0);;
-                                hit.additional_prices.user_discount_price = (Number(hit.additional_prices.msrp) - Number(hit.default_price)).toFixed(2);
-                            }
-                        }
-                    }
-
-                    if (hit.warehouse && hit.warehouse.length) {
-                        var houses = '';
-
-                        Object.keys(hit.warehouse).forEach(function (key) {
-                            house = hit.warehouse[key].name;
-                            houses += house + ', ';
-                        });
-
-                        hit.warehouse.totalWarehouses = houses.slice(0, -2);
-                    }
-
-    		    //lead times
-                        if(hit.inventory_count == 0 && hit.shipping.lead_days) {
-                            if (hit.shipping.lead_days.start == hit.shipping.lead_days.end) {
-                                hit.shipping.stock_message = 'Average time to ship: ' + hit.shipping.lead_days.start + ' business days';
-                            } else {
-                                hit.shipping.stock_message = 'Average time to ship: ' + hit.shipping.lead_days.start + '-' + hit.shipping.lead_days.end + ' business days';
-                            }
-                        }
-
-                        <?php endif; ?>
-
-                        if(hit.default_price) {
-                            hit.default_price = hit.default_price.toFixed(2);
-                        }
-
-    					//adding the path, right now only using for compare function
-    					<?php if(!empty($item->path)) : ?>
-    					hit.path = '<?php echo $item->path; ?>';
-    					<?php endif; ?>
-
-    					//ymm universal parts condition. we set this toggle in category/search.php and should be removed on first click
-
-                        if('Rating' in hit && hit.Rating) {
-                            hit.Rating = (Math.floor(hit.Rating *2) / 2).toFixed(1) * 20;
-                        }
-
-                        return hit;
-                    },
                     empty: function(empty) {
                         //jQuery('#hits_container' + instance_id).hide();
                         //jQuery('#empty-container' + instance_id + ', #empty_clear_all' + instance_id).show();
@@ -265,6 +157,36 @@ $clear_all_exclusions = '';
                         return empty;
                     },
                     allItems: function(allItems) {
+                        //cl.imageTag('product_images/t0xleog0c4mwbsws0igt', {secure: true, sign_url: true, type: "private", transformation: 'jba_category'}).toHtml();
+                        allItems.hits.each(function(hit, key) {
+                            if('swatches' in hit) {
+                                console.log(hit.swatches);
+                                let new_swatches = [];
+
+                                $.each(hit.swatches, function(key, swatch) {
+                                    new_swatch_values = [];
+
+                                    $.each(swatch, function(value_key, value) {
+                                        new_swatch_values.push(
+                                            {
+                                                "key": value_key,
+                                                "value": cl.imageTag(value, {secure: true, sign_url: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.swatch'); ?>', class: "amconf-image", alt: value_key, title: value_key}).toHtml()
+                                            }
+                                        );
+                                    });
+
+                                    new_swatches.push(
+                                        {
+                                            "key": key,
+                                            "value": new_swatch_values
+                                        }
+                                    );
+
+                                    hit.swatches = new_swatches;
+                                });
+                            };
+                        });
+
                         return allItems;
                     }
                 }
@@ -314,65 +236,33 @@ $clear_all_exclusions = '';
 				}
 
 
-            } else {
-                <?php if($type == 'shop.categories') : ?>
-                <?php foreach((array) $item->product_specs as $key => $spec) : ?>
-				<?php if($spec['hidden'] != 'on') : ?>
-                <?php if(!empty($spec['custom_atf'])) : ?>
-                    search.addWidget(
-    				  instantsearch.widgets.menuSelect({
-    					container: '#search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); ?>' + instance_id,
-    					attributeName: 'specs.<?php echo $key; ?>',
-    					autoHideContainer: false,
-    					templates: {
-    					    seeAllOption: 'Select <?php echo $key; ?>...',
-    					    item: '{{label}}'
-    					}
-    				  })
-    				);
-                <?php else : ?>
-                <?php if($spec['type'] == 'number') : ?>
-				search.addWidget(
-				  instantsearch.widgets.rangeSlider({
-					container: '#search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); ?>' + instance_id,
-					attributeName: 'specs.<?php echo $key; ?>',
-					templates: {
-						header: '<h4 class="collapsible_facet"><?php echo $key; ?><i class="fa fa-chevron-right" aria-hidden="true"></i><i class="fa fa-chevron-down" aria-hidden="true"></i></h4>'
-					},
-					cssClasses: {
-						root: 'collapsible_range'
-					},
-					collapsible: {
-						collapsed: true
-					}
-				  })
-				);
-				<?php else : ?>
-				search.addWidget(
-                    instantsearch.widgets.refinementList({
-                        container: '#search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); ?>' + instance_id,
-                        attributeName: 'specs.<?php echo $key; ?>',
-                        templates: {
-                            header: '<h4 class="collapsible_facet"><?php echo $key; ?><i class="fa fa-chevron-right" aria-hidden="true"></i><i class="fa fa-chevron-down" aria-hidden="true"></i></h4>'
-                        },
-                        cssClasses: {
-                            root: ''
-                        },
-                        collapsible: {
-                            collapsed: true
-                        },
-                        sortBy: function(a, b) {
-                            return alphanum(a.name, b.name);
-                        },
-                        limit: 200
-                    })
-                );
-				<?php endif; ?>
-                <?php endif; ?>
-				<?php endif; ?>
-                <?php endforeach; ?>
-                <?php endif; ?>
             }
+
+            <?php foreach((array) $this->app->get('product_specs') as $key => $spec) : ?>
+            <?php if($spec['hidden'] != 'on') : ?>
+            search.addWidget(
+                instantsearch.widgets.refinementList({
+                    container: '#search_filter_<?php echo str_replace(' ', '', preg_replace("/[^A-Za-z0-9 ]/", '', $key)); ?>' + instance_id,
+                    attributeName: 'specs.<?php echo $key; ?>',
+                    templates: {
+                        header: '<div class="block-title"><strong><span><div><em class="toggle toggle-plus"></em><div class="new_toggle"></div><a href="#" class="collapsible_facet_header_link"><span><?php echo $key; ?></span></a></div></span></strong></div>',
+                        item: '<?php echo trim(preg_replace("/[\n\r]/","",$this->renderLayout('Search/Site/Views::search/refinement_item_template.php')));?>'
+                    },
+                    cssClasses: {
+                        root: ''
+                    },
+                    collapsible: {
+                        collapsed: true
+                    },
+                    sortBy: function(a, b) {
+                        return alphanum(a.name, b.name);
+                    },
+                    limit: 10,
+					showMore: true
+                })
+            );
+            <?php endif; ?>
+            <?php endforeach; ?>
 
 		   //lets make some links if stuffsikins needs it
 		   var additional_links = '';
@@ -553,16 +443,16 @@ $clear_all_exclusions = '';
                 instantsearch.widgets.hierarchicalMenu({
                     container: '#search_filter_categories' + instance_id,
                     attributes: [
-                        'hierarchicalCategories.lvl0',
-                        'hierarchicalCategories.lvl1',
-                        'hierarchicalCategories.lvl2',
-                        'hierarchicalCategories.lvl3',
-                        'hierarchicalCategories.lvl4',
-                        'hierarchicalCategories.lvl5',
-                        'hierarchicalCategories.lvl6',
-                        'hierarchicalCategories.lvl7',
-                        'hierarchicalCategories.lvl8',
-                        'hierarchicalCategories.lvl9'
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl0',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl1',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl2',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl3',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl4',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl5',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl6',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl7',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl8',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl9'
                     ],
                     limit: 100,
                     templates: {
@@ -585,31 +475,26 @@ $clear_all_exclusions = '';
                                     });
                                 }
                                 
-                                //if(!hasChildRefinements) {
-                                    $('.category_dynamic_head').css('height', '500px').addClass('category_dynamic_head_loader');
+                                $('.category_dynamic_head').css('height', '500px').addClass('category_dynamic_head_loader');
 
-                                    $('.category-title h1').html(hit.label + ' Parts');
+                                $('.category-title h1').html(hit.label + ' Parts');
 
-                                    $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
-                                        $('.category-description.std').html(data.result.html);
+                                $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
+                                    $('.category-description.std').html(data.result.html);
 
-                                        if(data.result.children) {
-                                            $('ul.category-children').html('');
+                                    if(data.result.children) {
+                                        $('ul.category-children').html('');
 
-                                            data.result.children.each(function(child) {
-                                                if(child.image) {
-                                                    $('ul.category-children').append('<li><a href="' + child.link + '"><img src="' + child.image + '" alt="' + child.title + '" height="60" width="175" data-algolia-hierarchy="' + child.hierarchical_category + '"></a></li>');
-                                                }
-                                                
-                                            });
-
-                                            //$('ul.category-children').show('slow');
+                                        data.result.children.each(function(child) {
+                                            if(child.image) {
+                                                $('ul.category-children').append('<li><a href="' + child.link + '"><img src="' + child.image + '" alt="' + child.title + '" height="60" width="175" data-algolia-hierarchy="' + child.hierarchical_category + '"></a></li>');
+                                            }
                                             
-                                        }
-                                    })).then(function() {
-                                        $('.category_dynamic_head').css('height', 'auto').removeClass('category_dynamic_head_loader').delay(800).fadeIn(400);
-                                    });
-                                //}
+                                        });
+                                    }
+                                })).then(function() {
+                                    $('.category_dynamic_head').css('height', 'auto').removeClass('category_dynamic_head_loader').delay(800).fadeIn(400);
+                                });
                             }
 
                             return hit;
@@ -828,5 +713,9 @@ $clear_all_exclusions = '';
         $('.limiter li[data="' + hit_count + '"]').addClass('selected');
         $('.limiter .current').html(hit_count);
     });
+
+    $(document).on('click', '.collapsible_facet_header_link', function(e) {
+        e.preventDefault();
+    })
 </script>
 <?php endif; ?>

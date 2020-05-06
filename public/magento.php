@@ -42,62 +42,66 @@ $app->route('GET /sync-product-info', function() {
     (new JBAShop\Services\Magento)->syncProductInfo();
 });
 
-$app->route('GET /sync-product-images', function() {
-	$input = $CLImate->confirm('Have you cleared the product_images folder in Cloudinary?');
-	if ($input->confirmed()) {
-		(new JBAShop\Services\Magento)->syncProductImages();
-	} else {
-		$CLImate->error('Well, what are you waiting for?!');
-	}
+$app->route('GET /sync-product-installations', function() use($CLImate) {
+	$CLImate->red('Have you cleared the product_install_instructions folder in Cloudinary?');
+
+	\JBAShop\Services\Magento::setCloudinaryCNAME('images.jbautosports.com');
+	(new JBAShop\Services\Magento)->syncInstallInstructions();
 });
 
-$app->route('GET /sync-category-images', function() {
-	$input = $CLImate->confirm('Have you cleared the category_images folder in Cloudinary?');
-	if ($input->confirmed()) {
-		(new JBAShop\Services\Magento)->syncCategoryImages();
-	} else {
-		$CLImate->error('Well, what are you waiting for?!');
-	}
+$app->route('GET /sync-dynamic-group-products', function() {
+	(new JBAShop\Services\Magento)->syncDynamicGroupProducts();
+});
+
+$app->route('GET /sync-product-images', function() use($CLImate) {
+	$CLImate->red('Have you cleared the product_images folder in Cloudinary?');
+	(new JBAShop\Services\Magento)->syncProductImages();
+});
+
+$app->route('GET /sync-category-images', function() use($CLImate) {
+	$CLImate->red('Have you cleared the category_images folder in Cloudinary?');
+	(new JBAShop\Services\Magento)->syncCategoryImages();
 });
 
 $app->route('GET /sync-usercontent-images', function() use ($CLImate) {
-	$input = $CLImate->confirm('Have you cleared the user_content folder in Cloudinary?');
-	if ($input->confirmed()) {
-		(new JBAShop\Services\Magento)->syncUserContentImages();
-	} else {
-		$CLImate->error('Well, what are you waiting for?!');
-	}
+	$CLImate->red('Have you cleared the user_content folder in Cloudinary?');
+	(new JBAShop\Services\Magento)->syncUserContentImages();
 });
 
 $app->route('GET /move-product-description-images', function() use ($CLImate) {
-	$input = $CLImate->confirm('Have you cleared the content folder in Cloudinary?');
-	if ($input->confirmed()) {
-		(new JBAShop\Services\Magento)->moveProductDescriptionImages();
-	} else {
-		$CLImate->error('Well, what are you waiting for?!');
-	}
+	$CLImate->red('Have you cleared the content folder in Cloudinary?');
+
+	\JBAShop\Services\Magento::setCloudinaryCNAME('images.jbautosports.com');
+	(new JBAShop\Services\Magento)->moveProductDescriptionImages();
 });
 
 $app->route('GET /move-category-description-images', function() use ($CLImate) {
-	$input = $CLImate->confirm('Have you cleared the content folder in Cloudinary?');
-	if ($input->confirmed()) {
-		(new JBAShop\Services\Magento)->moveCategoryDescriptionImages();
-	} else {
-		$CLImate->error('Well, what are you waiting for?!');
-	}
+	$CLImate->red('Have you cleared the content folder in Cloudinary?');
+
+	\JBAShop\Services\Magento::setCloudinaryCNAME('images.jbautosports.com');
+	(new JBAShop\Services\Magento)->moveCategoryDescriptionImages();
 });
 
 $app->route('GET /sync-ymms', function() {
 	(new JBAShop\Services\Magento)->syncYmmsFromRally();
 });
 
+$app->route('GET /sync-specs', function() {
+	(new JBAShop\Services\Magento)->syncSpecs();
+});
+
+$app->route('GET /sync-rally-emails', function() {
+	(new JBAShop\Services\Magento)->syncEmailsFromRally();
+});
+
 /**
  * This method syncs all users from magento to mongo
- * @param int $magentoId - the user primary key from magento database (customer_entity.entity_id)
+ * @param int $minutes - Optionally pass amount of minuets, to only sync users created within that timeframe
  * @return void
  */
-$app->route('GET /sync-magento-users-to-mongo', function($f3){
-	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo();
+$app->route(['GET /sync-magento-users-to-mongo', 'GET /sync-magento-users-to-mongo/@minutes'], function($f3, $params){
+	$mins = $params['minutes'] ?? 0;
+	(new JBAShop\Services\Magento)->syncMagentoUsersToMongo((int) $mins);
 });
 
 /**
@@ -107,6 +111,13 @@ $app->route('GET /sync-product-ratings', function($f3){
 	(new JBAShop\Services\Magento)->syncProductRatings();
 });
 
+/**
+ * This method builds and syncs matrix items
+ */
+$app->route('GET /sync-matrix-items', function($f3) use($CLImate) {
+	$CLImate->red('Have you cleared the swatches folder in Cloudinary?');
+	(new JBAShop\Services\Magento)->syncMatrixItems();
+});
 /**************************/
 
 

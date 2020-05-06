@@ -1,9 +1,11 @@
 @import "theme/scss/variables";
+@import "theme/scss/custom/jba/base";
 @import "theme/scss/custom/jba/footer";
 @import "theme/scss/custom/jba/product";
 @import "theme/scss/custom/jba/category";
+@import "theme/scss/custom/jba/kits";
 /* Shop */
-// @import "shop-assets/scss/shop_master";
+@import "shop-assets/scss/shop_master_jba";
 
 /* Modules */
 @import "theme/scss/modules/custom_mixins";

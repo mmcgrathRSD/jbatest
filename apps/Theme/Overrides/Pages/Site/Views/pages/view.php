@@ -1,8 +1,2 @@
-<div class="row">
-    <div class="col-xs-12 paddingBottom">
-        <?php echo $item->{'copy'}; ?>
-    </div>
-
-</div>
-
-
+<?php echo $item->{'copy'}; ?>
+<div style="clear:both; padding-bottom: 20px;"></div>
