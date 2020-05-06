@@ -228,62 +228,75 @@ class Magento
         ];
         // TODO: category enabled?
 
-        $sql = "
-            SELECT DISTINCT
-                cc.entity_id AS id,
-                cc.`value` AS `name`,
-                cc1.`value` AS url_path,
-                channel.channel,
-                position AS sort_order,
-                ccdesc.description AS description,
-            IF
-                (
-                    channel.channel = 'ft86speedfactory' 
-                    AND cce.parent_id = 652,
-                    1682,
+        $sql = "SELECT DISTINCT
+                    cc.entity_id AS id,
+                    cc.`value` AS `name`,
+                    cc1.`value` AS url_path,
+                    channel.channel,
+                    position AS sort_order,
+                    ccdesc.description AS description,
+                CASE
+                        cc.entity_id 
+                        WHEN 5 THEN
+                        ' 2015-2020 Subaru WRX' 
+                        WHEN 6 THEN
+                        ' 2015-2020 Subaru WRX STI' 
+                        WHEN 3 THEN
+                        ' 2013-2020 Subaru BRZ' 
+                        WHEN 955 THEN
+                        ' 2014-2018 Subaru Forester' 
+                        WHEN 1222 THEN
+                        ' 2013-2017 Subaru Crosstrek' ELSE cc.`value` 
+                    END page_title,
+                    concat( 'View the latest ', cc.`value`, ' products at ', IF ( channel.channel = 'subispeed', 'SubiSpeed', 'FTspeed' ), '.com. Free Shipping on orders over $149.99 (48 States)' ) AS 'meta_description',
+                    COALESCE ( ccdesc.meta_keywords, cc.`value` ) AS 'meta_keywords',
                 IF
-                    ( cce.parent_id IN ( 1, 2, 652, 333, 515, 757, 1060, 1425 ), NULL, cce.parent_id ) 
-                ) AS parent_id 
-            FROM
-                catalog_category_entity_varchar cc
-                JOIN catalog_category_entity_varchar cc1 ON cc.entity_id = cc1.entity_id
-                JOIN catalog_category_entity_int cc_int ON cc1.entity_id = cc_int.entity_id
-                JOIN eav_entity_type ee ON cc.entity_type_id = ee.entity_type_id
-                JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id
-                JOIN ( SELECT entity_id, description FROM catalog_category_flat_store_1 UNION SELECT entity_id, description FROM catalog_category_flat_store_4 UNION SELECT entity_id, description FROM catalog_category_flat_store_5 ) AS ccdesc ON ccdesc.entity_id = cc.entity_id
-                JOIN (
-                SELECT
-                    entity_id,
-                    'subispeed' AS channel 
+                    (
+                        channel.channel = 'ft86speedfactory' 
+                        AND cce.parent_id = 652,
+                        1682,
+                    IF
+                        ( cce.parent_id IN ( 1, 2, 652, 333, 515, 757, 1060, 1425 ), NULL, cce.parent_id ) 
+                    ) AS parent_id 
                 FROM
-                    catalog_category_flat_store_1 AS subispeed UNION
-                SELECT
-                    entity_id,
-                    'ft86speedfactory' AS channel 
-                FROM
-                    catalog_category_flat_store_4 AS ft86speedfactory UNION
-                SELECT
-                    entity_id,
-                    'ftspeed' AS channel 
-                FROM
-                    catalog_category_flat_store_5 AS ftspeed 
-                ) AS channel ON channel.entity_id = cc.entity_id 
-            WHERE
-                cc.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'name' ) 
-                AND cc1.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'url_path' ) 
-                AND cc_int.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'is_active' ) 
-                AND cc_int.`value` = 1 
-                AND (( cce.parent_id = 2 AND cce.children_count > 1 ) OR cce.parent_id > 2 ) 
-                AND ee.entity_model = 'catalog/category' 
-                AND cc1.`value` NOT LIKE '%shop-by-manufacturer%' 
-                AND cc.`value` != 'SUPRA' -- AND cc.`value` != 'FR-S / BRZ / 86'
-                
-                AND channel.channel = 'ft86speedfactory' 
-            GROUP BY
-                id 
-            ORDER BY
-                cce.parent_id ASC,
-                cce.position ASC
+                    catalog_category_entity_varchar cc
+                    JOIN catalog_category_entity_varchar cc1 ON cc.entity_id = cc1.entity_id
+                    JOIN catalog_category_entity_int cc_int ON cc1.entity_id = cc_int.entity_id
+                    JOIN eav_entity_type ee ON cc.entity_type_id = ee.entity_type_id
+                    JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id
+                    JOIN ( SELECT entity_id, description, meta_keywords FROM catalog_category_flat_store_1 UNION SELECT entity_id, description, meta_keywords FROM catalog_category_flat_store_4 UNION SELECT entity_id, description, meta_keywords FROM catalog_category_flat_store_5 ) AS ccdesc ON ccdesc.entity_id = cc.entity_id
+                    JOIN (
+                    SELECT
+                        entity_id,
+                        'subispeed' AS channel 
+                    FROM
+                        catalog_category_flat_store_1 AS subispeed UNION
+                    SELECT
+                        entity_id,
+                        'ft86speedfactory' AS channel 
+                    FROM
+                        catalog_category_flat_store_4 AS ft86speedfactory UNION
+                    SELECT
+                        entity_id,
+                        'ftspeed' AS channel 
+                    FROM
+                        catalog_category_flat_store_5 AS ftspeed 
+                    ) AS channel ON channel.entity_id = cc.entity_id 
+                WHERE
+                    cc.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'name' ) 
+                    AND cc1.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'url_path' ) 
+                    AND cc_int.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'is_active' ) 
+                    AND cc_int.`value` = 1 
+                    AND (( cce.parent_id = 2 AND cce.children_count > 1 ) OR cce.parent_id > 2 ) 
+                    AND ee.entity_model = 'catalog/category' 
+                    AND cc1.`value` NOT LIKE '%shop-by-manufacturer%' 
+                    AND cc.`value` != 'SUPRA' -- AND cc.`value` != 'FR-S / BRZ / 86'
+                    
+                GROUP BY
+                    id 
+                ORDER BY
+                    cce.parent_id ASC,
+                    cce.position ASC
         ";
 
         $exclude = [];
@@ -314,7 +327,10 @@ class Magento
                     ->set('description', $row['description'])
                     ->set('magento.id', $row['id'])
                     ->set('magento.parent_id', $row['parent_id'])
-                    ->set('gm_product_category', 'Vehicles & Parts > Vehicle Parts & Accessories');
+                    ->set('gm_product_category', 'Vehicles & Parts > Vehicle Parts & Accessories')
+                    ->set('seo.page_title', $row['page_title'])
+                    ->set('seo.meta_description', $row['meta_description'])
+                    ->set('seo.meta_keywords', explode(',',$row['meta_keywords']));
 
                 if (in_array($row['parent_id'], array_keys($categoryIds))) {
                     $category->set('parent', $categoryIds[$row['parent_id']]);
