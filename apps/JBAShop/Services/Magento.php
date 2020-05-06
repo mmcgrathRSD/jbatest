@@ -167,37 +167,30 @@ class Magento
                 //Create the new user in mongo
                 $newUser = (new \Users\Models\Users)->bind($userData);
 
-                if ($newUser) {
-                    //New user was successfully transwered from Magento to Mongo
-                    array_push($data, ['New Mongo User Created From Magento!', $newUser['email'], ✅]);
+                //See if we have an existing netsuite user for this email and division
+                $netsuiteUser = \Netsuite\Models\Customer::getCustomerFromEmail($newUser['email']);
 
-                    //See if we have an existing netsuite user for this email and division
-                    $netsuiteUser = \Netsuite\Models\Customer::getCustomerFromEmail($newUser['email']);
+                //If we found a valid netsuite user, update the netsuite object on the corresponding mongo user
+                if ($netsuiteUser) {
+                    array_push($data, ['Netsuite User Found!', $netsuiteUser['email'], ✅]);
 
-                    //If we found a valid netsuite user, update the netsuite object on the corresponding mongo user
-                    if ($netsuiteUser) {
-                        array_push($data, ['Netsuite User Found!', $netsuiteUser['email'], ✅]);
-
-                        //Try to update the mongo user we just created with the netsuite data we need
-                        try {
-                            $updateUser = \Users\Models\Users::updateUserNetsuiteFields($netsuiteUser['email'], [
-                                'netsuite_external_id' => $netsuiteUser['externalId'],
-                                'netsuite_internal_id' => $netsuiteUser['internalId'],
-                                'netsuite_entity_id' => $netsuiteUser['entityId'],
-                            ]);
-                            array_push($data, ['Mongo User Netsuite Data Updated!', $newUser['email'], ✅]);
-                        } catch (Exception $e) {
-                            $this->CLImate->to('error')->red($e->getMessage());
-                        }
-                    } else {
-                        //No netsuite user was found for this Magento customer
-                        array_push($data, ['No Netsuite User Found!', $netsuiteUser['email'], ❌]);
-                    }
+                    $newUser->set('netsuite', [
+                        'externalId' => $netsuiteUser['externalId'],
+                        'internalId' => $netsuiteUser['internalId'],
+                        'entityId'  => $netsuiteUser['entityId']
+                    ]);
+                } else {
+                    //No netsuite user was found for this Magento customer
+                    array_push($data, ['No Netsuite User Found!', $netsuiteUser['email'], ❌]);
                 }
+
+                $newUser->save();
+                //New user was successfully transwered from Magento to Mongo
+                array_push($data, ['New Mongo User Created From Magento!', $newUser['email'], ✅]);
             } catch (Exception $e) {
                 $this->CLImate->to('error')->red($e->getMessage());
                 //This fixes CLImate exception of pushing empty array to table() 
-                array_push($data, ['Email ALready Exists... Skipping', $user['email'], ❌]);
+                array_push($data, ['Email Already Exists... Skipping', $user['email'], ❌]);
             }
 
             //Write our output for this iteration of the loop
