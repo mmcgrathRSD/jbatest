@@ -186,7 +186,7 @@ class Magento
 
                 $newUser->save();
                 //New user was successfully transwered from Magento to Mongo
-                array_push($data, ['New Mongo User Created From Magento!', $newUser['email'], ✅]);
+                array_push($data, ['New Mongo User Created From Magento!', $newUser->email, ✅]);
             } catch (Exception $e) {
                 $this->CLImate->to('error')->red($e->getMessage());
                 //This fixes CLImate exception of pushing empty array to table() 
