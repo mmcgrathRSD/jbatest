@@ -488,7 +488,7 @@ class Magento
                     ->setCondition('magento.id', $row['id'])
                     ->getItem();
                 }
-
+            
                 //If no NS product, and no product, create a new product
                 if(!$netsuiteProduct && !$product){
                     $product = new \Shop\Models\Products();
@@ -496,6 +496,17 @@ class Magento
                 if(empty($product)){
                     throw new \Exception('Product is null ' . $row['model']);
                 }
+
+                $productRedirect = (new \Shop\Models\ProductRedirects);
+                
+                try {
+                    (new \Redirect\Admin\Models\Routes)->bind([
+                        'product_id' => $product->id,
+                        'title' => "Magento redirect for product " . (string)$product->id,
+                        'old_slug'   => $row['default url path'],
+                        'url' => $product->url()
+                    ])->store();
+                } catch (\Exception $e) {}
                 $progress->advance(0, $row['model']);//push model to progress without progressing the count.
 
                 // TODO: query all categories once and get their full arrays for setting in products, key by magento id
@@ -627,7 +638,6 @@ class Magento
                     $failures[] = [$row['model']];
                 }
             }
-
 
             $progress->advance(1, $row['model']);
         }
@@ -1733,7 +1743,83 @@ class Magento
             }
         }
     }
+    public function syncRedirects(){
+        $sql = "
+        SELECT cr.store_id, cr.request_path, cr.target_path, cr.category_id, cr.product_id FROM core_url_rewrite cr
+        WHERE
+            ( cr.product_id IS NOT NULL OR cr.category_id IS NOT NULL)
+        GROUP BY cr.request_path, cr.target_path
+        ORDER BY cr.product_id
+        ";
+        $success = 0;
+        $failed = 0;
+        $select = $this->db->prepare($sql);
+        $select->execute();
+        $progress = $this->CLImate->progress()->total($select->rowCount());
+        $this->CLImate->green($select->rowCount() . " redirects to process");
+        $data = [['id', 'type', 'message', 'status']];
+        while ($row = $select->fetch()) {
+            if(!empty($row['product_id'])){
+                try{
+                    $product = (new \Shop\Models\Products)->setCondition('magento.id', $row['product_id'])->getItem();
+                    if(!empty($product)){
+                        $redirect = (new \Redirect\Admin\Models\Routes)->setCondition('url.alias', $row['request_path'])->getItem();
+                        if(!empty($redirect)){
+                            $redirect['url']['redirect'] = $product->url();
+                            $redirect->save();
+                        }else{
+                            (new \Redirect\Admin\Models\Routes)->bind([
+                                'product_id' => $product->id,
+                                'title'      => "Magento non-default redirect for product " . (string)$product->id,
+                                'old_slug'   => $row['request_path'],
+                                'type' => 'redirect.routes',
+                                'url' => ['redirect' => $product->url(), 'alias' => $row['request_path']],
+                            ])->store();
+                        }
+                        array_push($data, [$row['product_id'], "product", $row['request_path'], "✅"]);
+                        $success++;
+                    }
+                }catch(\Exception $e){
+                    array_push($data, [$row['product_id'], "product", $row['request_path'], "❌"]);
+                    $failed++;
+                }
+            }else if (empty($row['product_id']) && !empty($row['category_id'])){
+                try{
+                    $category = (new \Shop\Models\Categories)->setCondition('magento.id', $row['category_id']);
+                    if(!empty($category)){
+                        $redirect = (new \Redirect\Admin\Models\Routes)->setCondition('url.alias', $row['request_path'])->getItem();
+                        if(!empty($redirect)){
+                            $redirect['url']['redirect'] = $category->url();
+                            $redirect->save();
+                        }else{
+                            (new \Redirect\Admin\Models\Routes)->bind([
+                                'category_id' => $category->id,
+                                'title'      => "Magento non-default redirect for product " . (string)$category->id,
+                                'old_slug'   => $row['request_path'],
+                                'url' => ['redirect' => $category->url(), 'alias' => $row['request_path']],
+                            ])->store();
+                        }
+                        array_push($data, [$row['category_id'], "category", $row['request_path'], "✅"]);
+                        $success++;
+                    }
+                }catch(\Exception $e){
+                    array_push($data, [$row['category_id'], "category", $row['request_path'], "❌"]);
+                    $failed++;
+                }
+            }
 
+            if(count($data) > 2 && (count($data) - 1) % 10 === 0){
+                $this->CLImate->table($data);
+                $data = [['id', 'type', 'message', 'status']];
+            }
+        }
+        if(count($data) > 1){
+            $this->CLImate->table($data);
+        }
+
+        $this->CLImate->yellow("Failed redirects: $failed");
+        $this->CLImate->green("Successful redirects synced: $success.");
+    }
 
     /** Strip ymm from title. JBA saves their product titles in the format [PRODUCT_NAME] - [YMM].
      *So assuming that $title = [PRODUCT_NAME] and $ymm = [PRODUCT_NAME] - [YMM] and there for this function will return [YMM] from the $ymmTitle.*/
@@ -2019,5 +2105,6 @@ class Magento
                 $jbaTemplate->store();
             }
         }
+
     }
 }

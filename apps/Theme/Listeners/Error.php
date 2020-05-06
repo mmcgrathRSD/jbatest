@@ -23,36 +23,21 @@ class Error extends \Dsc\Singleton
 
         	// reroute old ymm/category links
         	$parsedUrl = parse_url(\Dsc\Url::full());
-        	if (preg_match('/^(\d{4}-.+)_([a-zA-Z-]{3,})$/', substr($parsedUrl['path'], 1), $matches)) {
-        		$oldYmmSlug = $matches[1];
-        		$oldCategorySlug = $matches[2];
-        	} else if (isset($parsedUrl['query'])) {
-        		parse_str($parsedUrl['query'], $query);
+			$path = rtrim($parsedUrl['path'], '/');
 
-        		if (isset($query['ymm_view_category'])) {
-        			$oldYmmSlug = substr($parsedUrl['path'], 1);
-        			$oldCategorySlug = str_replace(' ', '-', $query['ymm_view_category']);
-        		}
-        	}
+			$redirect = (new \Redirect\Admin\Models\Routes)
+				->setCondition('old_slug', substr($path, strrpos($path, '/') + 1))
+				->getItem();
 
-        	if (!empty($oldYmmSlug) && !empty($oldCategorySlug)) {
-        		$ymm = (new \JBAShop\Models\YearMakeModels())
-        		->setCondition('old.slug', $oldYmmSlug)
-        		->getItem();
+			if (!empty($redirect)) {
+				$product = (new \JBAShop\Models\Products)
+					->setCondition('_id', $redirect->product_id)
+					->getItem();
 
-        		if (!empty($ymm)) {
-        			$category = (new \JBAShop\Models\Categories())
-        			->setCondition('old.slug', $oldCategorySlug)
-        			->getItem();
-
-        			if (!empty($category)) {
-        				$this->app->reroute('/shop/category' . $category->path . '?ymm=' . $ymm->slug);
-        			} else {
-        				$this->app->reroute('/shop/vehicle/' . $ymm->slug);
-        			}
-        			return;
-        		}
-        	}
+				if (!empty($product)) {
+					$this->app->reroute($product->url());
+				}
+			}
 
         	/*
         	 * IF this is a bot and this page has 404'd we are going to submit it as 410 gone.  This is not something to have one shortly after launch but goog after

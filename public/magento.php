@@ -34,6 +34,10 @@ $app->route('GET /sync-categories', function() {
     (new JBAShop\Services\Magento)->syncCategories();
 });
 
+$app->route('GET /sync-redirects', function(){
+	(new JBAShop\Services\Magento)->syncRedirects();
+});
+
 $app->route('GET /sync-product-info', function() {
     (new JBAShop\Services\Magento)->syncProductInfo();
 });
