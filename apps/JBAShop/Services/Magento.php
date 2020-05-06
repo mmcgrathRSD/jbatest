@@ -142,10 +142,8 @@ class Magento
         //Get all the users from the magento database
         $select = $this->db->prepare($sql);
         $select->execute();
-        $users = $select->fetchall(\PDO::FETCH_ASSOC);
 
-
-        foreach ($users as $user) {
+        foreach ($select->fetch(\PDO::FETCH_ASSOC) as $user) {
             //Temp variable for our cli table
             $data = [];
 
@@ -167,7 +165,7 @@ class Magento
                     ],
                 ];
                 //Create the new user in mongo
-                $newUser = \Users\Models\Users::createNewUser($userData);
+                $newUser = (new \Users\Models\Users)->bind($userData);
 
                 if ($newUser) {
                     //New user was successfully transwered from Magento to Mongo
