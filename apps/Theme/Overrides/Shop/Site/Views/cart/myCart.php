@@ -20,20 +20,24 @@ if(empty($cart)){
     foreach($lastThreeItems as $item){ ?>
     <li class="item clearfix">
         <?php if($item instanceof \Shop\Models\Products){//if the item is an instance of products assume we are dealing with non standard items. ?>
+            
             <a href="/part/<?php echo $item->get('slug'); ?>" title="<?php echo "{$item->get('title')} - {$item->get('title_suffix')}"; ?>" class="product-image">
             <img src="<?php echo \Shop\Models\Products::product_thumb($item->get('featured_image.slug')); ?>" alt="<?php echo "{$item->get('title')} - {$item->get('title_suffix')}"; ?>"></a>
             <div class="product-details">
-                <a href="<?php echo '/shop/cart/remove-group/' . $item->get('__group_id'); ?>" title="Remove This Item" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" class="btn-remove icon-white">Remove This Item</a>
-                <a href="/part/<?php echo $item->get('slug'); ?>" title="Edit item" class="btn-edit icon-white">Edit item</a>
+                <form action="/shop/cart/remove-group/<?php echo $item->get('__group_id'); ?>" class="removeFromCartForm">
+                    <button class="btn-remove icon-white" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" ></button>
+                </form>
                 <p class="product-name"><a href="#"><?php echo "{$item->get('title')} - {$item->get('title_suffix')}"; ?></a></p>
                 <strong>1</strong> x <span class="price">$<?php echo number_format($item->get('kit_price_with_discount'), 2); ?></span>											
             </div>
         <?php }else{ ?>
+
             <a href="/part/<?php echo $item['product']['slug']; ?>" title="<?php echo "{$item['product']['title']} - {$item['product']['title_suffix']}"; ?>" class="product-image">
             <img src="<?php echo \Shop\Models\Products::product_thumb($item['image']); ?>" alt="<?php echo "{$item['product']['title']} - {$item['product']['title_suffix']}"; ?>"></a>
             <div class="product-details">
-                <a href="<?php echo '/shop/cart/remove/' . $item['hash'];?>" title="Remove This Item" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" class="btn-remove icon-white">Remove This Item</a>
-                <a href="/part/<?php echo $item['product']['slug']; ?>" title="Edit item" class="btn-edit icon-white">Edit item</a>
+                <form action="/shop/cart/remove/<?php echo $item['hash']; ?>" class="removeFromCartForm">
+                    <button class="btn-remove icon-white" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" ></button>
+                </form>
                 <p class="product-name"><a href="#"><?php echo "{$item['product']['title']} - {$item['product']['title_suffix']}"; ?></a></p>
                 <strong><?php echo $item['quantity']; ?></strong> x <span class="price">$<?php echo number_format($item['price'], 2); ?></span>											
             </div>
