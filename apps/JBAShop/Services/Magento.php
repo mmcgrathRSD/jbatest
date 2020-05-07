@@ -1149,7 +1149,7 @@ class Magento
                     ->set('magento', ['id' => $magentoID])
                     ->set('title', 'dont forget to update me!')
                     ->set('kit_options', $options)
-                    ->set('sales_channel_ids', array_unique(array_column($productSalesChannels)));
+                    ->set('sales_channel_ids', array_unique(array_column($productSalesChannels, 'id')));
                     
                 try{
                     $newProduct->save();
