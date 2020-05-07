@@ -150,7 +150,7 @@ class Magento
             try {
                 //The user data structure for transforming a Magento user to a Mongo User
                 $userData = [
-                    'email' => $user['email'],
+                    'email' => strtolower($user['email']),
                     'first_name' => $user['firstname'],
                     'password' => '',
                     'role' => 'identified',
@@ -188,13 +188,14 @@ class Magento
                 //New user was successfully transwered from Magento to Mongo
                 array_push($data, ['New Mongo User Created From Magento!', $newUser->email, ✅]);
             } catch (Exception $e) {
-                $this->CLImate->to('error')->red($e->getMessage());
+                $this->CLImate->red($e->getMessage());
                 //This fixes CLImate exception of pushing empty array to table() 
                 array_push($data, ['Email Already Exists... Skipping', $user['email'], ❌]);
             }
 
             //Write our output for this iteration of the loop
             $this->CLImate->table($data);
+            
         }
     }
 
@@ -1525,14 +1526,16 @@ class Magento
 
         while($row = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)){
             foreach($row as $parentId => $value){
+                //temp var for cli output
+                $data = [];
                 $magentoOptionsIds = [];
 
                 //The main product query now includes matrix parents, find our parent
                 $product = (new \Shop\Models\Products)
                     ->setCondition('magento.id', $parentId)
                     ->getItem();
-
-                if(empty($product->get('publication.sales_channels'))){
+                
+                if(is_null($product->get('publication.sales_channels'))){
                     $product->set('sales_channel_ids', array_column($salesChannels, 'id'));
                 }
 
