@@ -372,12 +372,12 @@ class Magento
         $failures = [['Failures']];
         $salesChannels = [
             'ftspeed' => [
-                'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
+                'id' => '5e18ce8bf74061555646d847',
                 'title' => 'FTSpeed',
                 'slug' => 'ftspeed'
             ],
             'subispeed' => [
-                'id' => new \MongoDB\BSON\ObjectID('5841b1deb38c50ba028b4567'),
+                'id' => '5841b1deb38c50ba028b4567',
                 'title' => 'SubiSpeed',
                 'slug' => 'subispeed'
             ]
@@ -613,8 +613,6 @@ class Magento
                     $product->set('title_suffix', !empty($suffixString) ? preg_replace("/\/[\s]{1,}\//", "/", rtrim(ltrim($suffixString, ' /') , ' /')): NULL); //if there is a suffix string then set it else leave as null.
                 }
 
-                $product->set('publication.sales_channels', $productSalesChannels);
-
                 if (!empty($row['enabled'])) {
                     $product->set('publication.status', 'published');
                 }
@@ -637,6 +635,9 @@ class Magento
                 }else if(empty($product->get('product_type'))){
                     $product->set('product_type', 'standard');
                 }
+
+                
+                $product->set('sales_channel_ids', array_column($productSalesChannels, 'id'));
 
                 $product->save();
             }catch(Exception $e){
