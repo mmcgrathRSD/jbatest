@@ -370,6 +370,7 @@ class Magento
     public function syncProductInfo()
     {
         $failures = [['Failures']];
+        
         $salesChannels = [
             'ftspeed' => [
                 'id' => '5e18ce8bf74061555646d847',
@@ -968,12 +969,12 @@ class Magento
     {
         $salesChannels = [
             'ftspeed' => [
-                'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
+                'id' => '5e18ce8bf74061555646d847',
                 'title' => 'FTSpeed',
                 'slug' => 'ftspeed'
             ],
             'subispeed' => [
-                'id' => new \MongoDB\BSON\ObjectID('5841b1deb38c50ba028b4567'),
+                'id' => '5841b1deb38c50ba028b4567',
                 'title' => 'SubiSpeed',
                 'slug' => 'subispeed'
             ]
@@ -1148,9 +1149,8 @@ class Magento
                     ->set('magento', ['id' => $magentoID])
                     ->set('title', 'dont forget to update me!')
                     ->set('kit_options', $options)
-                    ->set('publication.sales_channels', array_unique($productSalesChannels));
-
-
+                    ->set('sales_channel_ids', array_unique(array_column($productSalesChannels)));
+                    
                 try{
                     $newProduct->save();
                 }catch(Exception $e){
@@ -1385,6 +1385,19 @@ class Magento
 
     public function syncMatrixItems()
     {
+        $salesChannels = [
+            'ftspeed' => [
+                'id' => '5e18ce8bf74061555646d847',
+                'title' => 'FTSpeed',
+                'slug' => 'ftspeed'
+            ],
+            'subispeed' => [
+                'id' => '5841b1deb38c50ba028b4567',
+                'title' => 'SubiSpeed',
+                'slug' => 'subispeed'
+            ]
+        ];
+
         $swatchSQL =
             "SELECT
                 eao.option_id,
@@ -1518,6 +1531,10 @@ class Magento
                 $product = (new \Shop\Models\Products)
                     ->setCondition('magento.id', $parentId)
                     ->getItem();
+
+                if(empty($product->get('publication.sales_channels'))){
+                    $product->set('sales_channel_ids', array_column($salesChannels, 'id'));
+                }
 
                 if (empty($product->_id)) {
                     continue;
