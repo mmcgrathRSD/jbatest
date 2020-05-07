@@ -758,4 +758,21 @@ $( document ).ready(function() {
             }
         });
     });
-  });
+    $('body').on('submit', '.removeFromCartForm', function (e){
+        e.preventDefault();
+        var form = $(this);
+        $.ajax( {
+            type: "GET",
+            url: form.attr( 'action' ),
+            data: form.serialize(),
+            success: function( response ) {
+                //Find the my-cart element and replace with refreshed version.
+                $('#my-cart').html(response.message);
+            },
+            error: function( response ) {
+                // console.log('failed to remove', response);
+                //TODO: Show error message to user when failing to remove from the cart?
+            }
+        });
+    });
+});
