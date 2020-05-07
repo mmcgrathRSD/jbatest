@@ -427,7 +427,9 @@ class Magento
             cats.categories,
             default_desc.`value` AS 'long_description',
             default_short_desc.`value` AS 'short_description',
-            cpe.created_at
+            cpe.created_at,
+            new_from.`value` as 'first_publication_date',
+            new_to.`value` as 'new_flag_date'
         FROM
             catalog_product_entity_int def
             INNER JOIN catalog_product_entity_int AS `status` ON ( def.entity_id = `status`.entity_id AND `status`.store_id = 0 AND `status`.attribute_id = 96 AND `status`.`value` = 1 )
@@ -448,6 +450,8 @@ class Magento
             LEFT JOIN catalog_product_entity_varchar AS url_path ON ( def.entity_id = url_path.entity_id AND url_path.store_id = 0 AND url_path.attribute_id = 98)
             LEFT JOIN catalog_product_entity_int AS coupon ON ( def.entity_id = coupon.entity_id AND coupon.store_id = 0 AND coupon.attribute_id = 237)
             LEFT JOIN catalog_product_entity_text AS warranty ON ( def.entity_id = warranty.entity_id AND warranty.store_id = 0 AND warranty.attribute_id = 236 )
+            LEFT JOIN catalog_product_entity_datetime AS new_from ON (def.entity_id = new_from.entity_id AND new_from.store_id = 0 and new_from.attribute_id = 93)
+            LEFT JOIN catalog_product_entity_datetime AS new_to ON (def.entity_id = new_to.entity_id AND new_to.store_id = 0 and new_to.attribute_id = 94 )
             LEFT JOIN (
             SELECT
                 cat.product_id,
@@ -638,6 +642,13 @@ class Magento
                     $product->set('product_type', 'standard');
                 }
 
+                if(!empty($row['first_publation_date'])){
+                    $product->set('first_publication_time', \Carbon\Carbon::parse($row['first_publication_date'])->timestamp);
+                }
+
+                if(!empty($row['new_flag_date'])){
+                    $product->set('new_flag_date', \Carbon\Carbon::parse($row['new_flag_date'])->format('Y-m-d'));
+                }
                 
                 $product->set('sales_channel_ids', array_column($productSalesChannels, 'id'));
 
