@@ -177,8 +177,33 @@
          <div class="map-popup-text" id="map-popup-text">Our price is lower than the manufacturer's "minimum advertised price."  As a result, we cannot show you the price in catalog or the product page. <br><br> You have no obligation to purchase the product once you know the price. You can simply remove the item from your cart.</div>
          <div class="map-popup-text" id="map-popup-text-what-this">Our price is lower than the manufacturer's "minimum advertised price."  As a result, we cannot show you the price in catalog or the product page. <br><br> You have no obligation to purchase the product once you know the price. You can simply remove the item from your cart.</div>
       </div>
-      <div class="block block-list" itemscope="" itemtype="http://schema.org/Product">
+      <!-- <div class="block block-list" itemscope="" itemtype="http://schema.org/Product">
+      </div> -->
+      <!-- start of category rating -->
+      <div class="block block-list" itemscope="" id="category-rating" itemtype="http://schema.org/Product">
+         <div class="block-title" id="category-rating-title">
+               <strong>
+                  <span itemprop="name"><?php echo $item->title; ?></span>
+               </strong>
+         </div>
+         <div class="block-content">
+               <div id="m-snippets" class="category-sniippets">
+                  <span class="ratings rating-label" style="float:left;"></span>
+                  <div class="ratings" itemscope="" itemtype="http://schema.org/AggregateRating" itemprop="aggregateRating">
+                     <div id="category-rating-stars"  class="rating-box" style="float: left; margin-right: 5px;">
+                        <div class="rating" style="width: <?php echo (floatval($item->rating['average']) / 5) * 100 ; ?>%"></div>
+                     </div>
+                     <div class="r-lnk" id="category-rating-values">
+                        <span itemprop="ratingValue"><?php echo floatval($item->rating['average']); ?></span>
+                        <span> / </span>
+                        <span itemprop="reviewCount"><?php echo $item->rating['total']; ?></span>
+                        Review(s)                            
+                     </div>
+                  </div>
+               </div>
+         </div>
       </div>
+      <!-- end of category rating -->
    </div>
    <div class="col-left sidebar grid_5 custom_left">
          <?php if($master_search) : ?>

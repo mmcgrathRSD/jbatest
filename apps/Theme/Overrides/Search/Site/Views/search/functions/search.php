@@ -495,6 +495,18 @@ $clear_all_exclusions = '';
                                         
                                         $('title').html(data.result.seo_title);
                                     }
+                                    //update rating title
+                                    $('#category-rating-title > strong > span').html(hit.label);
+                                    //get the average.
+                                    var average = !!data.result.rating.average ? data.result.rating.average : 0;
+                                    //get the percent for the average divided by the total stars.
+                                    $('#category-rating-stars > div').css('width',  (average / 5) * 100 + '%');
+                                    //replace the rating value displayed.
+                                    $('#category-rating-values > span[itemprop="ratingValue"]').html(average);
+                                    //replace the review counts.
+                                    $('#category-rating-values > span[itemprop="reviewCount"]').html(data.result.rating.total);
+
+
                                 })).then(function() {
                                     $('.category_dynamic_head').css('height', 'auto').removeClass('category_dynamic_head_loader').delay(800).fadeIn(400);
                                 });
