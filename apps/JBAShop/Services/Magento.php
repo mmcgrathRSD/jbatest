@@ -142,17 +142,15 @@ class Magento
         //Get all the users from the magento database
         $select = $this->db->prepare($sql);
         $select->execute();
-        $users = $select->fetchall(\PDO::FETCH_ASSOC);
 
-
-        foreach ($users as $user) {
+        while ($user = $select->fetch(\PDO::FETCH_ASSOC)) {
             //Temp variable for our cli table
             $data = [];
 
             try {
                 //The user data structure for transforming a Magento user to a Mongo User
                 $userData = [
-                    'email' => $user['email'],
+                    'email' => strtolower($user['email']),
                     'first_name' => $user['firstname'],
                     'password' => '',
                     'role' => 'identified',
@@ -167,43 +165,37 @@ class Magento
                     ],
                 ];
                 //Create the new user in mongo
-                $newUser = \Users\Models\Users::createNewUser($userData);
+                $newUser = (new \Users\Models\Users)->bind($userData);
 
-                if ($newUser) {
-                    //New user was successfully transwered from Magento to Mongo
-                    array_push($data, ['New Mongo User Created From Magento!', $newUser['email'], ✅]);
+                //See if we have an existing netsuite user for this email and division
+                $netsuiteUser = \Netsuite\Models\Customer::getCustomerFromEmail($newUser->email);
 
-                    //See if we have an existing netsuite user for this email and division
-                    $netsuiteUser = \Netsuite\Models\Customer::getCustomerFromEmail($newUser['email']);
+                //If we found a valid netsuite user, update the netsuite object on the corresponding mongo user
+                if ($netsuiteUser) {
+                    array_push($data, ['Netsuite User Found!', $netsuiteUser['email'], ✅]);
 
-                    //If we found a valid netsuite user, update the netsuite object on the corresponding mongo user
-                    if ($netsuiteUser) {
-                        array_push($data, ['Netsuite User Found!', $netsuiteUser['email'], ✅]);
-
-                        //Try to update the mongo user we just created with the netsuite data we need
-                        try {
-                            $updateUser = \Users\Models\Users::updateUserNetsuiteFields($netsuiteUser['email'], [
-                                'netsuite_external_id' => $netsuiteUser['externalId'],
-                                'netsuite_internal_id' => $netsuiteUser['internalId'],
-                                'netsuite_entity_id' => $netsuiteUser['entityId'],
-                            ]);
-                            array_push($data, ['Mongo User Netsuite Data Updated!', $newUser['email'], ✅]);
-                        } catch (Exception $e) {
-                            $this->CLImate->to('error')->red($e->getMessage());
-                        }
-                    } else {
-                        //No netsuite user was found for this Magento customer
-                        array_push($data, ['No Netsuite User Found!', $netsuiteUser['email'], ❌]);
-                    }
+                    $newUser->set('netsuite', [
+                        'externalId' => $netsuiteUser['externalId'],
+                        'internalId' => $netsuiteUser['internalId'],
+                        'entityId'  => $netsuiteUser['entityId']
+                    ]);
+                } else {
+                    //No netsuite user was found for this Magento customer
+                    array_push($data, ['No Netsuite User Found!', $netsuiteUser['email'], ❌]);
                 }
+
+                $newUser->save();
+                //New user was successfully transwered from Magento to Mongo
+                array_push($data, ['New Mongo User Created From Magento!', $newUser->email, ✅]);
             } catch (Exception $e) {
-                $this->CLImate->to('error')->red($e->getMessage());
+                $this->CLImate->red($e->getMessage());
                 //This fixes CLImate exception of pushing empty array to table() 
-                array_push($data, ['Email ALready Exists... Skipping', $user['email'], ❌]);
+                array_push($data, ['Email Already Exists... Skipping', $user['email'], ❌]);
             }
 
             //Write our output for this iteration of the loop
             $this->CLImate->table($data);
+            
         }
     }
 
@@ -228,62 +220,75 @@ class Magento
         ];
         // TODO: category enabled?
 
-        $sql = "
-            SELECT DISTINCT
-                cc.entity_id AS id,
-                cc.`value` AS `name`,
-                cc1.`value` AS url_path,
-                channel.channel,
-                position AS sort_order,
-                ccdesc.description AS description,
-            IF
-                (
-                    channel.channel = 'ft86speedfactory' 
-                    AND cce.parent_id = 652,
-                    1682,
+        $sql = "SELECT DISTINCT
+                    cc.entity_id AS id,
+                    cc.`value` AS `name`,
+                    cc1.`value` AS url_path,
+                    channel.channel,
+                    position AS sort_order,
+                    ccdesc.description AS description,
+                CASE
+                        cc.entity_id 
+                        WHEN 5 THEN
+                        ' 2015-2020 Subaru WRX' 
+                        WHEN 6 THEN
+                        ' 2015-2020 Subaru WRX STI' 
+                        WHEN 3 THEN
+                        ' 2013-2020 Subaru BRZ' 
+                        WHEN 955 THEN
+                        ' 2014-2018 Subaru Forester' 
+                        WHEN 1222 THEN
+                        ' 2013-2017 Subaru Crosstrek' ELSE cc.`value` 
+                    END page_title,
+                    concat( 'View the latest ', cc.`value`, ' products at ', IF ( channel.channel = 'subispeed', 'SubiSpeed', 'FTspeed' ), '.com. Free Shipping on orders over $149.99 (48 States)' ) AS 'meta_description',
+                    COALESCE ( ccdesc.meta_keywords, cc.`value` ) AS 'meta_keywords',
                 IF
-                    ( cce.parent_id IN ( 1, 2, 652, 333, 515, 757, 1060, 1425 ), NULL, cce.parent_id ) 
-                ) AS parent_id 
-            FROM
-                catalog_category_entity_varchar cc
-                JOIN catalog_category_entity_varchar cc1 ON cc.entity_id = cc1.entity_id
-                JOIN catalog_category_entity_int cc_int ON cc1.entity_id = cc_int.entity_id
-                JOIN eav_entity_type ee ON cc.entity_type_id = ee.entity_type_id
-                JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id
-                JOIN ( SELECT entity_id, description FROM catalog_category_flat_store_1 UNION SELECT entity_id, description FROM catalog_category_flat_store_4 UNION SELECT entity_id, description FROM catalog_category_flat_store_5 ) AS ccdesc ON ccdesc.entity_id = cc.entity_id
-                JOIN (
-                SELECT
-                    entity_id,
-                    'subispeed' AS channel 
+                    (
+                        channel.channel = 'ft86speedfactory' 
+                        AND cce.parent_id = 652,
+                        1682,
+                    IF
+                        ( cce.parent_id IN ( 1, 2, 652, 333, 515, 757, 1060, 1425 ), NULL, cce.parent_id ) 
+                    ) AS parent_id 
                 FROM
-                    catalog_category_flat_store_1 AS subispeed UNION
-                SELECT
-                    entity_id,
-                    'ft86speedfactory' AS channel 
-                FROM
-                    catalog_category_flat_store_4 AS ft86speedfactory UNION
-                SELECT
-                    entity_id,
-                    'ftspeed' AS channel 
-                FROM
-                    catalog_category_flat_store_5 AS ftspeed 
-                ) AS channel ON channel.entity_id = cc.entity_id 
-            WHERE
-                cc.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'name' ) 
-                AND cc1.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'url_path' ) 
-                AND cc_int.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'is_active' ) 
-                AND cc_int.`value` = 1 
-                AND (( cce.parent_id = 2 AND cce.children_count > 1 ) OR cce.parent_id > 2 ) 
-                AND ee.entity_model = 'catalog/category' 
-                AND cc1.`value` NOT LIKE '%shop-by-manufacturer%' 
-                AND cc.`value` != 'SUPRA' -- AND cc.`value` != 'FR-S / BRZ / 86'
-                
-                AND channel.channel = 'ft86speedfactory' 
-            GROUP BY
-                id 
-            ORDER BY
-                cce.parent_id ASC,
-                cce.position ASC
+                    catalog_category_entity_varchar cc
+                    JOIN catalog_category_entity_varchar cc1 ON cc.entity_id = cc1.entity_id
+                    JOIN catalog_category_entity_int cc_int ON cc1.entity_id = cc_int.entity_id
+                    JOIN eav_entity_type ee ON cc.entity_type_id = ee.entity_type_id
+                    JOIN catalog_category_entity cce ON cc.entity_id = cce.entity_id
+                    JOIN ( SELECT entity_id, description, meta_keywords FROM catalog_category_flat_store_1 UNION SELECT entity_id, description, meta_keywords FROM catalog_category_flat_store_4 UNION SELECT entity_id, description, meta_keywords FROM catalog_category_flat_store_5 ) AS ccdesc ON ccdesc.entity_id = cc.entity_id
+                    JOIN (
+                    SELECT
+                        entity_id,
+                        'subispeed' AS channel 
+                    FROM
+                        catalog_category_flat_store_1 AS subispeed UNION
+                    SELECT
+                        entity_id,
+                        'ft86speedfactory' AS channel 
+                    FROM
+                        catalog_category_flat_store_4 AS ft86speedfactory UNION
+                    SELECT
+                        entity_id,
+                        'ftspeed' AS channel 
+                    FROM
+                        catalog_category_flat_store_5 AS ftspeed 
+                    ) AS channel ON channel.entity_id = cc.entity_id 
+                WHERE
+                    cc.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'name' ) 
+                    AND cc1.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'url_path' ) 
+                    AND cc_int.attribute_id IN ( SELECT attribute_id FROM eav_attribute WHERE attribute_code = 'is_active' ) 
+                    AND cc_int.`value` = 1 
+                    AND (( cce.parent_id = 2 AND cce.children_count > 1 ) OR cce.parent_id > 2 ) 
+                    AND ee.entity_model = 'catalog/category' 
+                    AND cc1.`value` NOT LIKE '%shop-by-manufacturer%' 
+                    AND cc.`value` != 'SUPRA' -- AND cc.`value` != 'FR-S / BRZ / 86'
+                    
+                GROUP BY
+                    id 
+                ORDER BY
+                    cce.parent_id ASC,
+                    cce.position ASC
         ";
 
         $exclude = [];
@@ -314,7 +319,10 @@ class Magento
                     ->set('description', $row['description'])
                     ->set('magento.id', $row['id'])
                     ->set('magento.parent_id', $row['parent_id'])
-                    ->set('gm_product_category', 'Vehicles & Parts > Vehicle Parts & Accessories');
+                    ->set('gm_product_category', 'Vehicles & Parts > Vehicle Parts & Accessories')
+                    ->set('seo.page_title', $row['page_title'])
+                    ->set('seo.meta_description', $row['meta_description'])
+                    ->set('seo.meta_keywords', explode(',',$row['meta_keywords']));
 
                 if (in_array($row['parent_id'], array_keys($categoryIds))) {
                     $category->set('parent', $categoryIds[$row['parent_id']]);
@@ -363,14 +371,15 @@ class Magento
     public function syncProductInfo()
     {
         $failures = [['Failures']];
+        
         $salesChannels = [
             'ftspeed' => [
-                'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
+                'id' => '5e18ce8bf74061555646d847',
                 'title' => 'FTSpeed',
                 'slug' => 'ftspeed'
             ],
             'subispeed' => [
-                'id' => new \MongoDB\BSON\ObjectID('5841b1deb38c50ba028b4567'),
+                'id' => '5841b1deb38c50ba028b4567',
                 'title' => 'SubiSpeed',
                 'slug' => 'subispeed'
             ]
@@ -488,7 +497,7 @@ class Magento
                     ->setCondition('magento.id', $row['id'])
                     ->getItem();
                 }
-
+            
                 //If no NS product, and no product, create a new product
                 if(!$netsuiteProduct && !$product){
                     $product = new \Shop\Models\Products();
@@ -496,6 +505,17 @@ class Magento
                 if(empty($product)){
                     throw new \Exception('Product is null ' . $row['model']);
                 }
+
+                $productRedirect = (new \Shop\Models\ProductRedirects);
+                
+                try {
+                    (new \Redirect\Admin\Models\Routes)->bind([
+                        'product_id' => $product->id,
+                        'title' => "Magento redirect for product " . (string)$product->id,
+                        'old_slug'   => $row['default url path'],
+                        'url' => $product->url()
+                    ])->store();
+                } catch (\Exception $e) {}
                 $progress->advance(0, $row['model']);//push model to progress without progressing the count.
 
                 // TODO: query all categories once and get their full arrays for setting in products, key by magento id
@@ -595,8 +615,6 @@ class Magento
                     $product->set('title_suffix', !empty($suffixString) ? preg_replace("/\/[\s]{1,}\//", "/", rtrim(ltrim($suffixString, ' /') , ' /')): NULL); //if there is a suffix string then set it else leave as null.
                 }
 
-                $product->set('publication.sales_channels', $productSalesChannels);
-
                 if (!empty($row['enabled'])) {
                     $product->set('publication.status', 'published');
                 }
@@ -620,6 +638,9 @@ class Magento
                     $product->set('product_type', 'standard');
                 }
 
+                
+                $product->set('sales_channel_ids', array_column($productSalesChannels, 'id'));
+
                 $product->save();
             }catch(Exception $e){
                 if($e->getMessage() !== 'Not a group item'){
@@ -627,7 +648,6 @@ class Magento
                     $failures[] = [$row['model']];
                 }
             }
-
 
             $progress->advance(1, $row['model']);
         }
@@ -950,12 +970,12 @@ class Magento
     {
         $salesChannels = [
             'ftspeed' => [
-                'id' => new \MongoDB\BSON\ObjectID('5e18ce8bf74061555646d847'),
+                'id' => '5e18ce8bf74061555646d847',
                 'title' => 'FTSpeed',
                 'slug' => 'ftspeed'
             ],
             'subispeed' => [
-                'id' => new \MongoDB\BSON\ObjectID('5841b1deb38c50ba028b4567'),
+                'id' => '5841b1deb38c50ba028b4567',
                 'title' => 'SubiSpeed',
                 'slug' => 'subispeed'
             ]
@@ -1130,9 +1150,8 @@ class Magento
                     ->set('magento', ['id' => $magentoID])
                     ->set('title', 'dont forget to update me!')
                     ->set('kit_options', $options)
-                    ->set('publication.sales_channels', array_unique($productSalesChannels));
-
-
+                    ->set('sales_channel_ids', array_unique(array_column($productSalesChannels, 'id')));
+                    
                 try{
                     $newProduct->save();
                 }catch(Exception $e){
@@ -1367,6 +1386,19 @@ class Magento
 
     public function syncMatrixItems()
     {
+        $salesChannels = [
+            'ftspeed' => [
+                'id' => '5e18ce8bf74061555646d847',
+                'title' => 'FTSpeed',
+                'slug' => 'ftspeed'
+            ],
+            'subispeed' => [
+                'id' => '5841b1deb38c50ba028b4567',
+                'title' => 'SubiSpeed',
+                'slug' => 'subispeed'
+            ]
+        ];
+
         $swatchSQL =
             "SELECT
                 eao.option_id,
@@ -1494,12 +1526,18 @@ class Magento
 
         while($row = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)){
             foreach($row as $parentId => $value){
+                //temp var for cli output
+                $data = [];
                 $magentoOptionsIds = [];
 
                 //The main product query now includes matrix parents, find our parent
                 $product = (new \Shop\Models\Products)
                     ->setCondition('magento.id', $parentId)
                     ->getItem();
+                
+                if(is_null($product->get('publication.sales_channels'))){
+                    $product->set('sales_channel_ids', array_column($salesChannels, 'id'));
+                }
 
                 if (empty($product->_id)) {
                     continue;
@@ -1733,7 +1771,83 @@ class Magento
             }
         }
     }
+    public function syncRedirects(){
+        $sql = "
+        SELECT cr.store_id, cr.request_path, cr.target_path, cr.category_id, cr.product_id FROM core_url_rewrite cr
+        WHERE
+            ( cr.product_id IS NOT NULL OR cr.category_id IS NOT NULL)
+        GROUP BY cr.request_path, cr.target_path
+        ORDER BY cr.product_id
+        ";
+        $success = 0;
+        $failed = 0;
+        $select = $this->db->prepare($sql);
+        $select->execute();
+        $progress = $this->CLImate->progress()->total($select->rowCount());
+        $this->CLImate->green($select->rowCount() . " redirects to process");
+        $data = [['id', 'type', 'message', 'status']];
+        while ($row = $select->fetch()) {
+            if(!empty($row['product_id'])){
+                try{
+                    $product = (new \Shop\Models\Products)->setCondition('magento.id', $row['product_id'])->getItem();
+                    if(!empty($product)){
+                        $redirect = (new \Redirect\Admin\Models\Routes)->setCondition('url.alias', $row['request_path'])->getItem();
+                        if(!empty($redirect)){
+                            $redirect['url']['redirect'] = $product->url();
+                            $redirect->save();
+                        }else{
+                            (new \Redirect\Admin\Models\Routes)->bind([
+                                'product_id' => $product->id,
+                                'title'      => "Magento non-default redirect for product " . (string)$product->id,
+                                'old_slug'   => $row['request_path'],
+                                'type' => 'redirect.routes',
+                                'url' => ['redirect' => $product->url(), 'alias' => $row['request_path']],
+                            ])->store();
+                        }
+                        array_push($data, [$row['product_id'], "product", $row['request_path'], "✅"]);
+                        $success++;
+                    }
+                }catch(\Exception $e){
+                    array_push($data, [$row['product_id'], "product", $row['request_path'], "❌"]);
+                    $failed++;
+                }
+            }else if (empty($row['product_id']) && !empty($row['category_id'])){
+                try{
+                    $category = (new \Shop\Models\Categories)->setCondition('magento.id', $row['category_id']);
+                    if(!empty($category)){
+                        $redirect = (new \Redirect\Admin\Models\Routes)->setCondition('url.alias', $row['request_path'])->getItem();
+                        if(!empty($redirect)){
+                            $redirect['url']['redirect'] = $category->url();
+                            $redirect->save();
+                        }else{
+                            (new \Redirect\Admin\Models\Routes)->bind([
+                                'category_id' => $category->id,
+                                'title'      => "Magento non-default redirect for product " . (string)$category->id,
+                                'old_slug'   => $row['request_path'],
+                                'url' => ['redirect' => $category->url(), 'alias' => $row['request_path']],
+                            ])->store();
+                        }
+                        array_push($data, [$row['category_id'], "category", $row['request_path'], "✅"]);
+                        $success++;
+                    }
+                }catch(\Exception $e){
+                    array_push($data, [$row['category_id'], "category", $row['request_path'], "❌"]);
+                    $failed++;
+                }
+            }
 
+            if(count($data) > 2 && (count($data) - 1) % 10 === 0){
+                $this->CLImate->table($data);
+                $data = [['id', 'type', 'message', 'status']];
+            }
+        }
+        if(count($data) > 1){
+            $this->CLImate->table($data);
+        }
+
+        $this->CLImate->yellow("Failed redirects: $failed");
+        $this->CLImate->green("Successful redirects synced: $success.");
+    }
 
     /** Strip ymm from title. JBA saves their product titles in the format [PRODUCT_NAME] - [YMM].
      *So assuming that $title = [PRODUCT_NAME] and $ymm = [PRODUCT_NAME] - [YMM] and there for this function will return [YMM] from the $ymmTitle.*/
@@ -2019,5 +2133,6 @@ class Magento
                 $jbaTemplate->store();
             }
         }
+
     }
 }
