@@ -483,7 +483,6 @@ $clear_all_exclusions = '';
 
                                 $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
                                     $('.category-description.std').html(data.result.html);
-
                                     if(data.result.children) {
                                         $('ul.category-children').html('');
 
@@ -493,6 +492,8 @@ $clear_all_exclusions = '';
                                             }
                                             
                                         });
+                                        
+                                        $('title').html(data.result.seo_title);
                                     }
                                 })).then(function() {
                                     $('.category_dynamic_head').css('height', 'auto').removeClass('category_dynamic_head_loader').delay(800).fadeIn(400);
