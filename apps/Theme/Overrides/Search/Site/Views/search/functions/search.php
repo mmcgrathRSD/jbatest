@@ -159,8 +159,10 @@ $clear_all_exclusions = '';
                     allItems: function(allItems) {
                         //cl.imageTag('product_images/t0xleog0c4mwbsws0igt', {secure: true, sign_url: true, type: "private", transformation: 'jba_category'}).toHtml();
                         allItems.hits.each(function(hit, key) {
+                            //cl.imageTag(value, {secure: true, sign_url: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.swatch'); ?>', class: "amconf-image", alt: value_key, title: value_key}).toHtml()
+                            console.log(hit.image);
+
                             if('swatches' in hit) {
-                                console.log(hit.swatches);
                                 let new_swatches = [];
 
                                 $.each(hit.swatches, function(key, swatch) {

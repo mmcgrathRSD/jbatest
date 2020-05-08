@@ -260,8 +260,8 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                            <input type="hidden" name="model_number" value="<?php echo $item->tracking['model_number']; ?>" class="variant_id" />
                         <?php endif; ?>
 		                    <script>
-                           $(document).on('.super-attribute-select', 'change', function() {
-
+                           $('.super-attribute-select').change(function() {
+                              console.log('wtf');;
                               
 
                               var value_selected = this.value;
