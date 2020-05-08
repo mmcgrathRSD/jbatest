@@ -644,6 +644,8 @@ class Magento
 
                 if(!empty($row['first_publication_date'])){
                     $product->set('first_publication_time', \Carbon\Carbon::parse($row['first_publication_date'])->timestamp);
+                }else if($row['enabled']){
+                    $newProduct->set('first_publication_time', \Carbon\Carbon::parse($row['created_at'])->timestamp);
                 }
 
                 if(!empty($row['new_flag_date'])){
@@ -1281,6 +1283,8 @@ class Magento
                     
                     if(!empty($row['first_publication_date'])){
                         $newProduct->set('first_publication_time', \Carbon\Carbon::parse($row['first_publication_date'])->timestamp);
+                    }else if($row['enabled']){
+                        $newProduct->set('first_publication_time', \Carbon\Carbon::parse($row['created_at'])->timestamp);
                     }
 
                     if(!empty($row['new_flag_date'])){
