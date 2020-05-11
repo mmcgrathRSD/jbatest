@@ -1535,7 +1535,8 @@ class Magento
                     ->setCondition('magento.id', $parentId)
                     ->getItem();
                 
-                if(is_null($product->get('publication.sales_channels'))){
+                //Account for situation where the product does not even have the sales channel property
+                if (!array_key_exists('sales_channels', $product->get('publication'))) {
                     $product->set('sales_channel_ids', array_column($salesChannels, 'id'));
                 }
 
