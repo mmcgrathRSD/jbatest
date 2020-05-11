@@ -1528,6 +1528,8 @@ class Magento
             foreach($row as $parentId => $value){
                 //temp var for cli output
                 $data = [];
+                array_push($data, ['Syncing Matrix Parent: ', $parentId, '✅']);
+                
                 $magentoOptionsIds = [];
 
                 //The main product query now includes matrix parents, find our parent
@@ -1535,6 +1537,12 @@ class Magento
                     ->setCondition('magento.id', $parentId)
                     ->getItem();
                 
+                if($product){
+                    array_push($data, ['Matrix Parent Found In Mongo: ', $product->get('magento.id'), '✅']);
+                }else{
+                    array_push($data, ['Matrix Parent NOT in mongo: ', $parentId, '❌']);
+                }
+
                 //Account for situation where the product does not even have the sales channel property
                 if (!array_key_exists('sales_channels', $product->get('publication'))) {
                     $product->set('sales_channel_ids', array_column($salesChannels, 'id'));
@@ -1628,7 +1636,14 @@ class Magento
                     }
                 }
 
-                $product->save();
+                try{
+                    $product->save();
+                    array_push($data, ['Matrix Item Created! ', $product->get('magento.id'), '✅']);
+                }catch(Exeption $e){
+                    array_push($data, ['Error Creating Matrix Parent', $e->getMessage(), '❌']);
+                }
+                $this->CLImate->table($data);
+
             }
         }
     }
