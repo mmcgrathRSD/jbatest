@@ -1568,13 +1568,11 @@ class Magento
                 JOIN catalog_product_entity_int STATUS ON STATUS.entity_id = relation.child_id 
                 AND STATUS.attribute_id = 96 
                 AND STATUS.store_id = 0 
-                AND STATUS.
-            VALUE
-                = 1 
+                AND STATUS.`value` = 1
             WHERE
                 cpe.type_id = 'configurable' 
                 AND cpe.entity_id NOT IN ( SELECT entity_id FROM catalog_product_entity_int WHERE attribute_id = 96 AND VALUE = 2 AND store_id = 0 ) 
-            ORDER BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title, attribute_option_ordering, attribute_option_value
+                ORDER BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title_id, attribute_title, attribute_option_ordering, attribute_option_value
             ";
 
         $select = $this->db->prepare($sql);
