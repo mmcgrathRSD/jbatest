@@ -1651,14 +1651,15 @@ class Magento
                                     'format' => 'jpg',
                                     'folder' => 'swatches'
                                 ]);
+
+                                //If there is no image, dont set the swatch
+                                if($upload){
+                                    $attributeOption['swatch'] = $upload['public_id'];
+                                }
                             }catch(Exception $e){
                                 $this->CLImate->red($e->getMessage());
                             }
-
-                            //If there is no image, dont set the swatch
-                            if($upload){
-                                $attributeOption['swatch'] = $upload['public_id'];
-                            }
+                            
                         }
 
                         $attribute['options'][] = $attributeOption;
