@@ -13,11 +13,6 @@ class Users extends \Dsc\Routes\Group
             'url_prefix' => '/profiles'
         ));
         
-        $this->add('', 'GET', array(
-            'controller' => 'Profiles',
-            'action' => 'readSelf'
-        ));
-        
         $this->add('/settings', 'GET', array(
             'controller' => 'Profiles',
             'action' => 'settings'

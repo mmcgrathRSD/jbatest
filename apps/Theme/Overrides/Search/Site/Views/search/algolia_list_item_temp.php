@@ -11,13 +11,10 @@ $moneyHtml = '<span class=notranslate><sup>'.$currency.'</sup>'.$priceTag.'</spa
     <li class="item  new-product quick-view-container" data-model="{{model_number}}">
         <a href="{{url}}" title="{{title}}" class="product-image">
             {{#image}}
-            <img class="regular_img" src="{{image}}" width="217" height="217" alt="GrimmSpeed Head Gasket Set (FA20) - 2015+ WRX / 2013+ BRZ" style="opacity: 1; display: block;">
-            {{/image}}
-            {{^image}}
-            <img class="regular_img" src="{{image}}" width="217" height="217" alt="GrimmSpeed Head Gasket Set (FA20) - 2015+ WRX / 2013+ BRZ" style="opacity: 1; display: block;">
+                {{{image}}}
             {{/image}}
             {{#image_2}}
-            <img class="additional_img" src="{{image_2}}" width="217" height="217" alt="GrimmSpeed Head Gasket Set (FA20) - 2015+ WRX / 2013+ BRZ" style="opacity: 0;">
+                {{{image_2}}}
             {{/image_2}}
             <!--bof free youtube icon-->
             <!--eof youtube icon -->
@@ -46,7 +43,6 @@ $moneyHtml = '<span class=notranslate><sup>'.$currency.'</sup>'.$priceTag.'</spa
                                 <div style="clear: both;"></div>
                             </div>  
                         </div>
-                        <div id="requared-attribute92-12313" style="color:red"></div>
                     </dd>
                 </dl>
             </div>

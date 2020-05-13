@@ -176,42 +176,48 @@ class OrderedGiftCard extends \Shop\Site\Controllers\OrderedGiftCard
         
         $currentTime = time();
         $attempts = array();
-        for($idx = 0; $idx < count( (array)$identity->{'shop.balance_attempts'}); $idx++ ) {
-            if( $identity->{'shop.balance_attempts.'.$idx} > ($currentTime - 15 * 60) )  {
-                $attempts []= $identity->{'shop.balance_attempts.'.$idx};
+        for ($idx = 0; $idx < count((array) $identity->get('shop.balance_attempts')); $idx++) {
+            if ($identity->get('shop.balance_attempts.' . $idx) > ($currentTime - 15 * 60))  {
+                $attempts []= $identity->get('shop.balance_attempts.' . $idx);
             }
         }
         $attempts []= $currentTime;
-        $identity->{'shop.balance_attempts'} = $attempts;
+        $identity->set('shop.balance_attempts', $attempts);
         $identity->save();
-        if( count( $attempts ) > 4){
+        if (count($attempt) > 4) {
             $response->error = "You reached maximum number of of requests for 15 minutes. Please contact our customer center or wait 15 minutes to make another request.";
             $this->OutputJson($response);
             return;
         }
         
-        $card_number = strtolower(trim( $this->inputfilter->clean( $this->app->get('POST.dig20'), 'alnum' ) ));
-        $card_pin = strtolower(trim( $this->inputfilter->clean( $this->app->get('POST.dig4'), 'alnum' ) ));
+        $card_number = strtolower(trim($this->inputfilter->clean($this->app->get('POST.dig20'), 'alnum')));
         
-       
         try {
-            
-             $code = preg_replace("/[^0-9a-z]/", '', strtolower(trim($card_number . $card_pin)));
-             $item = \Netsuite\Models\ActiveGiftCards::getCardByCode($code);
+            $code = preg_replace("/[^0-9a-z]/", '', $card_number);
+            $item = \Netsuite\Models\ActiveGiftCards::getCardByCode($code);
 
             if (empty($item)) {
                 throw new \Exception;
             }
-            $response->balance_msg = 'Remaining balance on gift card <strong>'.$item->giftCertificateCode.'</strong> is <strong>'.\Shop\Models\Currency::format( $item->amountRemaining ).'</strong>.';
-            $response->result = true;
-        } catch ( \Exception $e )
-        {
-            $response->error =  "Invalid Gift Card";
-            $this->OutputJson( $response );
-            return;
+
+            $response->result = [
+                'code' => $item->giftCertificateCode,
+                'balance' => \Shop\Models\Currency::format($item->amountRemaining),
+                'status' => 'Active'
+            ];
+            
+            if (!$item->gcActive) {
+                $response->result['status'] = 'Inactive';
+            } else if ($item->amountRemaining <= 0) {
+                $response->result['status'] = 'Used';
+            } else if (!empty($item->expirationDate) && new \DateTime($item->expirationDate) <= new \DateTime()) {
+                $response->result['status'] = 'Expired';
+            } 
+        } catch (\Exception $e) {
+            $response->error =  "Invalid gift code.";
         }
-        $this->OutputJson( $response );
-        return;
+
+        $this->OutputJson($response);
     }
 
 }

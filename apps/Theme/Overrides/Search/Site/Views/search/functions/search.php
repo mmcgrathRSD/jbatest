@@ -157,10 +157,20 @@ $clear_all_exclusions = '';
                         return empty;
                     },
                     allItems: function(allItems) {
-                        //cl.imageTag('product_images/t0xleog0c4mwbsws0igt', {secure: true, sign_url: true, type: "private", transformation: 'jba_category'}).toHtml();
+                        
                         allItems.hits.each(function(hit, key) {
-                            //cl.imageTag(value, {secure: true, sign_url: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.swatch'); ?>', class: "amconf-image", alt: value_key, title: value_key}).toHtml()
-                            console.log(hit.image);
+
+                            if(hit.image) {
+                                hit.image = cl.imageTag(hit.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1; display: block;"}).toHtml()
+                            } else {
+                                hit.image = cl.imageTag("<?php echo \Base::instance()->get('cloudinary.no_photo'); ?>", {secure: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1; display: block;"}).toHtml();
+
+                                console.log(hit.image);
+                            }
+
+                            if(hit.image_2) {
+                                hit.image_2 = cl.imageTag(hit.image_2, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 0;"}).toHtml()
+                            }
 
                             if('swatches' in hit) {
                                 let new_swatches = [];
@@ -685,7 +695,7 @@ $clear_all_exclusions = '';
     $(document).on('click', '.sort-by-wrap .sort-option', function(e) {
         e.preventDefault();
 
-        jba_instance = $('.main.row.search_container').attr('data-instance-id');
+        jba_instance = $(this).closest('.main.row.search_container').attr('data-instance-id');
 
         var sort_index = $(this).parent().attr('data');
         window[jba_instance].helper.setIndex(sort_index).search();
@@ -698,7 +708,7 @@ $clear_all_exclusions = '';
     $(document).on('click', '.sort-by-arrow', function(e) {
         e.preventDefault();
 
-        jba_instance = $('.main.row.search_container').attr('data-instance-id');
+        jba_instance = $(this).closest('.main.row.search_container').attr('data-instance-id');
         
         var sort_index = $('.sort-by-wrap span.current').attr('data-current');
         var sort_opposite = $('.sort-by-wrap span.current').attr('data-opposite');
@@ -719,7 +729,7 @@ $clear_all_exclusions = '';
     $(document).on('click', '.limiter .toolbar-dropdown a', function(e) {
         e.preventDefault();
 
-        jba_instance = $('.main.row.search_container').attr('data-instance-id');
+        jba_instance = $(this).closest('.main.row.search_container').attr('data-instance-id');
 
         var hit_count = $(this).html();
         window[jba_instance].helper.setQueryParameter('hitsPerPage', hit_count).search();

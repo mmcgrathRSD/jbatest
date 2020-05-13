@@ -344,6 +344,11 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                      <ul class="add-to-links">
                         <li><a class="link-wishlist  icon-black" href="https://www.subispeed.com/wishlist/index/add/product/13193/form_key/PTT3lpSgzitk4OCG/" onclick=""><span class="link_i"></span>Add to Wishlist</a></li>
                      </ul>
+                     <?php if($item->{'product_type'} != 'dynamic_group' && !\Dsc\ArrayHelper::get($item->policies, 'ships_email')) : ?>
+    <div class="wishListButton text-center add_to_wishlist" data-variant="<?php echo $item->get('tracking.model_number'); ?>">
+        <i class="glyphicon glyphicon-refresh spinning"></i>
+    </div>
+<?php endif; ?>
                      <div class="social">
                         <!-- AddThis Button BEGIN -->
                         <div class="addthis_toolbox addthis_default_style ">

@@ -27,41 +27,6 @@ class Profiles extends \Dsc\Controller
       
     }
     
-    public function readSelf()
-    {
-    	$this->requireIdentity();
-    	
-        $settings = \Users\Models\Settings::fetch();
-        if (!$settings->{'general.profiles.enabled'})
-        {
-            $this->app->reroute( "/user/settings" );
-        }
-    
-        $identity = $this->getIdentity();
-        if (empty($identity->id)) 
-        {
-            $this->app->reroute( '/login' );
-            return;
-        }
-        
-        if (!empty($identity->__safemode)) 
-        {
-        	$user = $identity;
-        } 
-            else 
-        {
-            $model = $this->getModel()->setState( 'filter.id', $identity->id );
-            $user = $model->getItem();
-        }
-
-        $this->app->set('user', $user);
-        
-        $this->app->set('meta.title', 'My Profile | My Account');
-            
-        $view = \Dsc\System::instance()->get('theme');
-        echo $view->render( 'Users/Site/Views::profile/readSelf.php' );
-    }
-    
     public function settings()
     {
         $identity = $this->getIdentity();

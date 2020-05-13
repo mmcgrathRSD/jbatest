@@ -1,88 +1,79 @@
-<?php $settings = \Users\Models\Settings::fetch(); ?>
-<?php $flash = \Dsc\Flash::instance(); ?>
-
-<div class="container">
-    <?php 
-    $settings = \Users\Models\Settings::fetch();
-    if ($settings->isSocialLoginEnabled()) 
-    {
-        ?>
-        <div class="row paddingTop">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3">
-            <legend>
-                Create your account with a social profile
-            </legend>
-                        
-            <?php echo $this->renderLayout('Users/Site/Views::login/social.php'); ?>
-            
-            <p>&nbsp;</p>
-            
+<div class="customer-account-create">
+    <div class="content-container">
+        <div class="main row clearfix">
+        <div class="col-main grid_18">
+            <div class="account-create">
+                <div class="block block-login">
+                    <div class="block-title">
+                    <strong><span>Create an Account</span></strong>
+                    </div>
+                    <div class="block-content">
+                    <form action="./register" method="post" id="form-validate">
+                        <div class="registration-info personal-info">
+                            <input type="hidden" name="success_url" value="">
+                            <input type="hidden" name="error_url" value="">
+                            <input type="hidden" name="form_key" value="QMOkWbNbwt6gn3Nm">
+                            <h2>Personal Information</h2>
+                            <ul class="form-list">
+                                <li class="fields">
+                                <div class="customer-name">
+                                    <div class="field name-firstname">
+                                        <label for="firstname" class="required"><em>*</em>First Name</label>
+                                        <div class="input-box">
+                                            <input type="text" id="first_name" name="firstname" value="" title="First Name" maxlength="255" class="input-text required-entry">
+                                        </div>
+                                    </div>
+                                    <div class="field name-lastname">
+                                        <label for="lastname" class="required"><em>*</em>Last Name</label>
+                                        <div class="input-box">
+                                            <input type="text" id="last_name" name="lastname" value="" title="Last Name" maxlength="255" class="input-text required-entry">
+                                        </div>
+                                    </div>
+                                </div>
+                                </li>
+                                <li>
+                                <label for="email_address" class="required"><em>*</em>Email Address</label>
+                                <div class="input-box">
+                                    <input type="text" name="email" id="email_address" value="" title="Email Address" class="input-text validate-email required-entry">
+                                </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="registration-info login-info">
+                            <h2>Login Information</h2>
+                            <ul class="form-list">
+                                <li class="fields">
+                                <div class="field">
+                                    <label for="password" class="required"><em>*</em>Password</label>
+                                    <div class="input-box">
+                                        <input type="password" name="new_password" id="password" title="Password" class="input-text required-entry validate-password">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="confirmation" class="required"><em>*</em>Confirm Password</label>
+                                    <div class="input-box">
+                                        <input type="password" name="confirm_new_password" title="Confirm Password" id="confirmation" class="input-text required-entry validate-cpassword">
+                                    </div>
+                                </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="buttons-set clearfix">
+                            <p class="required">* Required Fields</p>
+                            <div class="registration-info">
+                                <button type="submit" title="Submit" class="button"><span><span>Submit</span></span></button>
+                            </div>
+                            <div class="registration-info login-info">
+                                <button onclick="window.location='/sign-in'; " type="button" title="Back" class="button inverted"><span><span><small>« </small>Back</span></span></button>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                </div>
             </div>
         </div>
-        <?php  
-    } 
-    ?>
-        
-    <div class="row paddingTop">
-        <div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3">
-        
-            <legend>
-                 <strong>Create your account  with your email address</strong>
-            </legend>
-            
-            
-            <form action="./register" method="post" class="form paddingTop" role="form">
-            
-                <?php if ($settings->{'general.registration.username'}) { ?>
-                <div class="form-group">
-                    <label>Username</label>
-                    <input class="form-control" name="username" placeholder="Username" value="<?php echo $flash->old('username'); ?>" type="text" required autofocus />
-                </div>
-                <?php } ?>
-                
-                <div class="row">
-                    <div class="col-xs-6 col-md-6">
-                        <div class="form-group">
-                            <label>First Name</label>
-                            <input class="form-control" name="first_name" placeholder="First Name" value="<?php echo $flash->old('first_name'); ?>" type="text" autocomplete="given-name" required />
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-md-6">
-                        <div class="form-group">
-                            <label>Last Name</label>
-                            <input class="form-control" name="last_name" placeholder="Last Name" value="<?php echo $flash->old('last_name'); ?>" type="text" autocomplete="family-name" required />
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input class="form-control" name="email" placeholder="Email Address" value="<?php echo $flash->old('email'); ?>" type="email" required />
-                </div>
-                
-                <div class="form-group">
-                    <label>Password</label>
-                    <input class="form-control" name="new_password" placeholder="New Password" type="password" required />
-                </div>
-                
-                <div class="form-group">
-                    <label>Confirm Password</label>
-                    <input class="form-control" name="confirm_new_password" placeholder="Confirm New Password" type="password" required />
-                </div>
-                 
-                <div class="form-group">
-                    <button class="btn btn-lg btn-primary" type="submit">Register</button>
-                    <a class="btn btn-link" href="./sign-in">Already have an account?</a>
-                </div>
-            </form>
-            
-            
-            
-            
-        </div>
-        
     </div>
+   </div>
 </div>
-
 
 

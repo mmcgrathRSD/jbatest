@@ -40,7 +40,6 @@
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/rs-plugin/css/settings.css" media="all" />
   <link rel="stylesheet" type="text/css" href="/theme/css/jba/megamenu.css?<?php echo $cachebuster; ?>" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/local.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/custom.css" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/animation.css" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/grid.css" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/retina.css" media="all" />

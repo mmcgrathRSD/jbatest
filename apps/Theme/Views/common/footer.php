@@ -15,9 +15,7 @@
                      </li>
                      <li><a href="/pages/order-tracking/">Track Your Order</a>
                      </li>
-                     <li><a href="/giftvoucher/index/check/">Check Gift Card</a>
-                     </li>
-                     <li><a href="/login-fix-information">I Can't Login, HELP!</a>
+                     <li><a href="/shop/giftcards/balance">Check Gift Card</a>
                      </li>
                   </ul>
                   <p></p>

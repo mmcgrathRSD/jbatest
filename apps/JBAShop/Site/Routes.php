@@ -408,11 +408,21 @@ class Routes extends \Dsc\Routes\Group
             (new \Shop\Site\Controllers\Order())->read();
         } );
         
-        $this->add( '/shop/account', 'GET', array(
+        $this->add('/shop/account', 'GET', array(
             'controller' => 'Account',
             'action' => 'index' 
         ) );
         
+        $this->add('/shop/account/information', 'GET', array(
+            'controller' => 'Account',
+            'action' => 'information' 
+        ) );
+
+        $this->add('/shop/account/orders', 'GET', array(
+            'controller' => 'Account',
+            'action' => 'orders' 
+        ) );
+
         $this->add( '/shop/account/savepreferences', 'POST', array(
         		'controller' => 'Account',
         		'action' => 'savePreferences'

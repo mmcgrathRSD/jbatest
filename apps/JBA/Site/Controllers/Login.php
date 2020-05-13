@@ -8,7 +8,7 @@ class Login extends \Dsc\Controller
      * Displays a dual login/register form
      */
     public function index( $f3 )
-    {    	
+    {
         $identity = $this->getIdentity();
         if (! empty( $identity->id ))
         {
@@ -22,6 +22,7 @@ class Login extends \Dsc\Controller
         }
         
         $this->app->set('meta.title', 'Log In');
+        $this->app->set('page', 'sign-in');
         
         $view = \Dsc\System::instance()->get( 'theme' );
         echo $view->render( 'Users/Site/Views::login/dual.php' );
@@ -32,6 +33,7 @@ class Login extends \Dsc\Controller
      */
     public function only( $f3 )
     {
+        
         $identity = $this->getIdentity();
         if (! empty( $identity->id ))
         {
@@ -39,6 +41,7 @@ class Login extends \Dsc\Controller
         }
         
         $this->app->set('meta.title', 'Log In');
+        $this->app->set('page', 'sign-in');
         
         $view = \Dsc\System::instance()->get( 'theme' );
         echo $view->render( 'Users/Site/Views::login/login.php' );
@@ -64,6 +67,7 @@ class Login extends \Dsc\Controller
         $f3->set('flash', $flash );
         
         $this->app->set('meta.title', 'Register');
+        $this->app->set('page', 'register');
         
         $view = \Dsc\System::instance()->get( 'theme' );
         echo $view->render( 'Users/Site/Views::login/register.php' );

@@ -178,18 +178,35 @@ $(function() {
                 },
                 url: './shop/giftcards/check-balance'
             }).done(function(response) {
+                $jbaForm = $('.jba_gift_form');
+
                 var rowDiv = $('div[data-object-type="balance-message"]', $formBalance).removeClass('hidden');
                 if (response.result) {
                     var $alertDiv = $('div.alert', rowDiv)
                         .removeClass('alert-danger')
                         .addClass('alert-info')
                         .html(response.balance_msg);
+
+                    if($jbaForm.length) {
+                        rowDiv.show();
+                        $('.jba_gift_error_msg').hide();
+                        $('#result_giftvoucher_code').html('<strong>' + response.result.code + '</strong>');
+                        $('#balance').html('<strong>' + response.result.balance + '</strong>');
+                        $('#status').html('<strong>' + response.result.status + '</strong>');
+                    }
                 } else {
                     $('div.alert', rowDiv)
                         .removeClass('alert-info')
                         .addClass('alert-danger')
                         .html(response.error);
+
+                    if($jbaForm.length) {
+                        rowDiv.hide();
+                        $('.jba_gift_error_msg').show().find('span').html(response.error);
+                    }
                 }
+
+                
             }).always(function() {
 
             });

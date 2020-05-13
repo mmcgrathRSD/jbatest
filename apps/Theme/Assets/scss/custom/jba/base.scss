@@ -2,6 +2,43 @@ body {
     background-color: #ffffff;
 }
 
-.home .main-container.col2-left-layout {
+.home .main-container.col2-left-layout, .forgot-password .main-container, .sign-in .main-container, .register .main-container {
     padding-top: 0;
+}
+
+.forgot-password {
+    color: #000!important;
+    text-transform: uppercase;
+}
+
+.forgot-password:hover {
+    color: #FFF!important;
+}
+
+.content-container a.jba-button-style:hover {
+    background-color: inherit;
+}
+
+/* Base */
+::-moz-selection{background: #666; color: #fff; text-shadow: none;}
+::selection{background: #666; color: #fff; text-shadow: none;}
+
+/* Forms */
+// input:invalid, textarea:invalid { background-color: #f0dddd;}
+
+/* Print styles */
+@media print {
+    * { background: transparent !important; color: #000 !important; box-shadow: none !important; text-shadow: none !important;}
+    a, a:visited { text-decoration: underline;}
+    a[href]:after { content: " (" attr(href) ")";}
+    abbr[title]:after { content: " (" attr(title) ")";}
+    /** Don't show links for images, or javascript/internal links  */
+    .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: "";}
+    pre, blockquote { border: 1px solid #999; page-break-inside: avoid;}
+    thead {display: table-header-group; /* h5bp.com/t */}
+    tr, img { page-break-inside: avoid;}
+    img { max-width: 100% !important;}
+    @page { margin: 0.5cm;}
+    p, h2,h3 { orphans: 3; widows: 3;}
+    h2,h3 {page-break-after: avoid;}
 }
