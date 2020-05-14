@@ -283,7 +283,6 @@ class Magento
                     AND ee.entity_model = 'catalog/category' 
                     AND cc1.`value` NOT LIKE '%shop-by-manufacturer%' 
                     AND cc.`value` != 'SUPRA' -- AND cc.`value` != 'FR-S / BRZ / 86'
-                    
                 GROUP BY
                     id 
                 ORDER BY
@@ -350,19 +349,23 @@ class Magento
                 $category->save();
                 $categoryIds[$row['id']] = $category->id;
 
-                try{
-                    $redirect = new \Redirect\Admin\Models\Routes([
-                        'title' => 'Magento category redirect: ' . $row['name'],
-                        'url' => [
-                            'alias'   => $row['url_path'],
-                            'redirect' => $category->url()
-                        ],
-                        'magento' => true
-                    ]);
+                //See if the redirect already exists
+                $redirect = (new \Redirect\Admin\Models\Routes)->setCondition('url.alias', $row['url_path'])->getItem();
 
+                if(empty($redirect)){
+                    $redirect = new \Redirect\Admin\Models\Routes();
+                }
+
+                $redirect->set('title', 'Magento category redirect: ' . $row['name'])
+                    ->set('url.alias', $row['url_path'])
+                    ->set('url.redirect', $category->url())
+                    ->set('magento', true);
+                
+                try{
                     $redirect->save();
                 }catch(Exception $e){
                     //If redirect already exists, do nothing
+                    $this->CLImate->red($e->getMessage());
                 }
             }
         } while ($incomplete);
