@@ -1,3 +1,4 @@
+<?php $identity = $this->getIdentity(); ?>
 <div class="col-left sidebar grid_5 custom_left">
     <div class="block block-account">
         <div class="block-title">
@@ -5,10 +6,10 @@
         </div>
         <div class="block-content">
             <ul>
-                <li class="current"><strong>Account Dashboard</strong></li>
+                <li><a href="/shop/account">Account Dashboard</a></li>
                 <li><a href="/shop/account/information">Account Information</a></li>
-                <li><a href="/shop/account/orders">My Orders</a></li>
-                <li><a href="/profiles/<?php echo $user->id; ?>">My Product Reviews</a></li>
+                <li><a href="/shop/orders">My Orders</a></li>
+                <li><a href="/profiles/<?php echo $identity->id; ?>">My Product Reviews</a></li>
                 <li><a href="/shop/wishlist">My Wishlist</a></li>
                 <li><a href="/shop/giftcards/balance">Gift Card</a></li>
             </ul>

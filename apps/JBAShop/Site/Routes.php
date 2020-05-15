@@ -376,7 +376,7 @@ class Routes extends \Dsc\Routes\Group
             'action' => 'index' 
         ) );
         
-        $this->add( '/shop/order/@id', 'GET', array(
+        $this->add( '/shop/order/@externalId', 'GET', array(
             'controller' => 'Order',
             'action' => 'read' 
         ) );
@@ -416,11 +416,6 @@ class Routes extends \Dsc\Routes\Group
         $this->add('/shop/account/information', 'GET', array(
             'controller' => 'Account',
             'action' => 'information' 
-        ) );
-
-        $this->add('/shop/account/orders', 'GET', array(
-            'controller' => 'Account',
-            'action' => 'orders' 
         ) );
 
         $this->add( '/shop/account/savepreferences', 'POST', array(
