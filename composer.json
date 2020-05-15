@@ -16,8 +16,6 @@
         { "type": "vcs", "url": "git@github.com:premierperformance/Netsuite.git" }
     ],
     "require-dev": {
-        "phpunit/phpunit": "5.5.*",
-        "mockery/mockery": "dev-master",
         "psy/psysh": "@stable"
     },
     "require": {
