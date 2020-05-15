@@ -37,4 +37,4 @@
         </div>
     </div>
     <?php echo $this->renderView('Shop/Site/Views::account/sidebar.php'); ?>
-</div><?php var_dump($identity); ?>
+</div>
