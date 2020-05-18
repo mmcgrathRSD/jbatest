@@ -1048,7 +1048,7 @@ class Magento
         SELECT
             def.entity_id AS 'id',
             cpe.created_at ,
-            new_from.`value` as 'first_publication_date',
+            IF(new_from.`value`, new_from.`value`, cpe.created_at) as 'first_publication_date',
             new_to.`value` as 'new_flag_date',
             youtube.value AS 'youtube video' ,
             install.value AS 'install instructions' ,
@@ -1224,7 +1224,7 @@ class Magento
                 $modelNumber = '';
                 $categoriesIDs = [];
                 $productSalesChannels = [];
-
+                $seo = [];
                 //Loop through each kit option/kit option value
                 foreach($productGroup as $productOption){
                     //This value is what we'll use for the model number of the dynamic group product itself
@@ -1278,7 +1278,8 @@ class Magento
                 if(empty($newProduct)){
                     $newProduct = new \Shop\Models\Products();
                 }
-
+                
+                $seo = array_unique(array_column($productGroup, 'default_title'));
                 //Build/Update the dyanmic kit and save it to mongo
                 $newProduct->set('product_type', 'dynamic_group')
                     ->set('categories', $categories)
@@ -1289,16 +1290,20 @@ class Magento
                     ->set('magento', ['id' => $magentoID])
                     ->set('title', 'dont forget to update me!')
                     ->set('kit_options', $options)
-                    ->set('sales_channel_ids', array_unique(array_column($productSalesChannels, 'id')));
-                    
-                    if(!empty($row['first_publication_date'])){
-                        $newProduct->set('first_publication_time', \Carbon\Carbon::parse($row['first_publication_date'])->timestamp);
-                    }else if($row['enabled']){
-                        $newProduct->set('first_publication_time', \Carbon\Carbon::parse($row['created_at'])->timestamp);
-                    }
+                    ->set('sales_channel_ids', array_unique(array_column($productSalesChannels, 'id')))
+                    ->set('seo', [
+                        'page_title' => implode(array_unique(array_column($productGroup, 'default_title'))),
+                        'meta_description' => implode(array_unique(array_column($productGroup, 'default_title'))),
+                        'meta_keywords' => implode(array_unique(array_column($productGroup, trim(str_replace(["\r", "\n"],'',strip_tags($productGroup['long_description'])))))),
+                    ]);
 
-                    if(!empty($row['new_flag_date'])){
-                        $newProduct->set('new_flag_date', \Carbon\Carbon::parse($row['new_flag_date'])->format('Y-m-d'));
+                    $firstPubDate = implode(array_unique(array_column($productGroup, 'first_publication_date')));
+                    $newFlagDate = implode(array_unique(array_column($productGroup, 'first_publication_date')));
+
+                    $newProduct->set('first_publication_time', \Carbon\Carbon::parse($firstPubDate)->timestamp);
+                    
+                    if(!empty($newFlagDate)){
+                        $newProduct->set('new_flag_date', \Carbon\Carbon::parse($newFlagDate)->format('Y-m-d'));
                     }
 
                 try{
