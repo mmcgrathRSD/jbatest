@@ -643,7 +643,7 @@ class Magento
                 if(!empty($row['first_publication_date'])){
                     $product->set('first_publication_time', \Carbon\Carbon::parse($row['first_publication_date'])->timestamp);
                 }else if($row['enabled']){
-                    $newProduct->set('first_publication_time', \Carbon\Carbon::parse($row['created_at'])->timestamp);
+                    $product->set('first_publication_time', \Carbon\Carbon::parse($row['created_at'])->timestamp);
                 }
 
                 if(!empty($row['new_flag_date'])){
@@ -662,12 +662,17 @@ class Magento
             }
 
             try {
-                (new \Redirect\Admin\Models\Routes)->bind([
+                $redirect = (new \Redirect\Admin\Models\Routes)->bind([
                     'product_id' => $product->id,
                     'title' => "Magento redirect for product " . (string)$product->id,
                     'old_slug'   => $row['default url path'],
-                    'url' => $product->url()
-                ])->save();
+                    'url' => [
+                        'redirect' => $product->url(),
+                        'redirect' => $row['default url path'],
+                    ],
+                ]);
+                 
+                $redirect->save();
             } catch (\Exception $e) {
                 $this->CLImate->red($e->getMessage());
             }
