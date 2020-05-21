@@ -29,7 +29,20 @@ class Home extends \Dsc\Controller
 
         $this->app->set('page', 'home');
         $this->app->set('isHome', true);
-        
+        if (!filter_var(\Base::instance()->get('disable_order_tracking', true), FILTER_VALIDATE_BOOLEAN) && empty($dataLayer))
+		{
+            $identity = $this->auth->getIdentity();
+		    $dataLayer = [[
+		        "customerLoggedIn" => !empty($identity),
+		        "customerEmail" => !empty($identity) ? $identity->get('email') : '',
+		        "customerGroupId" => "0",
+		        "customerGroupCode" => !empty($identity) ? "GENERAL" : "NOT LOGGED IN",
+		        "pageType" => "cms/index/index",
+		        "site_type" => "d"
+			]];
+			$this->app->set('gtm.dataLayer', $dataLayer);
+			$this->app->set('gtm.event', ['ecommerce' => ['currencyCode' => 'USD']]);
+		}
         echo $this->theme->render('JBA\Site\Views::home/default.php');
     }
 
