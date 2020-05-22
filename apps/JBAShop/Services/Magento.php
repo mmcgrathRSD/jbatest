@@ -682,8 +682,11 @@ class Magento
         $this->CLImate->table($failures);
     }
 
-    public function syncProductImages()
+    public function syncProductImages($magentoId = null)
     {
+
+        $where = $magentoId ? "WHERE cpg.entity_id = {$magentoId}" : '';
+
         $sql = 
             "SELECT
                 cpg.entity_id AS product_id,
@@ -711,6 +714,7 @@ class Magento
                 )
                 LEFT JOIN catalog_product_entity_varchar google ON ( google.entity_id = cpg.entity_id AND google.attribute_id = 220 AND google.store_id = 0 )
                 LEFT JOIN catalog_product_entity_varchar image_label ON ( image_label.entity_id = cpg.entity_id AND image_label.attribute_id = 112 AND image_label.store_id = 1 ) 
+            {$where}
             ORDER BY
                 product_id ASC,
                 featured_image DESC,
@@ -742,16 +746,22 @@ class Magento
         foreach ($finalList as $magentoId => $links) {
             $product = (new \Shop\Models\Products)
                 ->setCondition('magento.id', (int) $magentoId)
-                // ->setCondition('publication.status', 'published')
-                // ->setCondition('categories.id', new \MongoDB\BSON\ObjectID('5e85f71ad36f5e431c0ed942'))
                 ->getItem();
 
-
+            
             if (empty($product)) {
+                $this->CLImate->red('No Product Found ' . $magentoId. ' Skipping..');
                 continue;
             }
-
+            //This corresponse to our "tag" for each iamge
             $model = $product->get('tracking.model_number_flat');
+
+            //Check to see if 
+            $api = (new \Cloudinary\Api())->resources_by_tag($model);
+
+            if(!empty($api['resources'])){
+                $this->CLImate->red('Assets Already In Cloudinary For ' . $model);
+            }
 
             if (!empty($links['google'])) {
                 $upload = \Cloudinary\Uploader::upload(trim($links['google']), [
