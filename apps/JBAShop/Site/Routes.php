@@ -23,6 +23,11 @@ class Routes extends \Dsc\Routes\Group
         /*
          * NEW URLS
          */
+        $this->add( '/part/@category/*/@slug', 'GET', array(
+            'controller' => 'Product',
+            'action' => 'read'
+        ) );
+
         $this->add( '/part/@category/@slug', 'GET', array(
             'controller' => 'Product',
             'action' => 'read'

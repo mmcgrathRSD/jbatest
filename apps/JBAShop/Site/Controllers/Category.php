@@ -74,6 +74,49 @@ class Category extends \Shop\Site\Controllers\Category
             $subcategories = \Shop\Models\Categories::getCategoryFilters($category,$state);
             $this->app->set('hierarchical_refinement', end($category->getHierarchy()));
             $this->app->set('children', $category->children());
+            if (empty(\Base::instance()->get('disable_order_tracking', false)))
+            {
+                $identity = $this->auth->getIdentity();
+                $catProds = [];
+                //get the newest 3 products with this category.
+                $catProdsCursor = $products_model::collection()->find([
+                        'categories.slug' => $category->get('slug'),
+                        'publication.status' => 'published',
+                        'publication.sales_channels.slug' => \Base::instance()->get('sales_channel')
+                    ],
+                    [
+                        'sort' => ['first_publication_time' => -1],
+                        'limit' => 3
+                    ]);
+                foreach($catProdsCursor as $key => $item){
+                    $product = new \Shop\Models\Products($item);
+                    $catProds[] = [
+                        'id' => $product->get('tracking.model_number'),
+                        'name' => $product->get('title'),
+                        'price' => $product->price(),
+                        'category' => $category->get('title'),
+                        'position' => $key,
+                    ];
+                }
+                
+                $this->app->set('gtm.dataLayer', [
+                    [
+                        "customerLoggedIn" => !empty($identity),
+                        "customerEmail" => !empty($identity) ? $identity->email : '',
+                        "customerGroupId" => "1",
+                        "customerGroupCode" =>  !empty($identity) ? "GENERAL" : "NOT LOGGED IN",
+                        "categoryId" => (string)$category->id,
+                        "categoryName" => $category->title,
+                        "categorySize" => \Shop\Models\Products::collection()->count(['categories.slug' => $category->get('slug')]),
+                        "categoryProducts" => $catProds,
+                        "pageType" => "catalog/category/view",
+                        "site_type" => "d"
+                    ]
+                ]);
+                $this->app->set('gtm.event', ['ecommerce' => ['impressions' => $catProds]]);
+            }
+            
+
     	} catch (\Exception $e) {
     		$this->app->error('404');
     	}

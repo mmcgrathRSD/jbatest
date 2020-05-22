@@ -29,7 +29,14 @@ class Home extends \Dsc\Controller
 
         $this->app->set('page', 'home');
         $this->app->set('isHome', true);
-        
+        if (!filter_var(\Base::instance()->get('disable_order_tracking', true), FILTER_VALIDATE_BOOLEAN) && empty($dataLayer))
+		{
+            $identity = $this->auth->getIdentity();
+            $dataLayer = \Users\Models\Users::getDataLayer($identity);
+
+			$this->app->set('gtm.dataLayer', $dataLayer);
+			$this->app->set('gtm.event', ['ecommerce' => ['currencyCode' => 'USD']]);
+		}
         echo $this->theme->render('JBA\Site\Views::home/default.php');
     }
 
