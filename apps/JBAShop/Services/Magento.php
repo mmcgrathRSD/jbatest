@@ -1865,7 +1865,7 @@ class Magento
                 'tracking.model_number' => true
             ]
         ]);
-
+                $temp = $productDocs->count();
         foreach ($productDocs as $doc) {
             $description = $doc['copy'];
             $this->CLImate->blue('Checking ' . $doc['tracking']['model_number'] . ' for images we can move to Cloudinary...');
@@ -2357,5 +2357,25 @@ class Magento
             }
         }
 
+    }
+
+    public function getProductImagesFromCloudinary(){
+        $products = \Shop\Models\Products::collection()->find([
+            'publication.status' => 'published',
+            'publication.sales_channels' => ['$exists' => true, '$not' => ['$size' => 0]]
+        ]);
+
+        foreach($products as $doc){
+            try{
+                $product = (new \Shop\Models\Products)->bind($doc);
+                $product->getImagesForProductFromCloudinary();
+            }catch(Exception $e){
+                
+            }
+
+            $this->CLImate->green('Product Images Synced' . $product->get('tracking.model_number'));
+        }
+
+        
     }
 }

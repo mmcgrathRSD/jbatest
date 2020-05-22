@@ -119,6 +119,11 @@ $app->route('GET /sync-matrix-items', function($f3) use($CLImate) {
 	$CLImate->red('Have you cleared the swatches folder in Cloudinary?');
 	(new JBAShop\Services\Magento)->syncMatrixItems();
 });
+
+$app->route('GET /get-product-images-from-cloudinary', function($f3) use($CLImate) {
+	(new JBAShop\Services\Magento)->getProductImagesFromCloudinary();
+});
+
 /**************************/
 
 
