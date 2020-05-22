@@ -2360,10 +2360,16 @@ class Magento
     }
 
     public function getProductImagesFromCloudinary(){
-        $products = \Shop\Models\Products::collection()->find([
-            'publication.status' => 'published',
-            'publication.sales_channels' => ['$exists' => true, '$not' => ['$size' => 0]]
-        ]);
+        $products = \Shop\Models\Products::collection()->find(
+            [
+                'publication.status' => 'published',
+                'publication.sales_channels' => ['$exists' => true, '$not' => ['$size' => 0]]
+            ],
+            [
+                'batchSize' => 50,
+                'noCursorTimeout' => true,
+            ]
+        );
 
         foreach($products as $doc){
             try{
@@ -2373,7 +2379,7 @@ class Magento
 
             }
 
-            $this->CLImate->green('Product Images Synced' . $product->get('tracking.model_number'));
+            $this->CLImate->green('Product Images Synced' . $product->get('tracking.model_number_flat'));
         }
 
         
