@@ -32,14 +32,8 @@ class Home extends \Dsc\Controller
         if (!filter_var(\Base::instance()->get('disable_order_tracking', true), FILTER_VALIDATE_BOOLEAN) && empty($dataLayer))
 		{
             $identity = $this->auth->getIdentity();
-		    $dataLayer = [[
-		        "customerLoggedIn" => !empty($identity),
-		        "customerEmail" => !empty($identity) ? $identity->get('email') : '',
-		        "customerGroupId" => "0",
-		        "customerGroupCode" => !empty($identity) ? "GENERAL" : "NOT LOGGED IN",
-		        "pageType" => "cms/index/index",
-		        "site_type" => "d"
-			]];
+            $dataLayer = \Users\Models\Users::getDataLayer($identity);
+
 			$this->app->set('gtm.dataLayer', $dataLayer);
 			$this->app->set('gtm.event', ['ecommerce' => ['currencyCode' => 'USD']]);
 		}
