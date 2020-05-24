@@ -559,7 +559,7 @@ class Magento
 
                 //If we are in a situation where we are creating a new product (eg. matrix parent, set the model number)
                 if(!$product->tracking['model_number']){
-                    if($product->product_type !== 'simple'){
+                    if($product->product_type !== 'simple' || $row['product_type'] !== 'simple'){
                         $product->set('tracking.model_number', strtoupper($row['matrix_parent_model_haxor']));
                     }else{
                         $product->set('tracking.model_number', strtoupper($row['model']));
@@ -1006,18 +1006,6 @@ class Magento
 
     public function syncDynamicGroupProducts()
     {
-        $salesChannels = [
-            'ftspeed' => [
-                'id' => '5e18ce8bf74061555646d847',
-                'title' => 'FTSpeed',
-                'slug' => 'ftspeed'
-            ],
-            'subispeed' => [
-                'id' => '5841b1deb38c50ba028b4567',
-                'title' => 'SubiSpeed',
-                'slug' => 'subispeed'
-            ]
-        ];
 
         $sql = "
         SELECT
@@ -1266,7 +1254,7 @@ class Magento
         $select->execute();
 
         while($rows = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)){
-            $failures = [];
+            $failures = [['FAILURES']];
 
             $progress = $this->CLImate->progress()->total(count($rows));
 
@@ -1315,7 +1303,11 @@ class Magento
                 $groupParent
                     ->set('product_type', 'dynamic_group')
                     ->set('kit_options', $options);
-                    
+                
+                if($groupParent->get('publication.status') == 'unpublished'){
+                    $groupParent->set('publication.status', 'published');
+                }
+
                 try{
                     $groupParent->save();
                 }catch(Exception $e){
