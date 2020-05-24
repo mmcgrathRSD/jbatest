@@ -1266,11 +1266,18 @@ class Magento
         $select->execute();
 
         while($rows = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)){
+            $failures = [];
+
             $progress = $this->CLImate->progress()->total(count($rows));
 
             foreach($rows as $magentoID => $productGroup){
                 //The dynamic group parent is now created in the "productInfo" sync. 
                 $groupParent = (new \Shop\Models\Products)->setCondition('magento.id', $magentoID)->getItem();
+
+                if(!$productGroup){
+                    $failures[] = ['No Parent Found For ', $magentoID];
+                    continue;
+                }
                 
                 foreach($productGroup as $productOption){
                     
@@ -1309,8 +1316,6 @@ class Magento
                     ->set('product_type', 'dynamic_group')
                     ->set('kit_options', $options);
                     
-
-
                 try{
                     $groupParent->save();
                 }catch(Exception $e){
@@ -1321,7 +1326,7 @@ class Magento
             }
         }
 
-
+        $this->CLImate->table($failures);
     }
 
     public function syncYmmsFromRally()
