@@ -480,7 +480,6 @@ class Magento
         WHERE
             def.attribute_id = 102
             AND def.store_id = 0
-            and cpe.type_id = 'grouped'
             ORDER BY cpe.sku ASC
         ";
 
@@ -1261,7 +1260,7 @@ class Magento
 
             foreach($rows as $magentoID => $productGroup){
                 $options = [];
-                
+
                 //The dynamic group parent is now created in the "productInfo" sync. 
                 $groupParent = (new \Shop\Models\Products)->setCondition('magento.id', $magentoID)->getItem();
 
