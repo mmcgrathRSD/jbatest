@@ -480,6 +480,7 @@ class Magento
         WHERE
             def.attribute_id = 102
             AND def.store_id = 0
+            and cpe.type_id = 'grouped'
             ORDER BY cpe.sku ASC
         ";
 
@@ -559,7 +560,7 @@ class Magento
 
                 //If we are in a situation where we are creating a new product (eg. matrix parent, set the model number)
                 if(!$product->tracking['model_number']){
-                    if($product->product_type !== 'simple' || $row['product_type'] !== 'simple'){
+                    if($row['product_type'] !== 'simple' && end(explode('-', $row['model_number'])) !== 'bundle'){
                         $product->set('tracking.model_number', strtoupper($row['matrix_parent_model_haxor']));
                     }else{
                         $product->set('tracking.model_number', strtoupper($row['model']));
@@ -668,7 +669,7 @@ class Magento
                     'old_slug'   => $row['default url path'],
                     'url' => [
                         'redirect' => $product->url(),
-                        'redirect' => $row['default url path'],
+                        'alias' => $row['default url path'],
                     ],
                 ]);
                  
@@ -1259,6 +1260,8 @@ class Magento
             $progress = $this->CLImate->progress()->total(count($rows));
 
             foreach($rows as $magentoID => $productGroup){
+                $options = [];
+                
                 //The dynamic group parent is now created in the "productInfo" sync. 
                 $groupParent = (new \Shop\Models\Products)->setCondition('magento.id', $magentoID)->getItem();
 
