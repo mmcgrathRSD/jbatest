@@ -501,7 +501,31 @@ $app->route('GET /wishlistreport',
     );
 
 
+$app->route(['GET /sync-category-ratings','GET /sync-category-ratings/@id'], function($f3){
+    $climate = new \League\CLImate\CLImate();
+    $model = (new \Shop\Models\Categories);
+    //get id
+    $id = $f3->get('PARAMS.id');
+    $query = [];
+    //If the id is set add to query else do nothing
+    if(!empty($id)){
+        $query = ['_id' => new \MongoDB\BSON\ObjectID($id)];
+    }
+    $salesChannels = (new \Shop\Models\SalesChannels)->getItems();
+    $progress = $climate->progress()->total($model->collection()->count($query));
+    //find all categories
+    $cursor = $model->collection()->find($query);
+    
+    foreach($cursor as $doc){
+        foreach($salesChannels as $salesChannel){
+            \Shop\Models\Categories::averageRatingByChannel($salesChannel->get('slug'),(string)$doc['_id'], true);
+        }
+        $progress->advance(1, $doc['title']);
+    }
 
+    $climate->green('Finished syncing category ratings for sales channels.');
+
+});
 
 $app->route('GET /shrink',
 		function() {
