@@ -204,64 +204,7 @@ class Listener extends \Prefab
                 @$product['metadata']['last_modified']['time']
             );
         }
-        /*
-        * GET ALL THE STANDARD BRAND LINKS AND THE SUB CATEGORIES
-        */
-        $brandRoutes  = [];
-        $brands = (new \Shop\Models\Manufacturers)->collection()->find([],
-            [
-                'projection' => [
-                    'slug' => 1,
-                    'metadata.last_modified.time' => 1,
-                    'metadata.created.time' => 1
-                ],
-                'sort' => [
-                    'metadata.last_modified.time'=> -1
-                ]
-            ]);
-        foreach($brands as $brand) {
-            $climate->blue(time() - $time . ' adding brand ' . $brand['slug']);
-            $brand_counts++;
-            $created = @$brand['metadata']['created']['time'];
-            $lastMod = @$brand['metadata']['last_modified']['time'];
-            
-            $sitemap->addItem(
-                '/brand/'.$brand['slug'],
-                \Dsc\Sitemap::priority($lastMod, $created),
-                'daily',
-                $brand['metadata']['last_modified']['time']
-            );
-            
-            /* Lets build the brand pages by category */
-            $products_model = (new \Shop\Models\Products);
-            $products_model->setState('filter.publication_status',  'published');
-            $products_model->setState('filter.manufacturer',  $brand['slug']);
-            
-            $conditions = $products_model->conditions();
-            $catids = $products_model->collection()->distinct('categories.id', $conditions);
-            $categories = (new  \Shop\Models\Categories)->collection()->find([
-                    '_id' => ['$in' => $catids],
-                    '$or' => [
-                        ['sales_channels.0' => ['$exists' => false]],
-                        ['sales_channels.slug' => \Base::instance()->get('sales_channel')]
-                    ]
-                ],
-                ['sort' => ['title' => 1]]);
-            foreach ($categories as $brandCat) {
-                $brand_category_counts++;
-                $created = @$brandCat['metadata']['created']['time'];
-                $lastMod = @$brandCat['metadata']['last_modified']['time'];
-                
-                $sitemap->addItem(
-                    '/brand/'.$brand['slug'].'/'.$brandCat['slug'],
-                    \Dsc\Sitemap::priority($lastMod, $created),
-                    'daily',
-                    @$ymmCat['metadata']['last_modified']['time']
-                );
-                
-            }
-                
-        }
+
         /*
         * FITS ROUTES /FITS/@SLUG, /FITS/@SLUG/@CAT/, /FITS/@SLUG/@CAT/@PRODUCT
         */
