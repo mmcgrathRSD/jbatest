@@ -25,4 +25,4 @@ Disallow: /
 User-agent: XoviBot
 Disallow: /
 
-Sitemap: http://www.rallysportdirect.com/sitemap.xml
+Sitemap: http://www.subispeed.com/sitemap.xml
