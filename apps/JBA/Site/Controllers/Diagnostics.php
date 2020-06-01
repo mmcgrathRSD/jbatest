@@ -163,7 +163,6 @@ class Diagnostics extends \Dsc\Controller
                 $sitemap = $event->getArgument('sitemap');
                 $sitemap->createSitemapIndex($xmldomain . 'sitemaps/', 'Today');
             } catch (\Exception $e) {
-                var_dump($e->getMessage());die('fail');
                 $this->sendNewRelicError('Error Build Site Map', $e);
             }
         }
