@@ -140,27 +140,33 @@ class Diagnostics extends \Dsc\Controller
     public function buildSiteMap()
     {
         $this->setNewRelicReporting(__METHOD__);
-        try {
-            $domain = 'https:///www.rallysportdirect.com/';
-            $sitemap = new \Dsc\Sitemap();
-            $sitemap->setDomain($domain);
-            $sitemap->setPath('/var/www/static.rallysportdirect.com/sitemaps/');
-            $sitemap->setFilename('google');
-            
-            $xmldomain = 'https://static.rallysportdirect.com/';
-            $routes = [
-                'base' => []
-            ];
-            $event = \Dsc\System::instance()->trigger('siteMapRegisterRoutes', [
-                'routes' => $routes,
-                'sitemap' => $sitemap
-            ]);
+        $salesChannels = (new \Shop\Models\SalesChannels)->getItems();
 
-            $sitemap = $event->getArgument('sitemap');
-            $sitemap->createSitemapIndex($xmldomain . 'sitemaps/', 'Today');
-        } catch (\Exception $e) {
-            $this->sendNewRelicError('Error Build Site Map', $e);
+        foreach($salesChannels as $salesChannel){
+            try {
+                $domain = "https:///www.{$salesChannel->get('slug')}.com/";
+                $sitemap = new \Dsc\Sitemap();
+                $sitemap->setDomain($domain);
+                $sitemap->setPath("/var/www/static.{$salesChannel->get('slug')}.com/sitemaps/");
+                $sitemap->setFilename('google');
+                
+                $xmldomain = "https://static.{$salesChannel->get('slug')}.com/";
+                $routes = [
+                    'base' => []
+                ];
+                $event = \Dsc\System::instance()->trigger('siteMapRegisterRoutes', [
+                    'routes' => $routes,
+                    'sitemap' => $sitemap,
+                    'salesChannel' => $salesChannel
+                ]);
+
+                $sitemap = $event->getArgument('sitemap');
+                $sitemap->createSitemapIndex($xmldomain . 'sitemaps/', 'Today');
+            } catch (\Exception $e) {
+                $this->sendNewRelicError('Error Build Site Map', $e);
+            }
         }
+
         $this->endNewRelic();
     }
 

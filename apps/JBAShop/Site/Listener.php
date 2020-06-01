@@ -155,6 +155,7 @@ class Listener extends \Prefab
 	    $climate = new \League\CLImate\CLImate;
         $routes = $event->getArgument('routes');
         $sitemap = $event->getArgument('sitemap');
+        $salesChannel = $event->getArgument('salesChannel');
 		$product_counts = 0;
         $product_category_counts = 0;
         $brand_counts = 0;
@@ -169,7 +170,7 @@ class Listener extends \Prefab
          
         $products = (new \Shop\Models\Products)->collection()->find([
             'publication.status' => 'published',
-            'publication.sales_channels.slug' => 'rallysport-usa'
+            'publication.sales_channels.slug' => $salesChannel->get('slug')
         ], [
             'sort' => [
                 'metadata.last_modified.time' => -1
@@ -276,7 +277,7 @@ class Listener extends \Prefab
         $categories = (new \JBAShop\Models\Categories)->collection()->find([
             '$or' => [
                 ['sales_channels.0' => ['$exists' => false]],
-                ['sales_channels.slug' => \Base::instance()->get('sales_channel')]
+                ['sales_channels.slug' => $salesChannel->get('slug')]
             ]
         ], [
             'projection' => [

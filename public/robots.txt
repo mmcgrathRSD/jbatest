@@ -24,5 +24,3 @@ Disallow: /
 
 User-agent: XoviBot
 Disallow: /
-
-Sitemap: http://www.rallysportdirect.com/sitemap.xml
