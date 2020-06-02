@@ -1,0 +1,35 @@
+<div class="checkout_summary">
+    <div class="checkout_subtotal">
+        Subtotal (<span class="item_count">-</span> Items) <span class="subtotal">$--.--</span>
+    </div>
+    <div class="checkout_summary-body">
+        <div class="summary_index">
+
+        </div>
+        <div class="summary_rows"><div class="titles">Total</div><div class="totals summary_total"><span class="total">$--.--</span></div></div>
+
+            <div class="row">
+                <div class="col-sm-12 col-xs-6">
+                    <input type="text" name="coupon_code" class="form-control coupon_code" placeholder="Enter Coupon" no-validation="true">
+                    <a class="pull-right coupon_code_submit" type="submit">Apply coupon <i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i></a>
+                    <div class="coupon_applied"></div>
+                </div>
+                <check if="{{ !@is_wholesale }}">
+                <div class="col-sm-12 col-xs-6 clearfix">
+                    <input type="text" name="gift_card_code" class="form-control gift_card_code" placeholder="Enter Giftcard" no-validation="true">
+                    <input type="text" name="gift_card_pin" class="form-control gift_card_pin" style="width: 25%" size="8" placeholder="Pin" no-validation="true">
+                    <div class="gift_pin_disclaimer">
+                        <small>This gift card requires a pin, which is located on the back of your gift card</small>
+                    </div>
+                    <a class="pull-right gift_card_submit" type="submit">Apply gift card <i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i></a>
+                    <div class="gift_card_applied"></div>
+                </div>
+                 </check>
+            </div>
+
+        <include href="summary_buttons.htm" />
+    </div>
+</div>
+<div class="checkout_disclaimer">
+    <include href="checkout_disclaimer.htm" />
+</div>

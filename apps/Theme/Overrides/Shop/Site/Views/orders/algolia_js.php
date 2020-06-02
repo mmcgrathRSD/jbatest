@@ -9,8 +9,7 @@
                 facets: [
                     'user_id'
                 ],
-                //TODO: Please don't forget to undo this!
-                //filters: 'user_id: <?php echo $this->auth->getIdentity()->reload()->get('netsuite.internalId'); ?>'
+                filters: 'user_id: <?php echo $this->auth->getIdentity()->reload()->get('netsuite.internalId'); ?>'
             },
         });
         

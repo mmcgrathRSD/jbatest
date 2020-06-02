@@ -1,5 +1,6 @@
 <?php
 $clear_all_exclusions = '';
+$hierarchical_refinement = end($item->getHierarchy());
 if($type = $item->type()) {
     if ($type == 'shop.manufacturers') {
         $facet = 'Brand';
@@ -16,10 +17,6 @@ if($type = $item->type()) {
     } elseif ($type == 'shop.categories') {
     	$clear_all_exclusions = 'Category';
     }
-}
-
-if(!empty(\Dsc\ArrayHelper::get($item, 'hierarchical_categories'))) {
-	$hierarchical_refinement = \Dsc\ArrayHelper::get($item, 'hierarchical_categories');
 }
 ?>
 <script>
@@ -61,56 +58,12 @@ if(!empty(\Dsc\ArrayHelper::get($item, 'hierarchical_categories'))) {
 	instances.push('search_<?php echo $item->id; ?>');
 
 	search_<?php echo $item->id; ?>.on('render', function() {
-			<?php if(\Base::instance()->get('SITE_TYPE') != 'wholesale') : ?>
-  				try {
-      				affirm.ui.refresh();
-  				} catch(err) {
-        			<?php if($DEBUG) : ?>
-        					console.log(err);
-      					<?php endif; ?>
-    			}
-    	<?php endif; ?>
-		if($('.sticky_parent').length) {
-			try {
-  				$('.sticky_parent').hcSticky('reinit');
- 			} catch(err) {
-      		<?php if($DEBUG) : ?>
-      			console.error(err);
-      		<?php endif; ?>
-  		}
-		}
-        stickyEval(filtersParent<?php echo $item->id; ?>, row<?php echo $item->id; ?>, 0);
-
-		<?php if($type == 'shop.yearmakemodels') : ?>
-		if(firstRender) {
-			$('#search_universal_<?php echo $item->id; ?> .ais-toggle--checkbox').prop('checked', true);
-			$('#search_universal_<?php echo $item->id; ?>').addClass('inactive');
-			$('#search_universal_<?php echo $item->id; ?> .ais-toggle--item').addClass('ais-toggle--item__active');
-			firstRender = false;
-		} else {
+       
       if('universal_item' in this.helper.state.facetsRefinements && $('#search_universal_<?php echo $item->id; ?>.active .ais-toggle--checkbox').prop('checked') == false) {
         search_<?php echo $item->id; ?>.helper.removeFacetRefinement('universal_item').search();
-      }
-    }
-		<?php endif; ?>
+	  }
+	  
 	});
-
-
-    search_<?php echo $item->id; ?>.helper.on('result', function(results, state) {
-
-    });
-
-	<?php if($type == 'shop.yearmakemodels') : ?>
-	$(document).on('click', '#search_universal_<?php echo $item->id; ?>.inactive', function(e) {
-		$(this).removeClass('inactive').addClass('active');
-		e.stopImmediatePropagation();
-		//search_<?php echo $item->id; ?>.helper.setQueryParameter('filters', 'ymm_hashs: <?php echo $activeVehicle['hash']; ?> OR universal_item: true').search();
-    search_<?php echo $item->id; ?>.helper.removeFacetRefinement('universal_item', 'false').search();
-		$('#search_universal_<?php echo $item->id; ?> .ais-toggle--item').removeClass('ais-toggle--item__active');
-		return false;
-	});
-	<?php endif; ?>
-	
 	
 	
     

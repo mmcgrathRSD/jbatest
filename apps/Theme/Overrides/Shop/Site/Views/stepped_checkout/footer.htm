@@ -1,0 +1,230 @@
+<div class="checkout_footer">
+    <button class="step_back hidden-xs">Back</button> <button class="step_forward">Forward</button> <button class="braintree_submit">Forward</button><span id="apple_pay_footer"></span> <div class="checkout_disclaimer summary"><strong>Order Total: <span class="total">$--.--</span></strong><br /><include href="checkout_disclaimer.htm" /></div>
+</div>
+<style>
+    button {
+        height: 30px;
+        border: 0!important;
+        position: relative;
+        line-height: 30px;
+        padding-left: 11px;
+        padding-right: 11px;
+        font-family: "Open Sans", Arial, sans-serif;
+        letter-spacing: -1px;
+        color: #ffffff!important;
+        z-index: 2;
+        min-width: auto;
+        line-height: 30px;
+        padding-top: 0;
+        padding-bottom: 0;
+        width: auto;
+        min-width: auto!important;
+        padding-left: 11px;
+        padding-right: 11px;
+        line-height: 16px;
+        font-weight: 800!important;
+        font-size: 14px;
+        font-family: "Open Sans", Arial, sans-serif;
+        letter-spacing: -1px;
+    }
+
+    button.dark {
+        color: #000!important;
+    }
+
+    button:hover {
+        background-color: initial!important;
+        color: #000000!important;
+    }
+
+    button.dark:hover {
+        background-color: #000!important;
+        color: #fff!important;
+    }
+
+    button:before, button:after {
+        content: '';
+        width: 0;
+        position: absolute;
+        height: 30px;
+        left: 0;
+        top: 0;
+        z-index: -1
+    }
+
+    button:after {
+        width: 100%;
+        background-color: blue;
+        left: initial; 
+        right: 0;
+    }
+
+    button:hover:before {
+        transition: all 256ms cubic-bezier(0.330, 0.975, 0.245, 0.910)!important;
+        -webkit-transition: all 256ms cubic-bezier(0.245, 0.910, 0.330, 0.975)!important;
+        -moz-transition: all 256ms cubic-bezier(0.330, 0.975, 0.245, 0.910)!important;
+        -o-transition: all 256ms cubic-bezier(0.330, 0.975, 0.245, 0.910)!important;
+        background-color: #f0a548!important;
+        width: 100%;
+    }
+
+    button:hover:after {
+        transition: all 256ms cubic-bezier(0.330, 0.975, 0.245, 0.910)!important;
+        -webkit-transition: all 256ms cubic-bezier(0.330, 0.975, 0.245, 0.910)!important;
+        -moz-transition: all 256ms cubic-bezier(0.330, 0.975, 0.245, 0.910)!important;
+        -o-transition: all 256ms cubic-bezier(0.330, 0.975, 0.245, 0.910)!important;
+        width: 0%;
+    }
+
+    .steps_body .step_content {
+        display: none!important;
+    }
+
+    .side_bar_steps .number {
+        display: none;
+    }
+
+    .side_bar_steps .step {
+        padding: 0;
+    }
+
+    .side_bar_steps, .checkout_summary {
+        border: 0;
+        border-top: 6px solid #0736f8;
+        padding: 20px;
+        padding-top: 0;
+        background-color: #f8f8f8;
+    }
+
+    .side_bar_steps .block-title, .checkout_subtotal {
+        padding-top: 16px;
+        padding-bottom: 16px;
+        text-align: left!important;
+        border-bottom: 1px solid #d5d5d5;
+        background-color: initial!important;
+    }
+
+    .side_bar_steps .block-title span, .checkout_subtotal {
+        font-size: 20px;
+        text-transform: uppercase;
+        font-weight: 800!important;
+        font-size: 14px;
+        font-family: "Open Sans", Arial, sans-serif;
+        letter-spacing: -1px;
+        color: #000!important;
+    }
+
+    .side_bar_steps .step_title {
+        font-family: Arial, sans-serif!important;
+        font-size: 12px!important;
+        font-weight: 700;
+    }
+
+    .step_content small {
+        font-size: 12px!important;
+    }
+
+    .side_bar_steps .step_content {
+        font-size: 12px;
+        line-height: 12px;
+    }
+
+    .steps_body {
+        border-top: 6px solid #0736f8!important;
+        border-bottom: none!important;
+    }
+
+    .side_bar_steps .step {
+        min-height: initial;
+    }
+
+    .checkout_title h1 {
+        font-size: 48px;
+        font-weight: 800!important;
+        font-family: "Open Sans", Arial, sans-serif;
+        letter-spacing: -1px;
+        text-transform: uppercase;
+    }
+
+    .steps_body .jba_steps {
+        padding: 0;
+    }
+
+    .jba_steps .step {
+        padding: 0;
+        height: auto;
+        min-height: auto;
+        background-color: #f8f8f8;
+    }
+    
+    .jba_steps .number {
+        border-radius: initial!important;
+        border: none!important;
+        background-color: #f0f0f0;
+        position: static!important;
+        display: inline-block;
+        float:left;
+    }
+
+    .jba_steps .number ~ div {
+        display: inline-block;
+        height: 50px;
+        line-height: 50px;
+        width: calc(100% - 50px);
+        float: left;
+        background-color: #f8f8f8;
+    }
+
+    .jba_steps .step_title {
+        font-size: 20px;
+        font-weight: 800!important;
+        font-family: "Open Sans", Arial, sans-serif;
+        letter-spacing: -1px;
+        text-transform: uppercase;
+        padding-left: 20px;
+    }
+
+    .jba_steps .number.active {
+        background-color: #0736f8;
+    }
+
+    .jba_steps .number.active ~ div {
+        background-color: #000;
+        color: #fff;
+    }
+
+    .jba_steps:hover .valid .number:not(.active) {
+        background-color: #000;
+        color: #fff;
+    }
+    
+    .jba_steps:hover .valid .number:not(.active) ~ div {
+        background-color: #0736f8;
+        color: #000;
+    }
+
+    .jba_steps {
+        margin-bottom: 5px;
+    }
+
+    .main.row {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    @media only screen and (max-width: 768px) {
+        .main.row {
+            width: 100%;
+        }
+
+        .step_index .row > div, .step_index .row .hide_for_sameasshipping > div, .steps_index > div {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+
+    .checkout_body input, .checkout_body select {
+        border: 1px solid #e5e5e5;
+        border-radius: 0;
+    }
+</style>
