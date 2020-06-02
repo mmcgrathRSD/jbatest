@@ -171,8 +171,8 @@
                             <?php else : ?>
                             <form>
                                 <div class="updateCartQtyNumber">
-                                <input style="height: 29px;" type="number" data-hash="<?php echo \Dsc\ArrayHelper::get($item, 'hash'); ?>"  class="cartUpdateQuantities" id="quantities-<?php echo \Dsc\ArrayHelper::get($item, 'hash'); ?>" value="<?php echo \Dsc\ArrayHelper::get($item, 'quantity'); ?>" /><!--
-                                --><button class="button inverted"><span><span>Update</span></span></button>
+                                <input style="height: 29px;" type="number" data-hash="<?php echo \Dsc\ArrayHelper::get($item, 'hash'); ?>"  class="cartUpdateQuantities" id="quantities-<?php echo \Dsc\ArrayHelper::get($item, 'hash'); ?>" value="<?php echo \Dsc\ArrayHelper::get($item, 'quantity'); ?>" />
+                                <button class="button inverted updateCartQtyButton"><span><span>Update</span></span></button>
                                 </div>
                             </form>
                             <?php endif; ?>
