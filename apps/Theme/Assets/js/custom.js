@@ -785,6 +785,10 @@ $( document ).ready(function() {
             success: function( response ) {
                 //Find the my-cart element and replace with refreshed version.
                 $('#my-cart').html(response.message);
+                //If we are on the cart page let us refresh.
+                if(window.location.pathname.includes('cart')){
+                    window.location.reload();
+                }
             },
             error: function( response ) {
                 // console.log('failed to remove', response);
