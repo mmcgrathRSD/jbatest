@@ -54,7 +54,8 @@ class Category extends \Shop\Site\Controllers\Category
 
             $this->app->set('meta.title', $category->seoTitle());
             $this->app->set('meta.description', $category->seoDescription());
-
+            $this->app->set('meta.canonical', \Base::instance()->get('SCHEME') . "://" . \Base::instance()->get('HOST') . $this->app->get('PARAMS.0'));
+            
             if( !empty($category->{'seo.meta_keywords'})){
                 $this->app->set('meta.keywords', implode(',', $category->{'seo.meta_keywords'}) );
             }
