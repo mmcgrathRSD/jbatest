@@ -336,7 +336,7 @@ class Magento
                 if ($row['channel'] === 'subispeed') {
                     $categorySalesChannels[] = $salesChannels['subispeed'];
                 }
-                if ($category['channel'] === 'ftspeed') {
+                if ($row['channel'] === 'ftspeed') {
                     $categorySalesChannels[] = $salesChannels['ftspeed'];
                 }
                 if(!empty($categorySalesChannels)){
