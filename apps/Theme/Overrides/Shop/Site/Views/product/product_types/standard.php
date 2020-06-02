@@ -1,4 +1,5 @@
 <?php
+$app = \Dsc\System::instance()->get('app');
 //Adding item if this view was called from the reviews page, not the product page.
 if(empty($item)) {
 	$item = $product;
@@ -49,11 +50,12 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                   </div>
                   <div class="product-img-box">
                      <div class="product-image">
-                        <a href="https://www.subispeed.com/media/catalog/product/cache/1/image/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-3.jpg" rel="lighbox-zoom-gallery">
+                        <a href="<?php echo $item->featuredImage(); ?>" rel="lighbox-zoom-gallery">
                         
-                        <img src="<?php echo $item->featuredImage(); ?>" data-srcx2="https://www.subispeed.com/media/catalog/product/cache/1/image/946x946/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-3.jpg" alt="Subaru Matte Black AC Knob Full Replacement - 2015+ WRX / STI / 2014+ Forester / 2013+ Crosstrek" title="Subaru Matte Black AC Knob Full Replacement - 2015+ WRX / STI / 2014+ Forester / 2013+ Crosstrek" width="473" height="473">
+                        <img src="<?php echo $item->featuredImage(); ?>" data-srcx2="<?php echo $item->featuredImage(); ?>" alt="<?php echo $item->title; ?>" title="<?php echo $item->title; ?>" width="473" height="473">
                         </a>
                      </div>
+                     <?php if (count($images) > 1) : ?>
                      <div class="more-views">
                         <div class="more-views-nav" id="thumbs_slider_nav">
                            <ul>
@@ -64,48 +66,19 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                         <div class="jcarousel-container jcarousel-container-horizontal" style="position: relative; display: block;">
                            <div class="jcarousel-clip jcarousel-clip-horizontal" style="position: relative;">
                               <ul class="jcarousel-slider slides jcarousel-list jcarousel-list-horizontal" id="thumbs_slider" style="overflow: hidden; position: relative; top: 0px; margin: 0px; padding: 0px; left: 0px; width: 705px;">
+                              <?php foreach (array_values($images) as $key=>$image) : ?>
                                  <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal" jcarouselindex="1" style="float: left; list-style: none;">
-                                    <a href="https://www.subispeed.com/media/catalog/product/cache/1/image/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-5.jpg" class="lighbox-zoom-gallery" rel="lighbox-zoom-gallery" title="">
+                                    <a href="<?php echo $item->product_image($image);?>" class="lighbox-zoom-gallery" rel="lighbox-zoom-gallery" title="">
                                     <span style="width: 92px; height: 92px;"></span>
-                                    <img src="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/110x110/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-5.jpg" data-srcx2="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/220x220/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-5.jpg" width="110" height="110" alt="">
+                                    <img alt="<?php echo $item->title; if(!empty($item->title_suffix)) { echo ' - ' . $item->title_suffix; } ?>" title="<?php echo $item->title; ?> (Part Number: <?php echo $item->get('tracking.oem_model_number'); ?>)" src="<?php echo $item->product_image($image);?>" data-srcx2="<?php echo $item->product_image($image)?>" width="110" height="110" alt="">
                                     </a>
                                  </li>
-                                 <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-2 jcarousel-item-2-horizontal" jcarouselindex="2" style="float: left; list-style: none;">
-                                    <a href="https://www.subispeed.com/media/catalog/product/cache/1/image/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-6.jpg" class="lighbox-zoom-gallery" rel="lighbox-zoom-gallery" title="">
-                                    <span style="width: 92px; height: 92px;"></span>
-                                    <img src="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/110x110/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-6.jpg" data-srcx2="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/220x220/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-6.jpg" width="110" height="110" alt="">
-                                    </a>
-                                 </li>
-                                 <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-3 jcarousel-item-3-horizontal" jcarouselindex="3" style="float: left; list-style: none;">
-                                    <a href="https://www.subispeed.com/media/catalog/product/cache/1/image/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-4.jpg" class="lighbox-zoom-gallery" rel="lighbox-zoom-gallery" title="">
-                                    <span style="width: 92px; height: 92px;"></span>
-                                    <img src="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/110x110/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-4.jpg" data-srcx2="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/220x220/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-4.jpg" width="110" height="110" alt="">
-                                    </a>
-                                 </li>
-                                 <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-4 jcarousel-item-4-horizontal" jcarouselindex="4" style="float: left; list-style: none;">
-                                    <a href="https://www.subispeed.com/media/catalog/product/cache/1/image/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-1.jpg" class="lighbox-zoom-gallery" rel="lighbox-zoom-gallery" title="">
-                                    <span style="width: 92px; height: 92px;"></span>
-                                    <img src="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/110x110/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-1.jpg" data-srcx2="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/220x220/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-1.jpg" width="110" height="110" alt="">
-                                    </a>
-                                 </li>
-                                 <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-5 jcarousel-item-5-horizontal" jcarouselindex="5" style="float: left; list-style: none;">
-                                    <a href="https://www.subispeed.com/media/catalog/product/cache/1/image/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-2.jpg" class="lighbox-zoom-gallery" rel="lighbox-zoom-gallery" title="">
-                                    <span style="width: 92px; height: 92px;"></span>
-                                    <img src="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/110x110/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-2.jpg" data-srcx2="https://www.subispeed.com/media/catalog/product/cache/1/thumbnail/220x220/85e4522595efc69f496374d01ef2bf13/s/u/subaru_matte_ac_controls-2.jpg" width="110" height="110" alt="">
-                                    </a>
-                                 </li>
+                              <?php endforeach; ?>
                               </ul>
                            </div>
                         </div>
                      </div>
-                     <script type="text/javascript">
-                        jQuery(function($) {
-                        	$('a[rel="lighbox-zoom-gallery"]').fancybox({
-                        		titleShow:false,
-                        		hideOnContentClick:true
-                        	});
-                        });
-                     </script>			
+                     <?php endif; ?>
                   </div>
                   <div class="product-shop ">
                      <meta itemprop="brand" content="<?php echo $item->manufacturer['title']; ?>">
@@ -343,6 +316,7 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                      </div>
                      <ul class="add-to-links">
                         <li><a class="link-wishlist  icon-black" href="https://www.subispeed.com/wishlist/index/add/product/13193/form_key/PTT3lpSgzitk4OCG/" onclick=""><span class="link_i"></span>Add to Wishlist</a></li>
+                        <li><a class="link-email-friend  icon-black" href="https://www.subispeed.com/sendfriend/product/send/id/<?php echo $item->id ?>/"><span class="link_i"></span>Email to a Friend</a></li>
                      </ul>
                      <?php if($item->{'product_type'} != 'dynamic_group' && !\Dsc\ArrayHelper::get($item->policies, 'ships_email')) : ?>
     <div class="wishListButton text-center add_to_wishlist" data-variant="<?php echo $item->get('tracking.model_number'); ?>">
@@ -353,13 +327,10 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                         <!-- AddThis Button BEGIN -->
                         <div class="addthis_toolbox addthis_default_style ">
                            <a class="addthis_button_facebook_like at300b" fb:like:layout="button_count">
-                              <div class="fb-like fb_iframe_widget" data-layout="button_count" data-show_faces="false" data-share="false" data-action="like" data-width="90" data-height="25" data-font="arial" data-href="https://www.subispeed.com/subaru-matte-black-ac-knob-full-replacement-2015-wrx-sti-2014-forester-2013-crosstrek" data-send="false" style="height: 25px;" fb-xfbml-state="rendered" fb-iframe-plugin-query="action=like&amp;app_id=195555774072&amp;container_width=77&amp;font=arial&amp;height=25&amp;href=https%3A%2F%2Fwww.subispeed.com%2Fsubaru-matte-black-ac-knob-full-replacement-2015-wrx-sti-2014-forester-2013-crosstrek&amp;layout=button_count&amp;locale=en_US&amp;sdk=joey&amp;send=false&amp;share=false&amp;show_faces=false&amp;width=90"><span style="vertical-align: bottom; width: 69px; height: 20px;"><iframe name="f2c872b77b945c4" width="90px" height="25px" title="fb:like Facebook Social Plugin" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" allow="encrypted-media" src="https://www.facebook.com/plugins/like.php?action=like&amp;app_id=195555774072&amp;channel=https%3A%2F%2Fstaticxx.facebook.com%2Fconnect%2Fxd_arbiter.php%3Fversion%3D46%23cb%3Df1a78600bb1903c%26domain%3Dwww.subispeed.com%26origin%3Dhttps%253A%252F%252Fwww.subispeed.com%252Ff3135e49829595c%26relation%3Dparent.parent&amp;container_width=77&amp;font=arial&amp;height=25&amp;href=https%3A%2F%2Fwww.subispeed.com%2Fsubaru-matte-black-ac-knob-full-replacement-2015-wrx-sti-2014-forester-2013-crosstrek&amp;layout=button_count&amp;locale=en_US&amp;sdk=joey&amp;send=false&amp;share=false&amp;show_faces=false&amp;width=90" style="border: none; visibility: visible; width: 69px; height: 20px;" class=""></iframe></span></div>
+                              <div class="fb-like fb_iframe_widget" data-layout="button_count" data-show_faces="false" data-share="false" data-action="like" data-width="90" data-height="25" data-font="arial" data-href="<?php echo $app->get('REALM');?>" data-send="false" style="height: 25px;" fb-xfbml-state="rendered" fb-iframe-plugin-query="action=like&amp;app_id=195555774072&amp;container_width=77&amp;font=arial&amp;height=25&amp;href=<?php echo $app->get('REALM');?>&amp;layout=button_count&amp;locale=en_US&amp;sdk=joey&amp;send=false&amp;share=false&amp;show_faces=false&amp;width=90"><span style="vertical-align: bottom; width: 69px; height: 20px;"><iframe name="f2c872b77b945c4" width="90px" height="25px" title="fb:like Facebook Social Plugin" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" allow="encrypted-media" src="https://www.facebook.com/plugins/like.php?action=like&amp;app_id=195555774072&amp;channel=https%3A%2F%2Fstaticxx.facebook.com%2Fconnect%2Fxd_arbiter.php%3Fversion%3D46%23cb%3Df1a78600bb1903c%26domain%3Dwww.subispeed.com%26origin%3Dhttps%253A%252F%252Fwww.subispeed.com%252Ff3135e49829595c%26relation%3Dparent.parent&amp;container_width=77&amp;font=arial&amp;height=25&amp;href=<?php echo $app->get('REALM');?>&amp;layout=button_count&amp;locale=en_US&amp;sdk=joey&amp;send=false&amp;share=false&amp;show_faces=false&amp;width=90" style="border: none; visibility: visible; width: 69px; height: 20px;" class=""></iframe></span></div>
                            </a>
-                           <a class="addthis_button_tweet at300b">
-                              <div class="tweet_iframe_widget" style="width: 62px; height: 25px;"><span><iframe id="twitter-widget-0" scrolling="no" frameborder="0" allowtransparency="true" allowfullscreen="true" class="twitter-share-button twitter-share-button-rendered twitter-tweet-button" style="position: static; visibility: visible; width: 61px; height: 20px;" title="Twitter Tweet Button" src="https://platform.twitter.com/widgets/tweet_button.d0f13be8321eb432fba28cfc1c3351b1.en.html#dnt=false&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=https%3A%2F%2Fwww.subispeed.com%2Fsubaru-matte-black-ac-knob-full-replacement-2015-wrx-sti-2014-forester-2013-crosstrek%23.Xnpu2dNKhTY&amp;size=m&amp;text=Subaru%20Matte%20Black%20AC%20Knob%20Full%20Replacement%20-%202015%2B%20WRX%20%2F%20STI%20%2F%202014%2B%20Forester%20%2F%202013%2B%20Crosstrek%3A&amp;time=1585082074417&amp;type=share&amp;url=https%3A%2F%2Fwww.subispeed.com%2Fsubaru-matte-black-ac-knob-full-replacement-2015-wrx-sti-2014-forester-2013-crosstrek%23.Xnpu2a9qW8Y.twitter" data-url="https://www.subispeed.com/subaru-matte-black-ac-knob-full-replacement-2015-wrx-sti-2014-forester-2013-crosstrek#.Xnpu2a9qW8Y.twitter"></iframe></span></div>
-                           </a>
-                           <a class="addthis_button_pinterest_pinit at300b" pi:pinit:layout="horizontal"></a>
-                           <a class="addthis_counter addthis_pill_style addthis_nonzero" href="#" style="display: inline-block;"><a class="atc_s addthis_button_compact">Share<span></span></a><a class="addthis_button_expanded" target="_blank" title="More" href="#" tabindex="1000">47</a></a>
+                           <a class="addthis_button_tweet at300b"></a>
+                           <a class="addthis_counter addthis_pill_style addthis_nonzero" href="#" style="display: inline-block;"><a class="atc_s addthis_button_compact"><span></span></a></a>
                            <div class="atclear"></div>
                         </div>
                         <script type="text/javascript">var addthis_config = {"data_track_addressbar":true};</script>
