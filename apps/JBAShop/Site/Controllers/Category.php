@@ -54,7 +54,6 @@ class Category extends \Shop\Site\Controllers\Category
 
             $this->app->set('meta.title', $category->seoTitle());
             $this->app->set('meta.description', $category->seoDescription());
-            
             if( !empty($category->{'seo.meta_keywords'})){
                 $this->app->set('meta.keywords', implode(',', $category->{'seo.meta_keywords'}) );
             }
