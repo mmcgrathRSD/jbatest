@@ -20,13 +20,13 @@
                                     <div class="field name-firstname">
                                         <label for="firstname" class="required"><em>*</em>First Name</label>
                                         <div class="input-box">
-                                            <input type="text" id="first_name" name="firstname" value="" title="First Name" maxlength="255" class="input-text required-entry">
+                                            <input type="text" id="first_name" name="first_name" value="" title="First Name" maxlength="255" class="input-text required-entry">
                                         </div>
                                     </div>
                                     <div class="field name-lastname">
                                         <label for="lastname" class="required"><em>*</em>Last Name</label>
                                         <div class="input-box">
-                                            <input type="text" id="last_name" name="lastname" value="" title="Last Name" maxlength="255" class="input-text required-entry">
+                                            <input type="text" id="last_name" name="last_name" value="" title="Last Name" maxlength="255" class="input-text required-entry">
                                         </div>
                                     </div>
                                 </div>
