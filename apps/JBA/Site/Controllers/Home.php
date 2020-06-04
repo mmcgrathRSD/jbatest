@@ -29,6 +29,8 @@ class Home extends \Dsc\Controller
 
         $this->app->set('page', 'home');
         $this->app->set('isHome', true);
+        $this->app->set('canonical', \Base::instance()->get('SCHEME') . "://" . \Base::instance()->get('HOST'));
+        
         if (!filter_var(\Base::instance()->get('disable_order_tracking', true), FILTER_VALIDATE_BOOLEAN) && empty($dataLayer))
 		{
             $identity = $this->auth->getIdentity();
