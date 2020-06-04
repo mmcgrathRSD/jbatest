@@ -4,7 +4,7 @@
 <meta name="keywords" content="<?php echo $this->app->get('meta.keywords'); ?>" />
 <meta name="description" content="<?php echo preg_replace("/[\s]{2,}/", ' ', $this->app->get('meta.description')); ?><?php if(!empty($shop['freeshipping'])) : ?> | Free shipping over <?php echo \Shop\Models\Currency::format( $shop['freeshipping'] ); ?>!<?php endif; ?>" />
 <?php
-    $canonical = $this->app->get('meta.canonical');
+    $canonical = $this->app->get('canonical');
     if(!empty($canonical)) :?>
 <link rel="canonical" href="<?php echo $canonical;?>" />
 <?php endif; ?>
