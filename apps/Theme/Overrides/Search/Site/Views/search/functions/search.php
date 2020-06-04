@@ -165,8 +165,7 @@ $clear_all_exclusions = '';
                         return empty;
                     },
                     allItems: function(allItems) {
-                        
-                        allItems.hits.each(function(hit, key) {
+                        $.each(allItems.hits, function(key, hit) {
 
                             if(hit.image) {
                                 hit.image = cl.imageTag(hit.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml()
