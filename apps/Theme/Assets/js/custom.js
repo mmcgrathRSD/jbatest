@@ -740,6 +740,13 @@ function setLocation(url){
 $( document ).ready(function() {
     var timer;
   
+    jQuery(function($) {
+        $('a[rel="lighbox-zoom-gallery"]').fancybox({
+            titleShow:false,
+            hideOnContentClick:true
+        });
+    });
+
   $('body').on('submit', '.addToCartForm', function (e){
         e.preventDefault();
         var form = $(this);
