@@ -9,6 +9,7 @@
 				<!-- Google Tag Manager (noscript) -->
 				<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PFV89B"
 				height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+				<?php echo $this->renderLayout('Shop/Site/Views::common/datalayer.php'); ?>
 				<!-- End Google Tag Manager (noscript) -->
 				<div role="main">
 					<?php echo $this->renderLayout('Shop/Site/Views::common/nav.php')?>

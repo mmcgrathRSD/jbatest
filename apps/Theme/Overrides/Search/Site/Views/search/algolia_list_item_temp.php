@@ -8,24 +8,43 @@ $moneyHtml = '<span class=notranslate><sup>'.$currency.'</sup>'.$priceTag.'</spa
 ?>
 <ul class="products-grid">
     {{#hits}}
-    <li class="item  new-product quick-view-container" data-model="{{model_number}}">
+    <li class="item  {{#new_item_flag}}new-product{{/new_item_flag}} quick-view-container" data-model="{{model_number}}">
         <a href="{{url}}" title="{{title}}" class="product-image">
-            {{#image}}
-                {{{image}}}
-            {{/image}}
             {{#image_2}}
                 {{{image_2}}}
             {{/image_2}}
+            {{#image}}
+                {{{image}}}
+            {{/image}}
             <!--bof free youtube icon-->
+            {{#youtube_video_description}}
+            <div class="youtube-video"><img src="/images/youtube-video.png" alt="Video description available"></div>
+            {{/youtube_video_description}}
             <!--eof youtube icon -->
+            {{#new_item_flag}}
             <div class="new-label label-top-right">NEW</div>
+            {{/new_item_flag}}
+            {{#flag.enabled}}
+            <div class="sale-label label-bottom-left">{{{flag.text}}}</div>
+            {{/flag.enabled}}
         </a>
         <div class="product-hover">
             <h2 class="product-name"><a href="{{url}}" title="{{title}}">{{title}}{{#title_suffix}} - {{title_suffix}}{{/title_suffix}}</a></h2>
             <br>
             <div class="price-box">
-                <span class="regular-price" id="product-price-23498">
-                <span class="price">${{default_price}}</span>                                    </span>
+            {{#flag.enabled}}<p class="special-price">
+                <span class="price-label">{{/flag.enabled}}
+                {{^flag.enabled}}
+                <span class="regular-price">{{/flag.enabled}}
+                    <span class="price">{{default_price}}</span>
+                </span>
+                {{#flag.enabled}}</p>{{/flag.enabled}}
+                {{#previous_default_price}}
+                <p class="old-price">
+                    <span class="price-label"></span>
+                    <span class="price">{{previous_default_price}}</span>
+                </p>
+                {{/previous_default_price}}
             </div>
             <div id="insert" style="display:none;"></div>
             {{#swatches}}

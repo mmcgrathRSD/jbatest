@@ -954,6 +954,29 @@ $app->route('GET /listtrac-orders',
     }
 );
 
+$app->route(['GET /sync-category-ratings', 'GET /sync-category-ratings/@id'], function($f3){
+    $climate = new \League\CLImate\CLImate();
+    $id = $f3->get('PARAMS.id');
+    $salesChannels = (new \Shop\Models\SalesChannels)->getItems();
+    $filter = [];
+
+    if(!empty($id)){
+        $filter['_id'] = new \MongoDB\BSON\ObjectID($id);
+    }
+
+    $cursor = (new \Shop\Models\Categories)->collection()->find($filter, ['projection' => ['_id' => 1, 'title' => 1]]);
+    $progress = $climate->progress()->total((new \Shop\Models\Categories)->collection()->count($filter));
+    foreach($cursor as $doc){
+        foreach($salesChannels as $channel){
+            $progress->advance(0, $doc['title'] . ' - ' . $channel->get('slug'));
+            \Shop\Models\Categories::averageRatingByChannel($channel->get('slug'), $doc['id'], true);
+        }
+        $progress->advance(1, $doc['title']);
+    }
+
+    $climate->green('Done.');
+});
+
 $app->route('GET /sync-algolia/@type/@channel', function ($f3) {
     $type = strtolower($f3->get('PARAMS.type'));
     $channel = strtolower($f3->get('PARAMS.channel'));
@@ -988,7 +1011,7 @@ $app->route('GET /expired-new-flags', function(){
     \Search\Models\Algolia\Products::syncExpiredNewFlags();
 });
 
-$app->route('GET /save-all-cats-handy-somewhere', function(){
+$app->route('GET /save-all-categories', function(){
     $cursor = (new \Shop\Models\Categories)->collection()->find();
     $climate = new \League\CLImate\CLImate();
     $count = (new \Shop\Models\Categories)->collection()->count();

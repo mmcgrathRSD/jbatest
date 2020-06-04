@@ -39,7 +39,11 @@
             </ul>
          </div>
          <div class="page-title category-title">
+            <?php if(!$this->app->get('master_search')) : ?>
             <h1><?php echo $item->title; ?> Parts</h1>
+            <?php else : ?>
+            <h1>Search</h1>
+            <?php endif; ?>
          </div>
          <div class="category-description std">
             <?php echo $item->description; ?>

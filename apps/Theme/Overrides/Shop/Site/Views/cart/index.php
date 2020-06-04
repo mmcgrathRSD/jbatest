@@ -130,7 +130,7 @@
             <?php foreach ($result['items'] as $key => $item) : $product = (new \Shop\Models\Products)->load(['_id' => $item['product_id']]); ?>
             <tr class="first last odd">
                 <td>
-                    <a href="/part/<?php echo \Dsc\ArrayHelper::get($item, 'product.title'); ?>" title="<?php echo \Dsc\ArrayHelper::get($item, 'product.title'); ?>" class="product-image">		<img src="<?php echo \Shop\Models\Products::product_thumb(\Dsc\ArrayHelper::get($item, 'image'));?>" width="300" height="300" alt="<?php echo \Dsc\ArrayHelper::get($item, 'product.title'); ?>">
+                    <a href="/part/<?php echo \Dsc\ArrayHelper::get($item, 'product.slug'); ?>" title="<?php echo \Dsc\ArrayHelper::get($item, 'product.title'); ?>" class="product-image">		<img src="<?php echo \Shop\Models\Products::product_thumb(\Dsc\ArrayHelper::get($item, 'image'));?>" width="300" height="300" alt="<?php echo \Dsc\ArrayHelper::get($item, 'product.title'); ?>">
                     </a>    
                 </td>
                 <td>
@@ -171,8 +171,8 @@
                             <?php else : ?>
                             <form>
                                 <div class="updateCartQtyNumber">
-                                <input style="height: 29px;" type="number" data-hash="<?php echo \Dsc\ArrayHelper::get($item, 'hash'); ?>"  class="cartUpdateQuantities" id="quantities-<?php echo \Dsc\ArrayHelper::get($item, 'hash'); ?>" value="<?php echo \Dsc\ArrayHelper::get($item, 'quantity'); ?>" /><!--
-                                --><button class="button inverted"><span><span>Update</span></span></button>
+                                <input style="height: 29px;" type="number" data-hash="<?php echo \Dsc\ArrayHelper::get($item, 'hash'); ?>"  class="cartUpdateQuantities" id="quantities-<?php echo \Dsc\ArrayHelper::get($item, 'hash'); ?>" value="<?php echo \Dsc\ArrayHelper::get($item, 'quantity'); ?>" />
+                                <button class="button inverted updateCartQtyButton"><span><span>Update</span></span></button>
                                 </div>
                             </form>
                             <?php endif; ?>

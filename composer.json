@@ -16,8 +16,6 @@
         { "type": "vcs", "url": "git@github.com:premierperformance/Netsuite.git" }
     ],
     "require-dev": {
-        "phpunit/phpunit": "5.5.*",
-        "mockery/mockery": "dev-master",
         "psy/psysh": "@stable"
     },
     "require": {
@@ -38,7 +36,7 @@
         "premierperformance/mailer": "dev-jba2020",
         "premierperformance/minify": "dev-master",
         "premierperformance/modules": "dev-master",
-        "premierperformance/pages": "dev-master",
+        "premierperformance/pages": "dev-jba2020",
         "premierperformance/redirect": "dev-master",
         "premierperformance/search": "dev-jba2020_2",
         "premierperformance/shop": "dev-jba2020",

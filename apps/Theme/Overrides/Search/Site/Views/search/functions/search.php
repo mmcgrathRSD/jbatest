@@ -13,6 +13,8 @@ if(!empty($item)) {
 $car = $this->session->get('activeVehicle');
 
 $clear_all_exclusions = '';
+
+
 ?>
 
 <script>
@@ -83,6 +85,12 @@ $clear_all_exclusions = '';
                 url_hash = false;
             }
 
+            if(instance_id) {
+                search_placeholder = 'Search within these results...';
+            } else {
+                search_placeholder = '';
+            }
+
 			ymm_instance = false;
 			<?php if($type == 'shop.yearmakemodels') : ?>
 			if(instance_id) {
@@ -111,7 +119,7 @@ $clear_all_exclusions = '';
 					facetsRefinements: facet_refinements,
 					<?php if($type == 'shop.categories' || !empty($hierarchical_refinement)) : ?>
 					hierarchicalFacets: 'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.subispeed.lvl0',
-					//hierarchicalFacetsRefinements: hierarchical_facet_refinements,
+					hierarchicalFacetsRefinements: hierarchical_facet_refinements,
 					<?php endif; ?>
 				},
 				urlSync: {
@@ -157,19 +165,18 @@ $clear_all_exclusions = '';
                         return empty;
                     },
                     allItems: function(allItems) {
-                        
-                        allItems.hits.each(function(hit, key) {
+                        $.each(allItems.hits, function(key, hit) {
 
                             if(hit.image) {
-                                hit.image = cl.imageTag(hit.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1; display: block;"}).toHtml()
+                                hit.image = cl.imageTag(hit.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml()
                             } else {
-                                hit.image = cl.imageTag("<?php echo \Base::instance()->get('cloudinary.no_photo'); ?>", {secure: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1; display: block;"}).toHtml();
+                                hit.image = cl.imageTag("<?php echo \Base::instance()->get('cloudinary.no_photo'); ?>", {secure: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml();
 
                                 console.log(hit.image);
                             }
 
                             if(hit.image_2) {
-                                hit.image_2 = cl.imageTag(hit.image_2, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 0;"}).toHtml()
+                                hit.image_2 = cl.imageTag(hit.image_2, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 0; display: block", class: "additional_img"}).toHtml()
                             }
 
                             if('swatches' in hit) {
@@ -197,6 +204,13 @@ $clear_all_exclusions = '';
                                     hit.swatches = new_swatches;
                                 });
                             };
+
+                            hit.default_price = currency_format.format(hit.default_price);
+
+                            if('previous_default_price' in hit && hit.previous_default_price) {
+                                hit.previous_default_price = currency_format.format(hit.previous_default_price);
+                            }
+                            
                         });
 
                         return allItems;
@@ -211,7 +225,7 @@ $clear_all_exclusions = '';
            search.addWidget(
                 instantsearch.widgets.searchBox({
                     container: '#search-box' + instance_id,
-                    placeholder: 'Search within these results...',
+                    placeholder: search_placeholder,
 					templates: {
                         submit: 'asdf'
                     },
@@ -487,7 +501,7 @@ $clear_all_exclusions = '';
                                     });
                                 }
                                 
-                                $('.category_dynamic_head').css('height', '500px').addClass('category_dynamic_head_loader');
+                                // $('.category_dynamic_head').addClass('category_dynamic_head_loader');
 
                                 $('.category-title h1').html(hit.label + ' Parts');
 

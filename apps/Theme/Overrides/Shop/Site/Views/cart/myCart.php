@@ -27,7 +27,7 @@ if(empty($cart)){
                 <form action="/shop/cart/remove-group/<?php echo $item->get('__group_id'); ?>" class="removeFromCartForm">
                     <button class="btn-remove icon-white" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" ></button>
                 </form>
-                <p class="product-name"><a href="#"><?php echo "{$item->get('title')} - {$item->get('title_suffix')}"; ?></a></p>
+                <p class="product-name"><a href="/part/<?php echo $item->get('slug'); ?>"><?php echo "{$item->get('title')} - {$item->get('title_suffix')}"; ?></a></p>
                 <strong>1</strong> x <span class="price">$<?php echo number_format($item->get('kit_price_with_discount'), 2); ?></span>											
             </div>
         <?php }else{ ?>
@@ -38,7 +38,7 @@ if(empty($cart)){
                 <form action="/shop/cart/remove/<?php echo $item['hash']; ?>" class="removeFromCartForm">
                     <button class="btn-remove icon-white" onclick="return confirm('Are you sure you would like to remove this item from the shopping cart?');" ></button>
                 </form>
-                <p class="product-name"><a href="#"><?php echo "{$item['product']['title']} - {$item['product']['title_suffix']}"; ?></a></p>
+                <p class="product-name"><a href="/part/<?php echo $item['product']['slug']; ?>"><?php echo "{$item['product']['title']} - {$item['product']['title_suffix']}"; ?></a></p>
                 <strong><?php echo $item['quantity']; ?></strong> x <span class="price">$<?php echo number_format($item['price'], 2); ?></span>											
             </div>
         <?php } ?>

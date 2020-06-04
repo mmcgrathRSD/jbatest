@@ -283,7 +283,6 @@ class Magento
                     AND ee.entity_model = 'catalog/category' 
                     AND cc1.`value` NOT LIKE '%shop-by-manufacturer%' 
                     AND cc.`value` != 'SUPRA' -- AND cc.`value` != 'FR-S / BRZ / 86'
-                    
                 GROUP BY
                     id 
                 ORDER BY
@@ -337,7 +336,7 @@ class Magento
                 if ($row['channel'] === 'subispeed') {
                     $categorySalesChannels[] = $salesChannels['subispeed'];
                 }
-                if ($category['channel'] === 'ftspeed') {
+                if ($row['channel'] === 'ftspeed') {
                     $categorySalesChannels[] = $salesChannels['ftspeed'];
                 }
                 if(!empty($categorySalesChannels)){
@@ -350,19 +349,23 @@ class Magento
                 $category->save();
                 $categoryIds[$row['id']] = $category->id;
 
-                try{
-                    $redirect = new \Redirect\Admin\Models\Routes([
-                        'title' => 'Magento category redirect: ' . $row['name'],
-                        'url' => [
-                            'alias'   => $row['url_path'],
-                            'redirect' => $category->url()
-                        ],
-                        'magento' => true
-                    ]);
+                //See if the redirect already exists
+                $redirect = (new \Redirect\Admin\Models\Routes)->setCondition('url.alias', $row['url_path'])->getItem();
 
+                if(empty($redirect)){
+                    $redirect = new \Redirect\Admin\Models\Routes();
+                }
+
+                $redirect->set('title', 'Magento category redirect: ' . $row['name'])
+                    ->set('url.alias', $row['url_path'])
+                    ->set('url.redirect', $category->url())
+                    ->set('magento', true);
+                
+                try{
                     $redirect->save();
                 }catch(Exception $e){
                     //If redirect already exists, do nothing
+                    $this->CLImate->red($e->getMessage());
                 }
             }
         } while ($incomplete);
@@ -416,6 +419,7 @@ class Magento
             mB.option_id as 'brand_id,mfg_id',
             mB.value as 'brand/manufacturer',
             cpe.sku AS 'model',
+            if(cpe.type_id <> 'simple',CONCAT(cpe.sku,'-parent'),cpe.sku ) as 'matrix_parent_model_haxor',
             cpe.type_id AS 'product_type',
             `status`.`value` AS 'enabled',
             ! ISNULL( subi.`value` ) AS 'subispeed',
@@ -510,16 +514,6 @@ class Magento
                     throw new \Exception('Product is null ' . $row['model']);
                 }
 
-                $productRedirect = (new \Shop\Models\ProductRedirects);
-                
-                try {
-                    (new \Redirect\Admin\Models\Routes)->bind([
-                        'product_id' => $product->id,
-                        'title' => "Magento redirect for product " . (string)$product->id,
-                        'old_slug'   => $row['default url path'],
-                        'url' => $product->url()
-                    ])->store();
-                } catch (\Exception $e) {}
                 $progress->advance(0, $row['model']);//push model to progress without progressing the count.
 
                 // TODO: query all categories once and get their full arrays for setting in products, key by magento id
@@ -565,7 +559,11 @@ class Magento
 
                 //If we are in a situation where we are creating a new product (eg. matrix parent, set the model number)
                 if(!$product->tracking['model_number']){
-                    $product->set('tracking.model_number', strtoupper($row['model']));
+                    if($row['product_type'] !== 'simple' && end(explode('-', $row['model_number'])) !== 'bundle'){
+                        $product->set('tracking.model_number', strtoupper($row['matrix_parent_model_haxor']));
+                    }else{
+                        $product->set('tracking.model_number', strtoupper($row['model']));
+                    }
                 }
 
                 $productSalesChannels = [];
@@ -645,7 +643,7 @@ class Magento
                 if(!empty($row['first_publication_date'])){
                     $product->set('first_publication_time', \Carbon\Carbon::parse($row['first_publication_date'])->timestamp);
                 }else if($row['enabled']){
-                    $newProduct->set('first_publication_time', \Carbon\Carbon::parse($row['created_at'])->timestamp);
+                    $product->set('first_publication_time', \Carbon\Carbon::parse($row['created_at'])->timestamp);
                 }
 
                 if(!empty($row['new_flag_date'])){
@@ -656,10 +654,27 @@ class Magento
 
                 $product->save();
             }catch(Exception $e){
+                $this->CLImate->red($e->getMessage());
                 if($e->getMessage() !== 'Not a group item'){
                     // throw $e;
                     $failures[] = [$row['model']];
                 }
+            }
+
+            try {
+                $redirect = (new \Redirect\Admin\Models\Routes)->bind([
+                    'product_id' => $product->id,
+                    'title' => "Magento redirect for product " . (string)$product->id,
+                    'old_slug'   => $row['default url path'],
+                    'url' => [
+                        'redirect' => $product->url(),
+                        'alias' => $row['default url path'],
+                    ],
+                ]);
+                 
+                $redirect->save();
+            } catch (\Exception $e) {
+                $this->CLImate->red($e->getMessage());
             }
 
             $progress->advance(1, $row['model']);
@@ -667,8 +682,11 @@ class Magento
         $this->CLImate->table($failures);
     }
 
-    public function syncProductImages()
+    public function syncProductImages($magentoId = null)
     {
+
+        $where = $magentoId ? "WHERE cpg.entity_id = {$magentoId}" : '';
+
         $sql = 
             "SELECT
                 cpg.entity_id AS product_id,
@@ -696,6 +714,7 @@ class Magento
                 )
                 LEFT JOIN catalog_product_entity_varchar google ON ( google.entity_id = cpg.entity_id AND google.attribute_id = 220 AND google.store_id = 0 )
                 LEFT JOIN catalog_product_entity_varchar image_label ON ( image_label.entity_id = cpg.entity_id AND image_label.attribute_id = 112 AND image_label.store_id = 1 ) 
+            {$where}
             ORDER BY
                 product_id ASC,
                 featured_image DESC,
@@ -727,16 +746,22 @@ class Magento
         foreach ($finalList as $magentoId => $links) {
             $product = (new \Shop\Models\Products)
                 ->setCondition('magento.id', (int) $magentoId)
-                // ->setCondition('publication.status', 'published')
-                // ->setCondition('categories.id', new \MongoDB\BSON\ObjectID('5e85f71ad36f5e431c0ed942'))
                 ->getItem();
 
-
+            
             if (empty($product)) {
+                $this->CLImate->red('No Product Found ' . $magentoId. ' Skipping..');
                 continue;
             }
-
+            //This corresponse to our "tag" for each iamge
             $model = $product->get('tracking.model_number_flat');
+
+            //Check to see if 
+            $api = (new \Cloudinary\Api())->resources_by_tag($model);
+
+            if(!empty($api['resources'])){
+                $this->CLImate->red('Assets Already In Cloudinary For ' . $model);
+            }
 
             if (!empty($links['google'])) {
                 $upload = \Cloudinary\Uploader::upload(trim($links['google']), [
@@ -981,223 +1006,246 @@ class Magento
 
     public function syncDynamicGroupProducts()
     {
-        $salesChannels = [
-            'ftspeed' => [
-                'id' => '5e18ce8bf74061555646d847',
-                'title' => 'FTSpeed',
-                'slug' => 'ftspeed'
-            ],
-            'subispeed' => [
-                'id' => '5841b1deb38c50ba028b4567',
-                'title' => 'SubiSpeed',
-                'slug' => 'subispeed'
-            ]
-        ];
 
         $sql = "
         SELECT
-        *
-    FROM
-        (
-        SELECT
-            bundle.parent_id,
-            bundle.option_id,
-            bundle.required,
-            cpd.value AS discount,
-            bval.title,
-            sel.product_id,
-            sel.position,
-            sel.selection_price_type,
-            sel.selection_price_value,
-            sel.selection_qty
+            *
         FROM
-            catalog_product_bundle_option AS bundle
-        LEFT JOIN catalog_product_bundle_option_value AS bval ON
-            bundle.option_id = bval.option_id
-            AND bval.store_id = 0
-        LEFT JOIN catalog_product_bundle_selection AS sel ON
-            bundle.option_id = sel.option_id
-        LEFT JOIN catalog_product_entity_decimal cpd ON
-            bundle.parent_id = cpd.entity_id
-            AND cpd.attribute_id = 76
-        WHERE
-            sel.product_id not in ('11053',
-            '12717',
-            '11052',
-            '10916')
-            and sel.product_id not in (
-            select
-                entity_id
-            from
-                catalog_product_entity_int
-            where
-                attribute_id = 96
-                and value = 2
-                and store_id = 0) ) dgroups
-    JOIN (
-        SELECT
-            def.entity_id AS 'id',
-            cpe.created_at ,
-            new_from.`value` as 'first_publication_date',
-            new_to.`value` as 'new_flag_date',
-            youtube.value AS 'youtube video' ,
-            install.value AS 'install instructions' ,
-            meta_title.value AS 'meta title',
-            is_carb.value AS 'is carb',
-            url_key.value AS 'default url key',
-            url_path.value AS 'default url path',
-            coupon.value AS 'qualifies for coupon',
-            warranty.value AS 'warranty',
-            mB.option_id AS 'brand_id,mfg_id',
-            mB.value AS 'brand/manufacturer',
-            cpe.sku AS 'model',
-            `status`.`value` AS 'enabled',
-            ! Isnull(subi.`value`) AS 'subispeed',
-            IF ( ! Isnull(ft86.`value`)
-            OR ! Isnull(ftspeed.`value`),
-            1,
-            0) AS 'ftspeed',
-            default_name.`value` AS 'default_title',
-            subi_name.`value` AS 'subispeed_title',
-            ft86_name.`value` AS 'ft86_title',
-            ftspeed_name.`value` AS 'ftspeed_title',
-            cats.categories,
-            default_desc.`value` AS 'long_description',
-            default_short_desc.`value` AS 'short_description'
-        FROM
-            catalog_product_entity_int def
-        INNER JOIN catalog_product_entity_int AS `status` ON
-            ( def.entity_id = `status`.entity_id
-            AND `status`.store_id = 0
-            AND `status`.attribute_id = 96
-            AND `status`.`value` = 1 )
-        LEFT JOIN catalog_product_entity cpe ON
-            def.entity_id = cpe.entity_id
-        LEFT JOIN catalog_product_entity_varchar AS default_name ON
-            ( def.entity_id = default_name.entity_id
-            AND default_name.store_id = 0
-            AND default_name.attribute_id = 71 )
-        LEFT JOIN catalog_product_entity_text AS default_desc ON
-            ( def.entity_id = default_desc.entity_id
-            AND default_desc.store_id = 0
-            AND default_desc.attribute_id = 72 )
-        LEFT JOIN catalog_product_entity_text AS default_short_desc ON
-            ( def.entity_id = default_short_desc.entity_id
-            AND default_short_desc.store_id = 0
-            AND default_short_desc.attribute_id = 73 )
-        LEFT JOIN catalog_product_entity_varchar subi_name ON
-            ( def.entity_id = subi_name.entity_id
-            AND subi_name.store_id = 1
-            AND subi_name.attribute_id = 71 )
-        LEFT JOIN catalog_product_entity_varchar ft86_name ON
-            ( def.entity_id = ft86_name.entity_id
-            AND ft86_name.store_id = 4
-            AND ft86_name.attribute_id = 71 )
-        LEFT JOIN catalog_product_entity_varchar ftspeed_name ON
-            ( def.entity_id = ftspeed_name.entity_id
-            AND ftspeed_name.store_id = 5
-            AND ftspeed_name.attribute_id = 71 )
-        LEFT JOIN catalog_product_entity_int AS subi ON
-            ( def.entity_id = subi.entity_id
-            AND subi.store_id = 1
-            AND subi.attribute_id = 102 )
-        LEFT JOIN catalog_product_entity_int AS ft86 ON
-            ( def.entity_id = ft86.entity_id
-            AND ft86.store_id = 4
-            AND ft86.attribute_id = 102 )
-        LEFT JOIN catalog_product_entity_int AS ftspeed ON
-            ( def.entity_id = ftspeed.entity_id
-            AND ftspeed.store_id = 5
-            AND ftspeed.attribute_id = 102 )
-        LEFT JOIN catalog_product_entity_int AS youtube ON
-            ( def.entity_id = youtube.entity_id
-            AND youtube.store_id = 0
-            AND youtube.attribute_id = 180 )
-        LEFT JOIN catalog_product_entity_text AS install ON
-            ( def.entity_id = install.entity_id
-            AND install.store_id = 0
-            AND install.attribute_id = 144 )
-        LEFT JOIN catalog_product_entity_varchar meta_title ON
-            ( def.entity_id = meta_title.entity_id
-            AND meta_title.store_id = 0
-            AND meta_title.attribute_id = 82 )
-        LEFT JOIN catalog_product_entity_int AS is_carb ON
-            ( def.entity_id = is_carb.entity_id
-            AND is_carb.store_id = 0
-            AND is_carb.attribute_id = 268 )
-        LEFT JOIN catalog_product_entity_varchar AS url_key ON
-            ( def.entity_id = url_key.entity_id
-            AND url_key.store_id = 0
-            AND url_key.attribute_id = 97 )
-        LEFT JOIN catalog_product_entity_varchar AS url_path ON
-            ( def.entity_id = url_path.entity_id
-            AND url_path.store_id = 0
-            AND url_path.attribute_id = 98 )
-        LEFT JOIN catalog_product_entity_int AS coupon ON
-            ( def.entity_id = coupon.entity_id
-            AND coupon.store_id = 0
-            AND coupon.attribute_id = 237 )
-        LEFT JOIN catalog_product_entity_text AS warranty ON
-            ( def.entity_id = warranty.entity_id
-            AND warranty.store_id = 0
-            AND warranty.attribute_id = 236 )
-        LEFT JOIN catalog_product_entity_datetime AS new_from ON
-            (def.entity_id = new_from.entity_id
-            AND new_from.store_id = 0
-            and new_from.attribute_id = 93)
-        LEFT JOIN catalog_product_entity_datetime AS new_to ON
-            (def.entity_id = new_to.entity_id
-            AND new_to.store_id = 0
-            and new_to.attribute_id = 94 )
-        LEFT JOIN (
+            (
             SELECT
-                cat.product_id,
-                Group_concat(cat.category_id) AS categories,
-                product.sku
+                bundle.parent_id,
+                bundle.option_id,
+                bundle.required,
+                cpd.value AS discount,
+                bval.title as option_title,
+                sel.product_id AS value_model_number,
+                sel.position AS value_position,
+                sel.selection_price_type,
+                sel.selection_price_value AS value_price,
+                sel.selection_qty AS value_required_quantity 
             FROM
-                catalog_category_product AS cat,
-                catalog_product_entity AS product
+                catalog_product_bundle_option AS bundle
+            LEFT JOIN catalog_product_bundle_option_value AS bval ON
+                bundle.option_id = bval.option_id
+                AND bval.store_id = 0
+            LEFT JOIN catalog_product_bundle_selection AS sel ON
+                bundle.option_id = sel.option_id
+            LEFT JOIN catalog_product_entity_decimal cpd ON
+                bundle.parent_id = cpd.entity_id
+                AND cpd.attribute_id = 76
             WHERE
-                cat.product_id = product.entity_id
-            GROUP BY
-                cat.product_id) AS cats ON
-            cats.product_id = def.entity_id
-        LEFT JOIN catalog_product_entity_int AS m ON
-            m.attribute_id = 81
-            AND m.entity_type_id = '4'
-            AND m.store_id = 0
-            AND def.entity_id = m.entity_id
-        LEFT JOIN eav_attribute_option_value mB ON
-            mB.option_id = m.value
-            AND mB.store_id = 0
-        WHERE
-            def.attribute_id = 102
-            AND def.store_id = 0) data ON
-        data.id = dgroups.parent_id
-    WHERE
-        parent_id not in (
-        select
-            parent_product_id
-        from
-            catalog_product_bundle_selection sel
-        where
-            sel.product_id not in ('11053',
-            '12717',
-            '11052',
-            '10916')/* remove disabled children */
-            and sel.product_id not in (
+                sel.product_id not in ('11053',
+                '12717',
+                '11052',
+                '10916')
+                and sel.product_id not in (
+                select
+                    entity_id
+                from
+                    catalog_product_entity_int
+                where
+                    attribute_id = 96
+                    and value = 2
+                    and store_id = 0)
+        union
             select
-                entity_id
+            product_id as 'bundle.parent_id',
+            999 as 'bundle.option_id',
+            '0' as 'bundle.required',
+            NULL as 'discount',
+            'Options' as 'bval.title',
+            linked_product_id as 'sel.product_id',
+            g_position.value as 'sel.position',
+            NULL as 'sel.price_type',
+            NULL as 'se.selection_price_value',
+            if(g_qty.value=0,1,g_qty.value) as 'sel.selection_qty'
+        from
+            catalog_product_link grouped
+        left join catalog_product_link_attribute_decimal g_qty on
+            g_qty.link_id = grouped.link_id
+            and g_qty.product_link_attribute_id = 3
+        left join catalog_product_link_attribute_int g_position on
+            g_position.link_id = grouped.link_id
+            and g_position.product_link_attribute_id = 2
+        where
+            link_type_id = 3
+                and linked_product_id not in ('11053',
+                '12717',
+                '11052',
+                '10916')
+                and linked_product_id not in (
+                select
+                    entity_id
+                from
+                    catalog_product_entity_int
+                where
+                    attribute_id = 96
+                    and value = 2
+                    and store_id = 0) ) dgroups
+        JOIN (
+            SELECT
+                def.entity_id AS 'id',
+                cpe.created_at ,
+                new_from.`value` as 'first_publication_date',
+                new_to.`value` as 'new_flag_date',
+                youtube.value AS 'youtube video' ,
+                install.value AS 'install instructions' ,
+                meta_title.value AS 'meta title',
+                is_carb.value AS 'is carb',
+                url_key.value AS 'default url key',
+                url_path.value AS 'default url path',
+                coupon.value AS 'qualifies for coupon',
+                warranty.value AS 'warranty',
+                mB.option_id AS 'brand_id,mfg_id',
+                mB.value AS 'brand/manufacturer',
+                cpe.sku AS 'model',
+                `status`.`value` AS 'enabled',
+                ! Isnull(subi.`value`) AS 'subispeed',
+                IF ( ! Isnull(ft86.`value`)
+                OR ! Isnull(ftspeed.`value`),
+                1,
+                0) AS 'ftspeed',
+                default_name.`value` AS 'default_title',
+                subi_name.`value` AS 'subispeed_title',
+                ft86_name.`value` AS 'ft86_title',
+                ftspeed_name.`value` AS 'ftspeed_title',
+                cats.categories,
+                default_desc.`value` AS 'long_description',
+                default_short_desc.`value` AS 'short_description'
+            FROM
+                catalog_product_entity_int def
+            INNER JOIN catalog_product_entity_int AS `status` ON
+                ( def.entity_id = `status`.entity_id
+                AND `status`.store_id = 0
+                AND `status`.attribute_id = 96
+                AND `status`.`value` = 1 )
+            LEFT JOIN catalog_product_entity cpe ON
+                def.entity_id = cpe.entity_id
+            LEFT JOIN catalog_product_entity_varchar AS default_name ON
+                ( def.entity_id = default_name.entity_id
+                AND default_name.store_id = 0
+                AND default_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_text AS default_desc ON
+                ( def.entity_id = default_desc.entity_id
+                AND default_desc.store_id = 0
+                AND default_desc.attribute_id = 72 )
+            LEFT JOIN catalog_product_entity_text AS default_short_desc ON
+                ( def.entity_id = default_short_desc.entity_id
+                AND default_short_desc.store_id = 0
+                AND default_short_desc.attribute_id = 73 )
+            LEFT JOIN catalog_product_entity_varchar subi_name ON
+                ( def.entity_id = subi_name.entity_id
+                AND subi_name.store_id = 1
+                AND subi_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_varchar ft86_name ON
+                ( def.entity_id = ft86_name.entity_id
+                AND ft86_name.store_id = 4
+                AND ft86_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_varchar ftspeed_name ON
+                ( def.entity_id = ftspeed_name.entity_id
+                AND ftspeed_name.store_id = 5
+                AND ftspeed_name.attribute_id = 71 )
+            LEFT JOIN catalog_product_entity_int AS subi ON
+                ( def.entity_id = subi.entity_id
+                AND subi.store_id = 1
+                AND subi.attribute_id = 102 )
+            LEFT JOIN catalog_product_entity_int AS ft86 ON
+                ( def.entity_id = ft86.entity_id
+                AND ft86.store_id = 4
+                AND ft86.attribute_id = 102 )
+            LEFT JOIN catalog_product_entity_int AS ftspeed ON
+                ( def.entity_id = ftspeed.entity_id
+                AND ftspeed.store_id = 5
+                AND ftspeed.attribute_id = 102 )
+            LEFT JOIN catalog_product_entity_int AS youtube ON
+                ( def.entity_id = youtube.entity_id
+                AND youtube.store_id = 0
+                AND youtube.attribute_id = 180 )
+            LEFT JOIN catalog_product_entity_text AS install ON
+                ( def.entity_id = install.entity_id
+                AND install.store_id = 0
+                AND install.attribute_id = 144 )
+            LEFT JOIN catalog_product_entity_varchar meta_title ON
+                ( def.entity_id = meta_title.entity_id
+                AND meta_title.store_id = 0
+                AND meta_title.attribute_id = 82 )
+            LEFT JOIN catalog_product_entity_int AS is_carb ON
+                ( def.entity_id = is_carb.entity_id
+                AND is_carb.store_id = 0
+                AND is_carb.attribute_id = 268 )
+            LEFT JOIN catalog_product_entity_varchar AS url_key ON
+                ( def.entity_id = url_key.entity_id
+                AND url_key.store_id = 0
+                AND url_key.attribute_id = 97 )
+            LEFT JOIN catalog_product_entity_varchar AS url_path ON
+                ( def.entity_id = url_path.entity_id
+                AND url_path.store_id = 0
+                AND url_path.attribute_id = 98 )
+            LEFT JOIN catalog_product_entity_int AS coupon ON
+                ( def.entity_id = coupon.entity_id
+                AND coupon.store_id = 0
+                AND coupon.attribute_id = 237 )
+            LEFT JOIN catalog_product_entity_text AS warranty ON
+                ( def.entity_id = warranty.entity_id
+                AND warranty.store_id = 0
+                AND warranty.attribute_id = 236 )
+            LEFT JOIN catalog_product_entity_datetime AS new_from ON
+                (def.entity_id = new_from.entity_id
+                AND new_from.store_id = 0
+                and new_from.attribute_id = 93)
+            LEFT JOIN catalog_product_entity_datetime AS new_to ON
+                (def.entity_id = new_to.entity_id
+                AND new_to.store_id = 0
+                and new_to.attribute_id = 94 )
+            LEFT JOIN (
+                SELECT
+                    cat.product_id,
+                    Group_concat(cat.category_id) AS categories,
+                    product.sku
+                FROM
+                    catalog_category_product AS cat,
+                    catalog_product_entity AS product
+                WHERE
+                    cat.product_id = product.entity_id
+                GROUP BY
+                    cat.product_id) AS cats ON
+                cats.product_id = def.entity_id
+            LEFT JOIN catalog_product_entity_int AS m ON
+                m.attribute_id = 81
+                AND m.entity_type_id = '4'
+                AND m.store_id = 0
+                AND def.entity_id = m.entity_id
+            LEFT JOIN eav_attribute_option_value mB ON
+                mB.option_id = m.value
+                AND mB.store_id = 0
+            WHERE
+                def.attribute_id = 102
+                AND def.store_id = 0) data ON
+            data.id = dgroups.parent_id
+        WHERE
+            parent_id not in (
+            select
+                parent_product_id
             from
-                catalog_product_entity_int
+                catalog_product_bundle_selection sel
             where
-                attribute_id = 96
-                and value = 2
-                and store_id = 0)
-        group by
-            sel.parent_product_id
-        having
-            count(*) = 1)
+                sel.product_id not in ('11053',
+                '12717',
+                '11052',
+                '10916')/* remove disabled children */
+                and sel.product_id not in (
+                select
+                    entity_id
+                from
+                    catalog_product_entity_int
+                where
+                    attribute_id = 96
+                    and value = 2
+                    and store_id = 0)
+            group by
+                sel.parent_product_id
+            having
+                count(*) = 1)
         ";
 
         //This query returns 1 record for each dynamic group member. the PDO::FETCH_GROUP is a helper to group all magento for a given dynamic group together
@@ -1206,22 +1254,23 @@ class Magento
         $select->execute();
 
         while($rows = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP)){
+            $failures = [['FAILURES']];
+
             $progress = $this->CLImate->progress()->total(count($rows));
 
             foreach($rows as $magentoID => $productGroup){
-                //Set a few temp variables for product level values
                 $options = [];
-                $modelNumber = '';
-                $categoriesIDs = [];
-                $productSalesChannels = [];
 
-                //Loop through each kit option/kit option value
+                //The dynamic group parent is now created in the "productInfo" sync. 
+                $groupParent = (new \Shop\Models\Products)->setCondition('magento.id', $magentoID)->getItem();
+
+                if(!$productGroup){
+                    $failures[] = ['No Parent Found For ', $magentoID];
+                    continue;
+                }
+                
                 foreach($productGroup as $productOption){
-                    //This value is what we'll use for the model number of the dynamic group product itself
-                    $modelNumber = $productOption['model'];
-
-                    //Set the categories for the product
-                    $categoriesIDs = array_unique(explode(',', $productOption['categories']));
+                    
 
                     //Dynamic Kit Option Properties
                     $options[$productOption['option_id']]['id'] = new \MongoDB\BSON\ObjectID();
@@ -1244,14 +1293,6 @@ class Magento
                             'title' => $productOption['option_title']
                         ];
                     }
-
-                    //Set the sales channels for the dyamic kit based on hardcoded array at the top
-                    if($productOption['subispeed']){
-                        $productSalesChannels[] = $salesChannels['subispeed'];
-                    }
-                    if($productOption['ftspeed']){
-                        $productSalesChannels[] = $salesChannels['ftspeed'];
-                    }
                 }
 
                 //remove any options that dont have any values
@@ -1259,49 +1300,27 @@ class Magento
                     return array_key_exists('values', $option);
                 });
                 
-                //Call The Helper Function to get all the outermost categories for the product
-                $categories = $this->getOuterMostCategories($categoriesIDs);
-
-                //The next two lines check to see if the product already exists based on magento ID
-                //So we dont create the same dynamic kit twice. Instead, update it if it exists
-                $newProduct = (new \Shop\Models\Products)->setCondition('magento.id', $magentoID)->getItem();
-                if(empty($newProduct)){
-                    $newProduct = new \Shop\Models\Products();
+            
+                //Build/Update the dyanmic kit and save it to mongo
+                $groupParent
+                    ->set('product_type', 'dynamic_group')
+                    ->set('kit_options', $options);
+                
+                if($groupParent->get('publication.status') == 'unpublished'){
+                    $groupParent->set('publication.status', 'published');
                 }
 
-                //Build/Update the dyanmic kit and save it to mongo
-                $newProduct->set('product_type', 'dynamic_group')
-                    ->set('categories', $categories)
-                    ->set('tracking', [
-                        'model_number' => $modelNumber,
-                    ])
-                    ->set('magento_test', true)
-                    ->set('magento', ['id' => $magentoID])
-                    ->set('title', 'dont forget to update me!')
-                    ->set('kit_options', $options)
-                    ->set('sales_channel_ids', array_unique(array_column($productSalesChannels, 'id')));
-                    
-                    if(!empty($row['first_publication_date'])){
-                        $newProduct->set('first_publication_time', \Carbon\Carbon::parse($row['first_publication_date'])->timestamp);
-                    }else if($row['enabled']){
-                        $newProduct->set('first_publication_time', \Carbon\Carbon::parse($row['created_at'])->timestamp);
-                    }
-
-                    if(!empty($row['new_flag_date'])){
-                        $newProduct->set('new_flag_date', \Carbon\Carbon::parse($row['new_flag_date'])->format('Y-m-d'));
-                    }
-
                 try{
-                    $newProduct->save();
+                    $groupParent->save();
                 }catch(Exception $e){
                     $this->CLImate->red($e->getMessage());
                 }
 
-                $progress->advance(1, $modelNumber);
+                $progress->advance(1, $groupParent->get('tracking.model_number'));
             }
         }
 
-
+        $this->CLImate->table($failures);
     }
 
     public function syncYmmsFromRally()
@@ -1403,6 +1422,7 @@ class Magento
         \Shop\Models\UserContent::collection()->deleteMany(['type' => 'image']);
         // manually delete images from cloudinary user_content folder
 
+
         $guestUser = (new \Users\Models\Users)
             ->setCondition('email', 'guest@jbautosports.com')
             ->getItem();
@@ -1442,7 +1462,10 @@ class Magento
 
         $missingProducts = [];
         while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
-            if (in_array($row['product_id'], $missingProducts)) {
+            
+            $imageExists = getimagesize($row['image_url']);
+            
+            if (in_array($row['product_id'], $missingProducts) || !$imageExists) {
                 continue;
             }
 
@@ -1464,7 +1487,7 @@ class Magento
 
                 $user = (new \Users\Models\Users)->collection()->findOne([
                     '$or' => [
-                        [ 'magento.user_id' => (int) $rating['customer_id'] ],
+                        [ 'magento.user_id' => (int) $row['customer_id'] ],
                         [ 'email' => $row['guest_email'] ]
                     ]
                 ], [
@@ -1486,7 +1509,8 @@ class Magento
                     'context' => [
                         'model_number' => $mongoProduct['tracking']['model_number_flat']
                     ]
-                ]);
+                ]); 
+
 
                 $userContent = (new \Shop\Models\UserContent)
                     ->set('type', 'image')
@@ -1551,114 +1575,161 @@ class Magento
 
 
         $sql = 
-            "SELECT cpe.entity_id     AS 'parent_id', 
-                relation.child_id, 
-                labels.value          AS 'attribute_title', 
-                specs.attribute_id    AS attribute_title_id, 
-                specs.value           AS attribute_option_value_id, 
-                labels.position       AS 'attribute_ordering', 
-                spec_label.spec_value AS 'attribute_option_value', 
-                sorting.sort_order    AS 'attribute_option_ordering', 
-                status.value          AS 'variant_enabled' 
-            FROM   catalog_product_entity AS cpe 
-                LEFT JOIN catalog_product_relation relation 
-                        ON cpe.entity_id = relation.parent_id 
-                LEFT JOIN(SELECT * 
-                            FROM   (SELECT ce.entity_id, 
-                                            ce.sku, 
-                                            ea.attribute_id, 
-                                            ea.attribute_code, 
-                                            CASE ea.backend_type 
-                                            WHEN 'varchar' THEN ce_varchar.value 
-                                            WHEN 'int' THEN ce_int.value 
-                                            WHEN 'text' THEN ce_text.value 
-                                            WHEN 'decimal' THEN ce_decimal.value 
-                                            WHEN 'datetime' THEN ce_datetime.value 
-                                            ELSE ea.backend_type 
-                                            end AS value 
-                                    FROM   (SELECT sku, 
-                                                    entity_type_id, 
-                                                    entity_id 
-                                            FROM   catalog_product_entity 
-                                            WHERE  type_id = 'simple') AS ce 
-                                            LEFT JOIN eav_attribute AS ea 
-                                                ON ce.entity_type_id = ea.entity_type_id 
-                                            LEFT JOIN catalog_product_entity_varchar AS 
-                                                    ce_varchar 
-                                                ON ce.entity_id = ce_varchar.entity_id 
-                                                    AND ea.attribute_id = 
-                                                        ce_varchar.attribute_id 
-                                                    AND ea.backend_type = 'varchar' 
-                                            LEFT JOIN catalog_product_entity_int AS ce_int 
-                                                ON ce.entity_id = ce_int.entity_id 
-                                                    AND ea.attribute_id = 
-                                                        ce_int.attribute_id 
-                                                    AND ea.backend_type = 'int' 
-                                            LEFT JOIN catalog_product_entity_text AS ce_text 
-                                                ON ce.entity_id = ce_text.entity_id 
-                                                    AND ea.attribute_id = 
-                                                        ce_text .attribute_id 
-                                                    AND ea.backend_type = 'text' 
-                                            LEFT JOIN catalog_product_entity_decimal AS 
-                                                    ce_decimal 
-                                                ON ce.entity_id = ce_decimal.entity_id 
-                                                    AND ea.attribute_id = 
-                                                        ce_decimal.attribute_id 
-                                                    AND ea.backend_type = 'decimal' 
-                                            LEFT JOIN catalog_product_entity_datetime AS 
-                                                    ce_datetime 
-                                                ON ce.entity_id = ce_datetime.entity_id 
-                                                    AND ea.attribute_id = 
-                                                        ce_datetime.attribute_id 
-                                                    AND ea.backend_type = 'datetime' 
-                                    WHERE  ea.attribute_id IN ( 92, 151, 152, 153, 
-                                                                154, 158, 155, 156, 
-                                                                157, 159, 160, 161, 
-                                                                162, 163, 164, 165, 
-                                                                166, 167, 168, 169, 
-                                                                170, 171, 172, 173, 
-                                                                174, 177, 183, 189, 
-                                                                191, 213, 218, 230, 
-                                                                222, 234, 225, 232, 
-                                                                238, 224, 243 )) data 
-                            WHERE  value <> '') specs 
-                        ON specs.entity_id = relation.child_id 
-                JOIN (SELECT super.product_id, 
-                                super.attribute_id, 
-                                label.value, 
-                                super.position 
-                        FROM   catalog_product_super_attribute AS super 
-                                LEFT JOIN catalog_product_super_attribute_label label 
-                                    ON super.product_super_attribute_id = 
-                                        label.product_super_attribute_id 
-                        WHERE  label.store_id = 0) labels 
-                    ON labels.product_id = relation.parent_id 
-                        AND specs.attribute_id = labels.attribute_id 
-                LEFT JOIN (SELECT option_id, 
-                                    value AS 'spec_value' 
-                            FROM   eav_attribute_option_value AS eaov 
-                            WHERE  store_id = 0) spec_label 
-                        ON spec_label.option_id = specs.value 
-                LEFT JOIN (SELECT option_id, 
-                                    @rownum := @rownum + 1 AS sort_order 
-                            FROM   (SELECT eao.option_id, 
-                                            value 
-                                    FROM   eav_attribute_option eao 
-                                            LEFT JOIN eav_attribute_option_value label 
-                                                    ON label.option_id = eao.option_id 
-                                    WHERE  store_id = 0 
-                                    ORDER  BY eao.attribute_id, 
-                                                eao.sort_order, 
-                                                label.value ASC) data, 
-                                    (SELECT @rownum := 0) row) sorting 
-                        ON sorting.option_id = specs.value 
-                JOIN catalog_product_entity_int status 
-                    ON status.entity_id = relation.child_id 
-                        AND status.attribute_id = 96 
-                        AND status.store_id = 0 
-                        AND status.value = 1 
-            WHERE  cpe.type_id = 'configurable'
-            ORDER  BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title, attribute_option_ordering, attribute_option_value";
+            "SELECT
+                cpe.entity_id AS 'parent_id',
+                relation.child_id,
+                labels.`value`
+                AS 'attribute_title',
+                specs.attribute_id AS attribute_title_id,
+                specs.`value`
+                AS attribute_option_value_id,
+                labels.position AS 'attribute_ordering',
+                spec_label.spec_value AS 'attribute_option_value',
+                sorting.sort_order AS 'attribute_option_ordering',
+                STATUS.`value`
+                AS 'variant_enabled' 
+            FROM
+                catalog_product_entity AS cpe
+                LEFT JOIN catalog_product_relation relation ON cpe.entity_id = relation.parent_id
+                LEFT JOIN (
+                SELECT
+                    * 
+                FROM
+                    (
+                    SELECT
+                        ce.entity_id,
+                        ce.sku,
+                        ea.attribute_id,
+                        ea.attribute_code,
+                    CASE
+                            ea.backend_type 
+                            WHEN 'varchar' THEN
+                            ce_varchar.`value`
+                            WHEN 'int' THEN
+                            ce_int.`value`
+                            WHEN 'text' THEN
+                            ce_text.`value`
+                            WHEN 'decimal' THEN
+                            ce_decimal.`value`
+                            WHEN 'datetime' THEN
+                            ce_datetime.`value`
+                            ELSE ea.backend_type 
+                    END AS VALUE
+                    FROM
+                        ( SELECT sku, entity_type_id, entity_id FROM catalog_product_entity WHERE type_id = 'simple' ) AS ce
+                        LEFT JOIN eav_attribute AS ea ON ce.entity_type_id = ea.entity_type_id
+                        LEFT JOIN catalog_product_entity_varchar AS ce_varchar ON ce.entity_id = ce_varchar.entity_id 
+                        AND ea.attribute_id = ce_varchar.attribute_id 
+                        AND ea.backend_type = 'varchar'
+                        LEFT JOIN catalog_product_entity_int AS ce_int ON ce.entity_id = ce_int.entity_id 
+                        AND ea.attribute_id = ce_int.attribute_id 
+                        AND ea.backend_type = 'int'
+                        LEFT JOIN catalog_product_entity_text AS ce_text ON ce.entity_id = ce_text.entity_id 
+                        AND ea.attribute_id = ce_text.attribute_id 
+                        AND ea.backend_type = 'text'
+                        LEFT JOIN catalog_product_entity_decimal AS ce_decimal ON ce.entity_id = ce_decimal.entity_id 
+                        AND ea.attribute_id = ce_decimal.attribute_id 
+                        AND ea.backend_type = 'decimal'
+                        LEFT JOIN catalog_product_entity_datetime AS ce_datetime ON ce.entity_id = ce_datetime.entity_id 
+                        AND ea.attribute_id = ce_datetime.attribute_id 
+                        AND ea.backend_type = 'datetime' 
+                    WHERE
+                        ea.attribute_id IN (
+                            92,
+                            151,
+                            152,
+                            153,
+                            154,
+                            158,
+                            155,
+                            156,
+                            157,
+                            159,
+                            160,
+                            161,
+                            162,
+                            163,
+                            164,
+                            165,
+                            166,
+                            167,
+                            168,
+                            169,
+                            170,
+                            171,
+                            172,
+                            173,
+                            174,
+                            177,
+                            183,
+                            189,
+                            191,
+                            213,
+                            218,
+                            230,
+                            222,
+                            234,
+                            225,
+                            232,
+                            238,
+                            224,
+                            243 
+                        )) DATA 
+                WHERE
+                    
+                VALUE
+                    <> '' 
+                ) specs ON specs.entity_id = relation.child_id
+                JOIN (
+                SELECT
+                    super.product_id,
+                    super.attribute_id,
+                    label.`value`,
+                    super.position 
+                FROM
+                    catalog_product_super_attribute AS super
+                    LEFT JOIN catalog_product_super_attribute_label label ON super.product_super_attribute_id = label.product_super_attribute_id 
+                WHERE
+                    label.store_id = 0 
+                ) labels ON labels.product_id = relation.parent_id 
+                AND specs.attribute_id = labels.attribute_id
+                LEFT JOIN ( SELECT option_id, VALUE AS 'spec_value' FROM eav_attribute_option_value AS eaov WHERE store_id = 0 ) spec_label ON spec_label.option_id = specs.`value`
+                LEFT JOIN (
+                SELECT
+                    option_id,
+                    @rownum := @rownum + 1 AS sort_order 
+                FROM
+                    (
+                    SELECT
+                        eao.option_id,
+                        
+                    VALUE
+                        
+                    FROM
+                        eav_attribute_option eao
+                        LEFT JOIN eav_attribute_option_value label ON label.option_id = eao.option_id 
+                    WHERE
+                        store_id = 0 
+                    ORDER BY
+                        eao.attribute_id,
+                        eao.sort_order,
+                        label.
+                    VALUE
+                    ASC 
+                    ) DATA,
+                    ( SELECT @rownum := 0 ) ROW 
+                ) sorting ON sorting.option_id = specs.
+                
+            VALUE
+                JOIN catalog_product_entity_int STATUS ON STATUS.entity_id = relation.child_id 
+                AND STATUS.attribute_id = 96 
+                AND STATUS.store_id = 0 
+                AND STATUS.`value` = 1
+            WHERE
+                cpe.type_id = 'configurable' 
+                AND cpe.entity_id NOT IN ( SELECT entity_id FROM catalog_product_entity_int WHERE attribute_id = 96 AND VALUE = 2 AND store_id = 0 ) 
+                ORDER BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title_id, attribute_title, attribute_option_ordering, attribute_option_value
+            ";
 
         $select = $this->db->prepare($sql);
         $select->execute();
@@ -1667,6 +1738,8 @@ class Magento
             foreach($row as $parentId => $value){
                 //temp var for cli output
                 $data = [];
+                array_push($data, ['Syncing Matrix Parent: ', $parentId, '✅']);
+                $this->CLImate->table($data);
                 $magentoOptionsIds = [];
 
                 //The main product query now includes matrix parents, find our parent
@@ -1674,7 +1747,14 @@ class Magento
                     ->setCondition('magento.id', $parentId)
                     ->getItem();
                 
-                if(is_null($product->get('publication.sales_channels'))){
+                if($product){
+                    array_push($data, ['Matrix Parent Found In Mongo: ', $product->get('magento.id'), '✅']);
+                }else{
+                    array_push($data, ['Matrix Parent NOT in mongo: ', $parentId, '❌']);
+                }
+
+                //This handles situation where matrix parent doesnt have sales channels (assign both)
+                if (empty($product->get('publication.sales_channels'))) {
                     $product->set('sales_channel_ids', array_column($salesChannels, 'id'));
                 }
 
@@ -1727,14 +1807,15 @@ class Magento
                                     'format' => 'jpg',
                                     'folder' => 'swatches'
                                 ]);
+
+                                //If there is no image, dont set the swatch
+                                if($upload){
+                                    $attributeOption['swatch'] = $upload['public_id'];
+                                }
                             }catch(Exception $e){
                                 $this->CLImate->red($e->getMessage());
                             }
-
-                            //If there is no image, dont set the swatch
-                            if($upload){
-                                $attributeOption['swatch'] = $upload['public_id'];
-                            }
+                            
                         }
 
                         $attribute['options'][] = $attributeOption;
@@ -1766,7 +1847,14 @@ class Magento
                     }
                 }
 
-                $product->save();
+                try{
+                    $product->save();
+                    array_push($data, ['Matrix Item Created! ', $product->get('magento.id'), '✅']);
+                }catch(Exeption $e){
+                    array_push($data, ['Error Creating Matrix Parent', $e->getMessage(), '❌']);
+                }
+                $this->CLImate->table($data);
+
             }
         }
     }
@@ -2273,5 +2361,31 @@ class Magento
             }
         }
 
+    }
+
+    public function getProductImagesFromCloudinary(){
+        $products = \Shop\Models\Products::collection()->find(
+            [
+                'publication.status' => 'published',
+                'publication.sales_channels' => ['$exists' => true, '$not' => ['$size' => 0]]
+            ],
+            [
+                'batchSize' => 50,
+                'noCursorTimeout' => true,
+            ]
+        );
+
+        foreach($products as $doc){
+            try{
+                $product = (new \Shop\Models\Products)->bind($doc);
+                $product->getImagesForProductFromCloudinary();
+            }catch(Exception $e){
+
+            }
+
+            $this->CLImate->green('Product Images Synced' . $product->get('tracking.model_number_flat'));
+        }
+
+        
     }
 }

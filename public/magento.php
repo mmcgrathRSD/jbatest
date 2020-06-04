@@ -53,9 +53,10 @@ $app->route('GET /sync-dynamic-group-products', function() {
 	(new JBAShop\Services\Magento)->syncDynamicGroupProducts();
 });
 
-$app->route('GET /sync-product-images', function() use($CLImate) {
+$app->route(['GET /sync-product-images', 'GET /sync-product-images/@magentoid'], function($f3, $params) use($CLImate) {
 	$CLImate->red('Have you cleared the product_images folder in Cloudinary?');
-	(new JBAShop\Services\Magento)->syncProductImages();
+	$id = $params['magentoid'] ?? null;
+	(new JBAShop\Services\Magento)->syncProductImages($id);
 });
 
 $app->route('GET /sync-category-images', function() use($CLImate) {
@@ -119,6 +120,11 @@ $app->route('GET /sync-matrix-items', function($f3) use($CLImate) {
 	$CLImate->red('Have you cleared the swatches folder in Cloudinary?');
 	(new JBAShop\Services\Magento)->syncMatrixItems();
 });
+
+$app->route('GET /get-product-images-from-cloudinary', function($f3) use($CLImate) {
+	(new JBAShop\Services\Magento)->getProductImagesFromCloudinary();
+});
+
 /**************************/
 
 

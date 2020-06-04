@@ -81,7 +81,7 @@ if(!empty(\Base::instance()->get('sales_channel')) && class_exists('\Shop\Models
 
 $app->route('GET /sitemap.xml',
 		function() {
-			\Base::instance()->reroute('https://static.rallysportdirect.com/sitemaps/google-index.xml');
+			\Base::instance()->reroute(sprintf('https://static.%s.com/sitemaps/google-index.xml', \Base::instance()->get('sales_channel')));
 		}
 );
 

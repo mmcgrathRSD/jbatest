@@ -83,8 +83,8 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                   <div class="product-shop ">
                      <meta itemprop="brand" content="<?php echo $item->manufacturer['title']; ?>">
                      <meta itemprop="sku" content="<?php echo $item->tracking['model_number']; ?>">
-                     <meta itemprop="category" content="NOTE">
-                     <meta itemprop="image" content="NOTE">
+                     <meta itemprop="category" content="<?php echo $this->app->get('gtm.category_name'); ?>">
+                     <meta itemprop="image" content="<?php echo $item->featuredImage(); ?>">
                      <div class="product-name " itemprop="name">
                         <h1><?php echo $item->title; ?></h1>
                         <?php if(!empty($item->title_suffix)) : ?>

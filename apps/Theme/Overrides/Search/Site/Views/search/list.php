@@ -1,4 +1,4 @@
-a<?php if (!empty($this->app->get('algolia.read_api_key')) && !empty($this->app->get('algolia.app_id')) && $checkoutmode == 0) : ?>
+<?php if (!empty($this->app->get('algolia.read_api_key')) && !empty($this->app->get('algolia.app_id')) && $checkoutmode == 0) : ?>
 <div id="search_loader" class="search_loader"><i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw margin-bottom"></i></div>
 <?php
 $this->app->set('master_search', true);
@@ -27,30 +27,7 @@ $this->app->set('master_search', false);
     );
 
 	search.on('render', function() {
-	    <?php if(\Base::instance()->get('SITE_TYPE') != 'wholesale') : ?>
-          try {
-              affirm.ui.refresh();
-          } catch(err) {
-                <?php if($DEBUG) : ?>
-                    console.error(err);
-                <?php endif; ?>
-            }
-        <?php endif; ?>
-	    try {
-          $('.sticky_parent').hcSticky('reinit');
-        } catch(err) {
-          <?php if($DEBUG) : ?>
-              console.error(err);
-          <?php endif; ?>
-        }
-        stickyEval(filtersParent, row, 0);
 		$('#search_loader').hide();
-
-
-
-
-
-
 	});
 </script>
 <?php endif; ?>
