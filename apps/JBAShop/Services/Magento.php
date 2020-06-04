@@ -336,7 +336,7 @@ class Magento
                 if ($row['channel'] === 'subispeed') {
                     $categorySalesChannels[] = $salesChannels['subispeed'];
                 }
-                if ($category['channel'] === 'ftspeed') {
+                if ($row['channel'] === 'ftspeed') {
                     $categorySalesChannels[] = $salesChannels['ftspeed'];
                 }
                 if(!empty($categorySalesChannels)){
@@ -1422,6 +1422,7 @@ class Magento
         \Shop\Models\UserContent::collection()->deleteMany(['type' => 'image']);
         // manually delete images from cloudinary user_content folder
 
+
         $guestUser = (new \Users\Models\Users)
             ->setCondition('email', 'guest@jbautosports.com')
             ->getItem();
@@ -1461,7 +1462,10 @@ class Magento
 
         $missingProducts = [];
         while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
-            if (in_array($row['product_id'], $missingProducts)) {
+            
+            $imageExists = getimagesize($row['image_url']);
+            
+            if (in_array($row['product_id'], $missingProducts) || !$imageExists) {
                 continue;
             }
 
@@ -1483,7 +1487,7 @@ class Magento
 
                 $user = (new \Users\Models\Users)->collection()->findOne([
                     '$or' => [
-                        [ 'magento.user_id' => (int) $rating['customer_id'] ],
+                        [ 'magento.user_id' => (int) $row['customer_id'] ],
                         [ 'email' => $row['guest_email'] ]
                     ]
                 ], [
@@ -1505,7 +1509,8 @@ class Magento
                     'context' => [
                         'model_number' => $mongoProduct['tracking']['model_number_flat']
                     ]
-                ]);
+                ]); 
+
 
                 $userContent = (new \Shop\Models\UserContent)
                     ->set('type', 'image')
