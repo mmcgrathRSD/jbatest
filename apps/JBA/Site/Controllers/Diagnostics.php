@@ -144,7 +144,7 @@ class Diagnostics extends \Dsc\Controller
 
         foreach($salesChannels as $salesChannel){
             try {
-                $domain = "http:///www.{$salesChannel->get('slug')}.com/";
+                $domain = "https:///www.{$salesChannel->get('slug')}.com/";
                 $sitemap = new \Dsc\Sitemap();
                 $sitemap->setDomain($domain);
                 $sitemap->setPath("/var/www/static.{$salesChannel->get('slug')}.com/sitemaps/");
