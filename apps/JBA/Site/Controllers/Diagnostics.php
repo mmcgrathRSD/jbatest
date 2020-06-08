@@ -150,7 +150,7 @@ class Diagnostics extends \Dsc\Controller
                 $sitemap->setPath("/var/www/static.{$salesChannel->get('slug')}.com/sitemaps/");
                 $sitemap->setFilename('google');
                 
-                $xmldomain = "https://static.{$salesChannel->get('slug')}.com/";
+                $xmldomain = "http://static.{$salesChannel->get('slug')}.com/";
                 $routes = [
                     'base' => []
                 ];
