@@ -183,24 +183,43 @@ class Listener extends \Prefab
         foreach($products as $product) {  
             $climate->blue(time() - $time . ' adding product ' . $product['slug']);
             $product_counts++;
-            $modelInstance = (new \Shop\Models\Products)->bind($product);
+            $modelInstance = (new \JBAShop\Models\Products)->bind($product);
             $created = @$product['metadata']['created']['time'];
             $lastMod = @$product['metadata']['last_modified']['time'];
+            $priority = \Dsc\Sitemap::priority($lastMod, $created);
             $sitemap->addItem(
                 $modelInstance->generateStandardURL(),
-                \Dsc\Sitemap::priority($lastMod, $created),
+                $priority,
                 'daily',
                 @$product['metadata']['last_modified']['time']
             );
+            //add canonical url
+            $sitemap->addItem(
+                $modelInstance->generateCanonicalURL(),
+                $priority,
+                'daily',
+                @$product['metadata']['last_modified']['time']
+            );
+
+            //add all product category urls.
+            foreach($modelInstance->generateAncestorCategoryUrls($salesChannel['slug']) as $ancestralCategoryUrl){
+                $sitemap->addItem(
+                    $ancestralCategoryUrl,
+                    $priority,
+                    'daily',
+                    @$product['metadata']['last_modified']['time']
+                );
+            }
+
             $sitemap->addItem(
                 $modelInstance->generateStandardURL().'/questions',
-                \Dsc\Sitemap::priority($lastMod, $created),
+                $priority,
                 'daily',
                 @$product['metadata']['last_modified']['time']
             );
             $sitemap->addItem(
                 $modelInstance->generateStandardURL().'/reviews',
-                \Dsc\Sitemap::priority($lastMod, $created),
+                $priority,
                 'daily',
                 @$product['metadata']['last_modified']['time']
             );
