@@ -12,7 +12,7 @@
                                             <strong><span>Account Verification</span></strong>
                                         </div>
                                         <div class="block-content">
-                                            <p>If you have not received an email yet, check your junk folder, or resend the email now.</p> 
+                                            <p>If you have not received an email yet, check your spam folder, or resend the email now.</p> 
 
                                             <form action="./login/validate-email" method="post" class="form" role="form">
                                                 <label for="email" class="required">Email</label>
