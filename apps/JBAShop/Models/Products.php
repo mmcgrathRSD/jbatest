@@ -3,8 +3,10 @@ namespace JBAShop\Models;
 
 class Products extends \Shop\Models\Products
 {
-	public function generateCanonicalURL(){
-		return \Base::instance()->get('SCHEME') . "://" . \Base::instance()->get('HOST') . '/part/' . $this->get('slug');
+	public function generateCanonicalURL($absolute = true){
+		$path = $absolute ? \Base::instance()->get('SCHEME') . "://" . \Base::instance()->get('HOST') : '';
+
+		return  $path . '/part/' . $this->get('slug');
 	}
 
 	public function generateAncestorCategoryUrls($salesChannel){
@@ -64,7 +66,7 @@ class Products extends \Shop\Models\Products
 				//while we have slugs build up the hierarchal urls and remove the last child after generating.
 				while(!empty($slugs)){
 					///build url
-					$categoryUrls[] = \Base::instance()->get('SCHEME') . "://" . \Base::instance()->get('HOST') . "/part/" . implode('/', $slugs) . "/{$this->slug}";
+					$categoryUrls[] = "/part/" . implode('/', $slugs) . "/{$this->slug}";
 					//remove the bottom most category.
 					array_pop($slugs);
 				}

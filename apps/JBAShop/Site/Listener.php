@@ -195,7 +195,7 @@ class Listener extends \Prefab
             );
             //add canonical url
             $sitemap->addItem(
-                $modelInstance->generateCanonicalURL(),
+                $modelInstance->generateCanonicalURL(false),
                 $priority,
                 'daily',
                 @$product['metadata']['last_modified']['time']
