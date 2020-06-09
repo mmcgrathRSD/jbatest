@@ -24,6 +24,10 @@
                                                 
                                                 <button type="submit" class="button" title="Submit"><span><span>Submit</span></span></button>
                                             </form>
+
+                                            <p>
+                                                <a href="/login/validate-email" class="forgot-password">Haven't received this email?<a>
+                                            </p>
                                         </div>
                                     </li>
                                 </ul>
