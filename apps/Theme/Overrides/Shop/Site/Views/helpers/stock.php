@@ -1,40 +1,4 @@
-<style>
-.stock_message {
-    display: inline-block;
-    font-size: 12px;
-    line-height: normal;
-    height: auto;
-    vertical-align: top;
-    position: static!important;
-    transform: none!important;
-    max-width: calc(100% - 35px);
-    color: #0655a9;
-}
-.stock_status_message {
-    font-weight: normal;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
 
-.cart_dyn_stock {
-    display: inline;
-    margin-bottom: 5px;
-}
-
-.cart_dyn_stock .stock_status > img {
-    display: none;
-}
-
-.cart_dyn_stock .stock_status, .cart_dyn_stock .stock_message {
-    display: inline;
-}
-
-.cart_dyn_stock .stock_message {
-    color: #000;
-}
-
-</style>
 <?php
 
 $img_out_of_stock = "data:img/png;base64,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";
@@ -44,8 +8,6 @@ $img_ships_direct = "data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD4AAAA+CAYAAAB
 
 if(empty($item)) {
 	$item = $stockProduct;
-} else {
-    $stockProduct = $item;
 }
 
 if(!empty($cart_stock)) {
@@ -72,40 +34,74 @@ $top_text = '';
 $extra_class = '';
 $cart_unit = 'days';
 $ga_label = 'Not Set';
-
-if(!empty($stock_timer_cutoff = (int) $this->app->get('shop.stock_timer_cutoff')) && $item->{'product_type'} != 'dynamic_group') {
-    $curr_time = new DateTime("now", new DateTimeZone('America/Denver'));
-    $hour = (int) $curr_time->format('H');
-    $min = (int) $curr_time->format('i');
-    $stock_timer_cutoff = (int) $this->app->get('shop.stock_timer_cutoff');
-    
-    if($hour < $stock_timer_cutoff) {
-        if($hour == ($stock_timer_cutoff - 1)) {
-            $ships_within = '<span class="ship_same_day">Ships same day <br />if ordered within <span class="ships_today">';
-        } else {
-            $ships_within = '<span class="ship_same_day">Ships same day <br />if ordered within  <span class="ships_today"><span class="ships_today_hour_text"><span class="ships_today_hour">' . (($stock_timer_cutoff - 1) - $curr_time->format('G')) . '</span> hrs </span>';
-        }
-        
-        if($min == 2) {
-            $ships_within .= '<span class="ships_today_minute">1</span> min</span></span>';
-        } else {
-            $ships_within .= '<span class="ships_today_minute">' . (59 - $min) . '</span> mins</span></span>';
-        }
-    } else {
-        $ships_within = '<span class="ships_24_hours">Ships within 24 hours</span><br />';
-    }
-}
+$ships_within = '';
 
 switch ($stock->getStatus()) {
     case \Shop\Models\ProductStock::IN_STOCK_MULTIWAREHOUSE:
     case \Shop\Models\ProductStock::IN_STOCK:
+        if(
+            !empty($stock_timer_cutoff = (int) $this->app->get('shop.stock_timer_cutoff')) 
+            && $item->{'product_type'} != 'dynamic_group'
+            && date('N') <= 5
+            && \Shop\Models\Settings::fetch()->{'site.ships_today_countdown'}
+        ) {
+            $curr_time = new DateTime("now", new DateTimeZone('America/Denver'));
+            $hour = (int) $curr_time->format('H');
+            $min = (int) $curr_time->format('i');
+            $stock_timer_cutoff = (int) $this->app->get('shop.stock_timer_cutoff');
+            
+            if($hour < $stock_timer_cutoff) {
+                if($hour == ($stock_timer_cutoff - 1)) {
+                    $ships_within = '<div class="ships_today_div"><span class="">Ships <span class="ship_same_day">today</span> if ordered in<br /><span class="ships_today">';
+                } else {
+                    $ships_within = '<div class="ships_today_div"><span class="">Ships <span class="ship_same_day">today</span> if ordered in<br /><span class="ships_today"><span class="ships_today_hour_text"><span class="ships_today_hour">' . (($stock_timer_cutoff - 1) - $curr_time->format('G')) . '</span> hrs </span>';
+                }
+                
+                if($min == 2) {
+                    $ships_within .= '<span class="ships_today_minute">1</span> min</span></span></div>';
+                } else {
+                    $ships_within .= '<span class="ships_today_minute">' . (59 - $min) . '</span> mins</span></span></div>';
+                }
+            } else {
+                $ships_within = '<span class="ships_24_hours">Ships within 24 hours</span><br />';
+            }
+        }
+
         $ga_label = 'InStock';
-        $top_text = '<span style="in_stock_wrapper"><span style="color: green;">In stock!</span> ' . $ships_within . '</span>';
+        $top_text = '<p class="availability in-stock"> <span><span class="tt"><img src="/theme/img/in_stock_jba.jpg" class="amstockstatus_icon" alt="" title=""><span class="amtooltip"></span></span><span class="amstockstatus amsts_501"><span style="font-weight: bold; color:#afd500">In Stock</span></span></span></p>';
 		$cart_unit = 'hours';
         break;
     case \Shop\Models\ProductStock::LIMITED_STOCK:
+        if(
+            !empty($stock_timer_cutoff = (int) $this->app->get('shop.stock_timer_cutoff')) 
+            && $item->{'product_type'} != 'dynamic_group'
+            && date('N') <= 5
+            && \Shop\Models\Settings::fetch()->{'site.ships_today_countdown'}
+        ) {
+            $curr_time = new DateTime("now", new DateTimeZone('America/Denver'));
+            $hour = (int) $curr_time->format('H');
+            $min = (int) $curr_time->format('i');
+            $stock_timer_cutoff = (int) $this->app->get('shop.stock_timer_cutoff');
+            
+            if($hour < $stock_timer_cutoff) {
+                if($hour == ($stock_timer_cutoff - 1)) {
+                    $ships_within = '<div class="ships_today_div"><span class="">Ships <span class="ship_same_day">today</span> if ordered in<br /><span class="ships_today">';
+                } else {
+                    $ships_within = '<div class="ships_today_div"><span class="">Ships <span class="ship_same_day">today</span> if ordered in<br /><span class="ships_today"><span class="ships_today_hour_text"><span class="ships_today_hour">' . (($stock_timer_cutoff - 1) - $curr_time->format('G')) . '</span> hrs </span>';
+                }
+                
+                if($min == 2) {
+                    $ships_within .= '<span class="ships_today_minute">1</span> min</span></span></div>';
+                } else {
+                    $ships_within .= '<span class="ships_today_minute">' . (59 - $min) . '</span> mins</span></span></div>';
+                }
+            } else {
+                $ships_within = '<span class="ships_24_hours">Ships within 24 hours</span><br />';
+            }
+        }
+
         $ga_label = 'LimitedStock';
-        $top_text = '<link itemprop="availability" href="http://schema.org/LimitedAvailability"/><span class="in_stock_wrapper"><i class="fa fa-clock-o" style="color: red;" aria-hidden="true"></i> Only ' . $stock->getInventory() . ' left! ' . $ships_within . '</span>';
+        $top_text = '<link itemprop="availability" href="http://schema.org/LimitedAvailability"/><span class="in_stock_wrapper"><i class="fa fa-clock-o" style="color: red;" aria-hidden="true"></i> Only ' . $stock->getInventory() . ' left!</span>';
 		$cart_unit = 'hours';
         break;
     case \Shop\Models\ProductStock::PARTIAL_STOCK:
@@ -147,6 +143,8 @@ switch ($stock->getStatus()) {
     case \Shop\Models\ProductStock::DROPSHIP_NOTES:
         $top_text = $stock->getDropShipNotes();
         $img_final = $img_ships_direct;
+
+    break;
     case \Shop\Models\ProductStock::DROPSHIP:
         $img_final = $img_ships_direct;
         $stockDates = $stock->getProductLeadDates();
@@ -160,13 +158,13 @@ switch ($stock->getStatus()) {
 		$extra_class = 'ss_truck-text-small';
 
 		if(\Base::instance()->get('shop.disable_dropship_lead_times')) {
-		    $top_text = 'Product will ship from manufacturer';
+		    $top_text = 'Ships From Factory';
 		} else {
             $dropshipping = true;
     		if ($actual[0] == $actual[1]){
-    		    $top_text = 'Product will ship from manufacturer, average time to ship: '. $actual[0]. ' business days<br />';
+    		    $top_text = 'Ships From Factory<br />Average time to ship: '. $actual[0]. ' business days<br />';
     		} else {
-    		    $top_text = 'Product will ship from manufacturer, average time to ship: '. $actual[0]. '-'. $actual[1]. ' business days<br />';
+    		    $top_text = 'Ships From Factory<br />Average time to ship: '. $actual[0]. '-'. $actual[1]. ' business days<br />';
     		}
 		}
 
@@ -183,7 +181,15 @@ switch ($stock->getStatus()) {
         ga('send', 'event', 'Stock Status Tracking', '<?php echo $ga_label; ?>', 'Added product <?php echo $ga_label; ?> to cart');
     });
 </script>
-</span></span> <span class="amstockstatus amsts_501"><span style="font-weight: bold; color:#afd500">In Stock</span></span>
+<?php if(empty($cart_stock)) : ?>
+    <link itemprop="availability" href="http://schema.org/<?php echo $schema_org; ?>"/><div class="stock_status <?php echo $dropshipping ? '' : 'not_dropshipping'; ?>"><div class="stock_message"><?php echo $top_text; ?></div></div><?php echo $ships_within; ?>
+<?php else : ?>
+<a href="#" data-toggle="modal" data-target="#ssModal" class="ssModal">
+    <div class="ss_cart"><i class="fa fa-truck" aria-hidden="true"></i> <?php echo $top_text . ' ' . $ships_within; ?></div>
+</a>
+<?php
+
+endif;
 
 $this->app->set('stock', null); //WEST: I just almost don't even care that this is a hack AUSTIN: OK sounds good!
 ?>

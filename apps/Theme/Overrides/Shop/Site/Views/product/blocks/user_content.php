@@ -5,7 +5,7 @@
     <div id="box-amcustomerimg-form-error" style="display: none;"></div>
     <div id="box-amcustomerimg-form-success" style="display: none;"></div>
     <div id="box-amcustomerimg-form-openlink">
-    <a href="#" onclick="javascript: amcustomerimg_showUpload(); return false;">+ Start Uploading My Own Images</a>
+    <a href="<?php echo $item->generateStandardURL(); ?>/create/image"">+ Start Uploading My Own Images</a>
     </div>
     <div id="box-amcustomerimg-form-form-container" style="display: none;">
     <form method="post" action="https://www.subispeed.com/amcustomerimg/image/upload/" id="box-amcustomerimg-form-form" enctype="multipart/form-data">

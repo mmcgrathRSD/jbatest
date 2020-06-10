@@ -15,7 +15,7 @@
                   <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/image_modal.php')?>
                   <div class="product-shop ">
                   <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/meta_links.php')?>
-                  <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/price_block.php')?>
+                  <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/price_box.php')?>
                      <div class="clear"></div>
                      <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/std.php')?>
                      <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/add_to_links.php')?>

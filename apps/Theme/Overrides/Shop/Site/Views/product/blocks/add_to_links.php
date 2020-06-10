@@ -127,7 +127,7 @@
             <a class="qty-math qty-inc icon-white" href="#"></a>
             <a class="qty-math qty-dec icon-white" href="#"></a>
             </div>
-            <input type="text" name="quantity" id="qty" maxlength="12" value="0" title="Qty" class="input-text qty">
+            <input type="text" name="quantity" id="qty" maxlength="12" value="1" title="Qty" class="input-text qty">
             <label for="qty">Quantity</label>
         </div>
         <button type="submit" title="Add to Cart" class="button btn-cart icon-black addToCartButton" product_name="<?php echo sprintf("%s%s", $item->title, !empty($item->title_suffix) ? " - $item->title_suffix" : ""); ?>" onclick=""><span><span>Add to Cart</span></span></button>

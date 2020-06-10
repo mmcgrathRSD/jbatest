@@ -683,6 +683,8 @@ $(document).on('change','.categoryPicker', function(e) {
 });
 
 
+
+
 $(document).on('click','.viewAllCatSpec',function(e) {
     e.preventDefault();
 
@@ -803,4 +805,13 @@ $( document ).ready(function() {
             }
         });
     });
+});
+
+$(document).on('click','.jba_tabs',function(e) {
+    e.preventDefault();
+
+    $('.jba_tabs').parent().removeClass('active');
+    $(this).parent().addClass('active');
+    $('.tabs-content').hide();
+    $('#' + $(this).attr('data-tab')).show();
 });

@@ -10,10 +10,22 @@
         <p class="availability in-stock">
             <span>
                 <span class="tt">
-                <img src="https://www.subispeed.com/media//amstockstatus/icons/501.jpg" class="amstockstatus_icon" alt="" title=""><span class="amtooltip">
+                
                 <span class="top"></span>
                 <span class="bottom"></span>
-                </span></span> <span class="amstockstatus amsts_501"><span style="font-weight: bold; color:#afd500">In Stock</span></span>
+                </span></span> <span class="amstockstatus amsts_501">
+                <?php
+                if (!empty($item->variantsAvailable()) && count($item->variantsAvailable()) > 1) {
+                    echo '&nbsp;';
+                } else {
+                    echo $this->renderView('Shop/Site/Views::helpers/stock.php', [
+                        'hive' => [
+                            'stockProduct' => $item
+                        ]
+                    ]);
+                }
+                ?>
+                </span>
             </span>
         </p>
     </div>

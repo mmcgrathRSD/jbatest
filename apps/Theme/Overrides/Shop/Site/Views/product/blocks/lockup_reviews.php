@@ -1,4 +1,5 @@
 <?php
+$sales_channel = \Base::instance()->get('sales_channel');
 //Adding item if this view was called from the reviews page, not the product page.
 if(empty($item)) {
 	$item = $product;
@@ -14,7 +15,7 @@ if(!empty($reviews)) { //This is also to use this view in the reviews page, not 
 	}
 }
 else {
-	$reviews = (new \Shop\Models\UserContent())->setCondition('product_id', $item->id)->setCondition('type', 'review')->setCondition('publication.status', 'published')->setState('list.limit', 5)->getList();
+	$reviews = (new \Shop\Models\UserContent())->setCondition('product_id', $item->id)->setCondition('type', 'review')->setCondition('publication.status', 'published')->setCondition('publication.sales_channels.slug', $sales_channel)->getList();
 }
 
 //This is a catch if the queue task is not run to update the product about review counts
@@ -22,19 +23,25 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
     $item->set('review_rating_counts.total',count($reviews));
 }
 
+\Dsc\System::instance()->get( 'session' )->set('site.login.redirect', \Base::instance()->get('PARAMS.0'));
+
+$ease = !empty(\Dsc\ArrayHelper::get((array) $item, 'review_rating_counts.sales_channel.' . $sales_channel . '.ease')) ? ((float) \Dsc\ArrayHelper::get((array) $item, 'review_rating_counts.sales_channel.' . $sales_channel . '.ease')) * 20 : 0;
+$overall = !empty(\Dsc\ArrayHelper::get((array) $item, 'review_rating_counts.sales_channel.' . $sales_channel . '.overall')) ? ((float) \Dsc\ArrayHelper::get((array) $item, 'review_rating_counts.sales_channel.' . $sales_channel . '.overall')) * 20 : 0;
+$fit = !empty(\Dsc\ArrayHelper::get((array) $item, 'review_rating_counts.sales_channel.' . $sales_channel . '.fit')) ? ((float) \Dsc\ArrayHelper::get((array) $item, 'review_rating_counts.sales_channel.' . $sales_channel . '.fit')) * 20 : 0;
+$count = !empty(\Dsc\ArrayHelper::get((array) $item, 'review_rating_counts.sales_channel.' . $sales_channel . '.total')) ? \Dsc\ArrayHelper::get((array) $item, 'review_rating_counts.sales_channel.' . $sales_channel . '.total') : 0;
 ?>
 <div class="collateral-box dedicated-review-box" id="product-customer-reviews">
     <div class="title-container clearfix">
-        <h3>3 customer reviews</h3>
-        <button type="button" title="Submit Review" class="button"><span><span>Submit Review</span></span></button>
+        <h3><?php echo $count; ?> customer review<?php echo $count != 1 ? 's' : ''; ?></h3>
+        <button type="button" title="Submit Review" class="button jba_button">Submit Review</button>
     </div>
     <div class="average-rating">
         <div class="f-left">
             <strong>Average rating</strong>
             <div class="rating-box rating-large">
-            <div class="rating" style="width:93%;"></div>
+            <div class="rating" style="width: <?php echo $overall; ?>%"></div>
             </div>
-            <span class="reviews-count">(based on 3 reviews)</span>
+            <span class="reviews-count">(based on <?php echo $count; ?> review<?php echo $count != 1 ? 's' : ''; ?>)</span>
         </div>
         <div class="f-left">
             <table class="ratings ratings-table">
@@ -46,7 +53,7 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                 <tr>
                     <td>
                         <div class="rating-box">
-                        <div class="rating" style="width:80%;"></div>
+                        <div class="rating" style="width: <?php echo $ease; ?>%"></div>
                         </div>
                     </td>
                     <th><span>Ease of Installation</span></th>
@@ -54,7 +61,7 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                 <tr>
                     <td>
                         <div class="rating-box">
-                        <div class="rating" style="width:100%;"></div>
+                        <div class="rating" style="width: <?php echo $fit; ?>%"></div>
                         </div>
                     </td>
                     <th><span>Fit / Quality</span></th>
@@ -62,7 +69,7 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
                 <tr>
                     <td>
                         <div class="rating-box">
-                        <div class="rating" style="width:100%;"></div>
+                        <div class="rating" style="width: <?php echo $overall; ?>%"></div>
                         </div>
                     </td>
                     <th><span>Overall Satisfaction</span></th>
@@ -88,11 +95,15 @@ if(!empty($reviews) && empty($item->{'review_rating_counts.total'})) {
         <?php endforeach; ?>
     </ol>
 </div>
-<div class="add-review">
+<div class="add-review" id="review-form">
     <div class="form-add">
         <h2>Write Your Own Review</h2>
-        <p class="review-nologged" id="review-form">
-            Only registered users can write reviews. Please, <a href="https://www.subispeed.com/customer/account/login/referer/aHR0cHM6Ly93d3cuc3ViaXNwZWVkLmNvbS9jYXRhbG9nL3Byb2R1Y3Qvdmlldy9pZC8xMzE5My8jcmV2aWV3LWZvcm0,/">log in</a> or <a href="https://www.subispeed.com/customer/account/create/">register</a>    
-        </p>
+        <?php if(empty($this->auth->getIdentity()->id)) : ?>
+            <p class="review-nologged" id="review-form">
+                Only registered users can write reviews. Please, <a href="/sign-in">log in</a> or <a href="/register">register</a>    
+            </p>
+        <?php else : ?>
+            <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/add_review.php')?>
+        <?php endif; ?>
     </div>
 </div>

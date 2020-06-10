@@ -17754,10 +17754,7 @@ $(document).on('mouseleave', 'ul.products-grid li.item', function() {
 		return false;
 	});
 	$('.product-tabs-container h2:first').toggleClass('active');
-	$('.product-tabs a').click(function(){
-		$('.product-tabs-container h2.tab-heading.active').toggleClass('active');
-		$('#'+$(this).parent().attr('id').replace("product_tabs_", "product_acc_")).toggleClass('active');
-	});
+
 
 	//add review link on product page open review tab
 	$('div.product-view p.no-rating a, div.product-view .rating-links a:last-child, .dedicated-review-box .title-container button').click(function(){
