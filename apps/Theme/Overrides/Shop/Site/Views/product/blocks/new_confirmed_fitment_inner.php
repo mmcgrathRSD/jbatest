@@ -21,11 +21,9 @@
                             <span class="makeModelsub">
                             <span class="subModel"><?php echo $subModel; ?>
                         <?php foreach($subModels as $info) : ?>
-                            <a href="<?php echo $info['link'] ?>" title="We have <?php echo $info['product_count'] ?> parts that fit the <?php echo $info['year'] . " " . $make . " " . $model . " " . $subModel; ?>">
-                                <div>
-                                    <?php echo $info['year'] . " " . $make . " " . $model . " " . $subModel; ?>
-                                </div>
-                            </a>
+                            <div>
+                                <?php echo $info['year'] . " " . $make . " " . $model . " " . $subModel; ?>
+                            </div>
                         <?php endforeach; ?>
                             </span>
                         </span>
