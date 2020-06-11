@@ -192,7 +192,11 @@
                 <td class="a-center last">
                     <span class="td-title v-top">Actions</span>
                     <span class="nobr">
-                    <a href="./shop/cart/remove/<?php echo \Dsc\ArrayHelper::get($item, 'hash'); ?>" title="Remove item" class="btn-remove btn-remove2 icon-white">Remove item</a>
+                        <a href="./shop/cart/remove/<?php echo \Dsc\ArrayHelper::get($item, 'hash'); ?>" title="Remove item" class="btn-remove btn-remove2 icon-white">Remove item</a>
+                        <br><br>
+                        <?php if ($product->get('product_type') !== 'dynamic_group' && empty($product->get('policies.is_giftcard'))): ?>
+                            <a href="./shop/cart/movetowishlist/<?php echo \Dsc\ArrayHelper::get($item, 'hash'); ?>/<?php echo \Dsc\ArrayHelper::get($item, 'model_number'); ?>" class="btn btn-xs btn-link fgBlue moveToWishlist paddingLNone">Move to Wishlist</a><br>
+                        <?php endif; ?>
                     </span>
                 </td>
             </tr>
@@ -246,7 +250,7 @@
                     <!-- <tbody>
                         <tr>
                             <td style="" class="a-right" colspan="1">
-                            Subtotal    
+                            Tax    
                             </td>
                             <td style="" class="a-right">
                             <span class="price">$21.85</span>    

@@ -288,7 +288,7 @@ class Routes extends \Dsc\Routes\Group
             'action' => 'remove'
         ) );
         
-        $this->add( '/shop/cart/movetowishlist/@cartitem_hash/@variant_id', 'GET|POST', array(
+        $this->add( '/shop/cart/movetowishlist/@cartitem_hash/@model', 'GET|POST', array(
         		'controller' => 'Cart',
         		'action' => 'moveToWishlist'
         ) );
