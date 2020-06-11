@@ -1,9 +1,11 @@
 <div class="product-img-box">
     <div class="product-image">
-    <a href="<?php echo $item->featuredImage(); ?>" rel="lighbox-zoom-gallery">
+    <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/flag.php')?>
+    <a href="#data-image-modal-main" rel="lighbox-zoom-gallery">
     
     <img src="<?php echo $item->featuredImage(); ?>" data-srcx2="<?php echo $item->featuredImage(); ?>" alt="<?php echo $item->title; ?>" title="<?php echo $item->title; ?>" width="473" height="473">
     </a>
+    <div style="display:none"><div id="data-image-modal-main"><img src="<?php echo $item->featuredImage(); ?>" alt="<?php echo $item->title; ?>" title="<?php echo $item->title; ?>"></div></div>
     </div>
     <?php if (count($images) > 1) : ?>
     <div class="more-views">
@@ -18,10 +20,11 @@
             <ul class="jcarousel-slider slides jcarousel-list jcarousel-list-horizontal" id="thumbs_slider" style="overflow: hidden; position: relative; top: 0px; margin: 0px; padding: 0px; left: 0px; width: 705px;">
             <?php foreach (array_values($images) as $key=>$image) : ?>
                 <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal" jcarouselindex="1" style="float: left; list-style: none;">
-                <a href="<?php echo $item->product_image($image);?>" class="lighbox-zoom-gallery" rel="lighbox-zoom-gallery" title="">
+                <a href="#data-image-modal-<?php echo $key; ?>" class="lighbox-zoom-gallery" rel="lighbox-zoom-gallery" title="">
                 <span style="width: 92px; height: 92px;"></span>
                 <img alt="<?php echo $item->title; if(!empty($item->title_suffix)) { echo ' - ' . $item->title_suffix; } ?>" title="<?php echo $item->title; ?> (Part Number: <?php echo $item->get('tracking.oem_model_number'); ?>)" src="<?php echo $item->product_image($image);?>" data-srcx2="<?php echo $item->product_image($image)?>" width="110" height="110" alt="">
                 </a>
+                <div style="display:none"><div id="data-image-modal-<?php echo $key; ?>"><img src="<?php echo $item->product_image($image);?>" /></div></div>
                 </li>
             <?php endforeach; ?>
             </ul>

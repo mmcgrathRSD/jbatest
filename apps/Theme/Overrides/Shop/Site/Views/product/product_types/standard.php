@@ -8,7 +8,6 @@
          <div id="messages_product_view"></div>
          <div class="product-view">
             <div class="product-essential">
-               <!-- <form action="https://www.subispeed.com/checkout/cart/add/uenc/aHR0cHM6Ly93d3cuc3ViaXNwZWVkLmNvbS9zdWJhcnUtbWF0dGUtYmxhY2stYWMta25vYi1mdWxsLXJlcGxhY2VtZW50LTIwMTUtd3J4LXN0aS0yMDE0LWZvcmVzdGVyLTIwMTMtY3Jvc3N0cmVr/product/13193/form_key/PTT3lpSgzitk4OCG/" method="post" id="product_addtocart_form"> -->
                   <div class="product-category-title">
                      <h3><?php echo $item->manufacturer['title']; ?></h3>
                   </div>

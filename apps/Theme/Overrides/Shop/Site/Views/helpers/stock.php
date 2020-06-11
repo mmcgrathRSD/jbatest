@@ -139,6 +139,9 @@ switch ($stock->getStatus()) {
             $schema_org = 'OnOrder';
             $img_final = $img_on_order;
         }
+
+        $top_text = '<span style="color: red;">Out of Stock</span>';
+
         break;
     case \Shop\Models\ProductStock::DROPSHIP_NOTES:
         $top_text = $stock->getDropShipNotes();
@@ -158,13 +161,13 @@ switch ($stock->getStatus()) {
 		$extra_class = 'ss_truck-text-small';
 
 		if(\Base::instance()->get('shop.disable_dropship_lead_times')) {
-		    $top_text = 'Ships From Factory';
+		    $top_text = 'On order from MFG';
 		} else {
             $dropshipping = true;
     		if ($actual[0] == $actual[1]){
-    		    $top_text = 'Ships From Factory<br />Average time to ship: '. $actual[0]. ' business days<br />';
+    		    $top_text = 'On order from MFG<br />Average time to ship: '. $actual[0]. ' business days<br />';
     		} else {
-    		    $top_text = 'Ships From Factory<br />Average time to ship: '. $actual[0]. '-'. $actual[1]. ' business days<br />';
+    		    $top_text = 'On order from MFG<br />Average time to ship: '. $actual[0]. '-'. $actual[1]. ' business days<br />';
     		}
 		}
 
