@@ -682,10 +682,11 @@ class Magento
         $this->CLImate->table($failures);
     }
 
-    public function syncProductImages($magentoId = null)
+    public function syncProductImages($giveMeAName = null)
     {
+        
 
-        $where = $magentoId ? "WHERE cpg.entity_id = {$magentoId}" : '';
+        $where = $giveMeAName ? "WHERE cpg.entity_id = {$giveMeAName}" : '';
 
         $sql = 
             "SELECT
@@ -725,6 +726,8 @@ class Magento
         $select->execute();
 
         $finalList = [];
+
+
         while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
             if (
                 $row['disabled']
@@ -743,61 +746,64 @@ class Magento
             }
         }
         
+
         foreach ($finalList as $magentoId => $links) {
-            $product = (new \Shop\Models\Products)
+            try{
+                $product = (new \Shop\Models\Products)
                 ->setCondition('magento.id', (int) $magentoId)
                 ->getItem();
-
             
-            if (empty($product)) {
-                $this->CLImate->red('No Product Found ' . $magentoId. ' Skipping..');
-                continue;
-            }
-            //This corresponse to our "tag" for each iamge
-            $model = $product->get('tracking.model_number_flat');
-
-            //Check to see if 
-            $api = (new \Cloudinary\Api())->resources_by_tag($model);
-
-            if(!empty($api['resources'])){
-                $this->CLImate->red('Assets Already In Cloudinary For ' . $model);
-            }
-
-            if (!empty($links['google'])) {
-                $upload = \Cloudinary\Uploader::upload(trim($links['google']), [
-                    'type' => 'upload',
-                    'format' => 'jpg',
-                    'folder' => 'google_images'
-                ]);
-
-                // TODO: make sure admin does NOT delete this field
-                $product->set('google_image', $upload['public_id']);
-                $product->store();
-            }
-
-            foreach ($links['images'] as $i => $image) {
-                $meta = ['order' => $i + 1];
-                if (!empty($image['caption'])) {
-                    $meta['caption'] = $image['caption'];
+            
+                if (empty($product)) {
+                    $this->CLImate->red('No Product Found ' . $magentoId. ' Skipping..');
+                    continue;
                 }
 
-                try {
-                    // TODO: check if photos are already in Cloudinary with product tag and skip upload (just call getImagesForProductFromCloudinary)
+                //This corresponse to our "tag" for each iamge
+                $model = $product->get('tracking.model_number_flat');
 
-                    \Cloudinary\Uploader::upload(trim($image), [
-                        'tags' => $model,
-                        'type' => 'private',
+
+    
+                if (!empty($links['google'])) {
+                    $upload = \Cloudinary\Uploader::upload(trim($links['google']), [
+                        'tags' => 'google_' . $model,
+                        'type' => 'upload',
                         'format' => 'jpg',
-                        'folder' => 'product_images',
-                        'context' => $meta
+                        'folder' => 'google_images_test'
                     ]);
-                } catch (\Exception $e) {
-                    // do nothing
-                }
-            }
 
-            if (count($links['images'])) {
-                $product->getImagesForProductFromCloudinary();
+                    // TODO: make sure admin does NOT delete this field
+                    //$product->set('google_image', $upload['public_id']);
+                    //$product->store();
+                }
+            
+
+
+                foreach ($links['images'] as $i => $image) {
+                    $meta = ['order' => $i + 1];
+                    if (!empty($image['caption'])) {
+                        $meta['caption'] = $image['caption'];
+                    }
+
+                }
+
+                \Cloudinary\Uploader::upload(trim($image), [
+                    'tags' => "{$model}-test",
+                    'type' => 'private',
+                    'format' => 'jpg',
+                    'folder' => 'product_images_test',
+                    'context' => $meta
+                ]);
+            
+            }catch(\Exception $e){
+                //This is empty the first time it 
+                if(empty($giveMeAName)){
+                    (new \Cloudinary\Api)->delete_resources_by_tag("{$model}-test");
+                    (new \Cloudinary\Api)->delete_resources_by_tag("google_{$model}");
+                    //If the sync dies trying to sync cloudinary
+                    $this->syncProductImages($magentoId);
+                }
+
             }
         }
     }
