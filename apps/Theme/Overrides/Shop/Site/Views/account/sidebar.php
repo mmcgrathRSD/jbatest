@@ -2,7 +2,6 @@
     $identity = $this->getIdentity();
     $wishlist = \Shop\Models\Wishlists::fetch();
     $wishlistItems = array_slice((array) $wishlist->items, -3, 3);
-    $wishlistCount = count($wishlistItems);
 ?>
 <div class="col-left sidebar grid_5 custom_left">
     <div class="block block-account">
@@ -94,11 +93,11 @@
         </div>
     </div>
 
-    <?php if ($wishlistCount): ?>
+    <?php if (count($wishlistItems)): ?>
         <!-- banner slider EOF -->
         <div class="block block-wishlist">
             <div class="block-title">
-                <strong><span>My Wishlist <small>(<?php echo count($wishlistItems); ?>)</small></span></strong>
+                <strong><span>My Wishlist <small>(<?php echo count((array) $wishlist->items); ?>)</small></span></strong>
             </div>
             <div class="block-content">
                 <p class="block-subtitle">Last Added Items</p>
