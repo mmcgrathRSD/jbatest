@@ -754,10 +754,12 @@ class Magento
                 ->getItem();
             
             
-                if (empty($product)) {
+                if (empty($product->id)) {
                     $this->CLImate->red('No Product Found ' . $magentoId. ' Skipping..');
                     continue;
                 }
+
+                $this->CLImate->green('Product Found ' . $magentoId . ' Trying Cloudinary');
 
                 //This corresponse to our "tag" for each iamge
                 $model = $product->get('tracking.model_number_flat');
@@ -765,14 +767,16 @@ class Magento
 
     
                 if (!empty($links['google'])) {
+                    
                     $upload = \Cloudinary\Uploader::upload(trim($links['google']), [
                         'tags' => 'google_' . $model,
                         'type' => 'upload',
                         'format' => 'jpg',
-                        'folder' => 'google_images_test'
+                        'folder' => 'google_images_test',
+                        'async' => true,
                     ]);
-
-                    // TODO: make sure admin does NOT delete this field
+                    $this->CLImate->blue('Google Image: ' . $model . ' ..');
+                // TODO: make sure admin does NOT delete this field
                     //$product->set('google_image', $upload['public_id']);
                     //$product->store();
                 }
@@ -792,8 +796,12 @@ class Magento
                     'type' => 'private',
                     'format' => 'jpg',
                     'folder' => 'product_images_test',
-                    'context' => $meta
+                    'context' => $meta,
+                    'async' => true,
                 ]);
+
+                $this->CLImate->blue('Product Image: ' . $model . ' ..');
+
             
             }catch(\Exception $e){
                 //This is empty the first time it 
@@ -804,6 +812,11 @@ class Magento
                     $this->syncProductImages($magentoId);
                 }
 
+                \Dsc\Mongo\Collections\Logs::add([
+                    'message' => json_encode(['exception' => $e->getMessage(), 'product' => $model])
+                    
+                ], 'error', 'MagentoSyncs');
+                
             }
         }
     }
