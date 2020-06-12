@@ -769,13 +769,17 @@ class Magento
                 if (!empty($links['google'])) {
                     
                     $upload = \Cloudinary\Uploader::upload(trim($links['google']), [
-                        'tags' => 'google_' . $model,
-                        'type' => 'upload',
+                        'upload-preset'=> 'jba-rawphotos',
+                        'tags' => "{$model}-google-test",
+                        'type' => 'private',
                         'format' => 'jpg',
-                        'folder' => 'google_images_test',
+                        'folder' => 'google-images-test',
+                        'context' => $meta,
                         'async' => true,
                     ]);
-                    $this->CLImate->blue('Google Image: ' . $model . ' ..');
+
+                    
+                    $this->CLImate->green('Product Found ' . $magentoId . ' Trying Cloudinary');
                 // TODO: make sure admin does NOT delete this field
                     //$product->set('google_image', $upload['public_id']);
                     //$product->store();
@@ -783,24 +787,27 @@ class Magento
             
 
 
-                foreach ($links['images'] as $i => $image) {
-                    $meta = ['order' => $i + 1];
-                    if (!empty($image['caption'])) {
-                        $meta['caption'] = $image['caption'];
-                    }
-
+            foreach ($links['images'] as $i => $image) {
+                $meta = ['order' => $i + 1];
+                if (!empty($image['caption'])) {
+                    $meta['caption'] = $image['caption'];
                 }
 
-                \Cloudinary\Uploader::upload(trim($image), [
-                    'tags' => "{$model}-test",
-                    'type' => 'private',
-                    'format' => 'jpg',
-                    'folder' => 'product_images_test',
-                    'context' => $meta,
-                    'async' => true,
-                ]);
+            }
 
-                $this->CLImate->blue('Product Image: ' . $model . ' ..');
+
+           $productImages = \Cloudinary\Uploader::upload($image, [
+                'upload-preset'=> 'jba-rawphotos',
+                'tags' => "{$model}-test",
+                'type' => 'private',
+                'format' => 'jpg',
+                'folder' => 'product_images_test',
+                'context' => $meta,
+                'async' => true,
+           ]);
+
+
+            $this->CLImate->blue('Product Image: ' . $model . ' ..');
 
             
             }catch(\Exception $e){
@@ -812,11 +819,16 @@ class Magento
                     $this->syncProductImages($magentoId);
                 }
 
-                \Dsc\Mongo\Collections\Logs::add([
+                $log = \Dsc\Mongo\Collections\Logs::add([
                     'message' => json_encode(['exception' => $e->getMessage(), 'product' => $model])
                     
                 ], 'error', 'MagentoSyncs');
                 
+                try{
+                    $log->store();
+                }catch(Exception $e){
+                    //cant even heckin log right
+                }
             }
         }
     }
