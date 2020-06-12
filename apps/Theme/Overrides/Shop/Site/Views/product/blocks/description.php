@@ -11,7 +11,7 @@
             <?php echo $item->copy; ?>
             </div>
             <div id="clear"></div>
-            <?php //West told me to remove the 'this part fits' section ?>
+            <?php echo $this->renderView ( 'Shop/Site/Views::product/blocks/new_confirmed_fitment_inner.php' ); ?>
         </div>
     </div>
     <div class="product-tabs-content tabs-content " id="product_tabs_additional_tabbed_contents" style="display: none;">
