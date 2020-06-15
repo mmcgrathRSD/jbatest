@@ -59,6 +59,14 @@ $app->route(['GET /sync-product-images', 'GET /sync-product-images/@magentoid'],
 	(new JBAShop\Services\Magento)->syncProductImages($id);
 });
 
+$app->route(['GET /sync-google-images'], function($f3, $params) use($CLImate, $app) {
+	if($app->get('cloudinary.upload_google_environment') === 'production'){
+		(new JBAShop\Services\Magento)->syncCloudinaryToMongo('google_images', 'upload');
+	}else{
+		(new JBAShop\Services\Magento)->syncCloudinaryToMongo('google-images-test', 'private');
+	}
+});
+
 $app->route('GET /sync-category-images', function() use($CLImate) {
 	$CLImate->red('Have you cleared the category_images folder in Cloudinary?');
 	(new JBAShop\Services\Magento)->syncCategoryImages();
