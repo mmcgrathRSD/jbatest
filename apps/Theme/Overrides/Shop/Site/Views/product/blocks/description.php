@@ -13,6 +13,34 @@
             <div id="clear"></div>
             <?php echo $this->renderView ( 'Shop/Site/Views::product/blocks/new_confirmed_fitment_inner.php' ); ?>
         </div>
+        <?php if(!empty($kitSpecsSingle) || !empty($kitSpecsMulti)) : ?>
+<div class="row real-clearfix description_section">
+   <?php foreach ($kitSpecsSingle as $value): ?>
+   <?php if(!empty($value['copy'])) : ?>
+   <div class="kit_description" id="kit_description_<?php echo $value['id']; ?>">
+      <div class="col-xs-12">
+      	<?php echo strip_tags($value['copy'], '<br><br/><a></a><p></p><ul class="part_list"><ol><li>'); ?>
+      </div>
+      <?php if(!empty($item->secondaryH2)) : ?>
+    <h2 class="block marginTopNone desc_h2"><?php echo $item->secondaryH2; ?></h2>
+    <?php endif; ?>
+   </div>
+   <?php endif; ?>
+   <?php endforeach; ?>
+   <?php foreach ($kitSpecsMulti as $value): ?>
+   <?php if(!empty($value['copy'])) : ?>
+   <div class="kit_description" style="display: none;" id="kit_description_<?php echo $value['id']; ?>">
+      <div class="col-xs-12">
+      	<?php echo strip_tags($value['copy'], '<br><br/><a></a><p></p><ul class="part_list"><ol><li>'); ?>
+      </div>
+      <?php if(!empty($item->secondaryH2)) : ?>
+    <h2 class="block marginTopNone desc_h2"><?php echo $item->secondaryH2; ?></h2>
+    <?php endif; ?>
+   </div>
+   <?php endif; ?>
+   <?php endforeach; ?>
+</div>
+<?php endif; ?>
     </div>
     <div class="product-tabs-content tabs-content " id="product_tabs_additional_tabbed_contents" style="display: none;">
         <h2>Additional Information</h2>

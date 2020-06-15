@@ -1,4 +1,7 @@
 <div class="product-img-box">
+    <?php if($item->{'product_type'} == 'dynamic_group') : ?>
+        <?php echo $this->renderLayout('Shop/Site/Views::product/kits.php')?>
+    <?php endif; ?>
     <div class="product-image">
     <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/flag.php')?>
     <a href="#data-image-modal-main" rel="lighbox-zoom-gallery">

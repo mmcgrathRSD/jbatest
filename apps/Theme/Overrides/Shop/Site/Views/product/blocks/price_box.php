@@ -17,32 +17,36 @@ $price = $item->price();
         </div>
         
         <div class="clear"></div>
-        <?php if (!empty($shop['freeshipping']) && $item->price() > $shop['freeshipping']) : ?>
+        <?php if (!empty($shop['freeshipping']) && $item->price() > $shop['freeshipping'] && !\Dsc\ArrayHelper::get($item->policies, 'ships_email')) : ?>
             <h5 style="color:#5bb900;">Ships for free in the 48 states</h5>
         <?php endif; ?>
     </div>
-    <div class="f-left">
-        <p class="sku">SKU: <span><?php echo $item->tracking['oem_model_number']; ?></span></p>
-        <p class="availability ">
-            <span>
-                <span class="tt">
-                
-                <span class="top"></span>
-                <span class="bottom"></span>
-                </span></span> <span class="amstockstatus amsts_501">
-                <?php
-                if (!empty($item->variantsAvailable()) && count($item->variantsAvailable()) > 1) {
-                    echo '&nbsp;';
-                } else {
-                    echo $this->renderView('Shop/Site/Views::helpers/stock.php', [
-                        'hive' => [
-                            'stockProduct' => $item
-                        ]
-                    ]);
-                }
-                ?>
+    <?php if(!\Dsc\ArrayHelper::get($item->policies, 'ships_email') & $item->{'product_type'} != 'dynamic_group') : ?>
+        <div class="f-left">
+            <p class="sku">SKU: <span><?php echo $item->tracking['oem_model_number']; ?></span></p>
+            <p class="availability ">
+                <span>
+                    <span class="tt">
+                    
+                    <span class="top"></span>
+                    <span class="bottom"></span>
+                    </span></span> <span class="amstockstatus amsts_501">
+                    <?php
+                    if (!empty($item->variantsAvailable()) && count($item->variantsAvailable()) > 1) {
+                        echo '&nbsp;';
+                    } else {
+                        echo $this->renderView('Shop/Site/Views::helpers/stock.php', [
+                            'hive' => [
+                                'stockProduct' => $item
+                            ]
+                        ]);
+                    }
+                    ?>
+                    </span>
                 </span>
-            </span>
-        </p>
-    </div>
+            </p>
+        </div>
+    <?php else : ?>
+        <div class="stockStatusContainer"></div>
+    <?php endif; ?>
 </div>

@@ -1,6 +1,6 @@
 <div class="content-container">
     <div class="main row">
-        <div class="col-main grid_13 custom_right">
+        <div class="col-main grid_18">
             <div class="std">
                 <?php echo $item->{'copy'}; ?>
             </div>

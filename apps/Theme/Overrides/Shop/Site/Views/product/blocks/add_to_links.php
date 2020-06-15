@@ -1,4 +1,4 @@
-<div class="add-to-box">
+<div class="add-to-box <?php if($item->{'product_type'} == 'dynamic_group') : ?>dynamic_kit_master_lockup<?php endif; ?>">
 <form action="/shop/cart/add" method="post" class="addToCartForm" autocomplete="off" <?php if(\Dsc\ArrayHelper::get($item->policies, 'requires_assembly')) : ?>data-assembled="1"<?php endif; ?>>
     <?php if($item->{'product_type'} == 'dynamic_group') : ?>
         <div class="row">
@@ -67,6 +67,20 @@
 <?php else : ?>
     <input type="hidden" name="model_number" value="<?php echo $item->tracking['model_number']; ?>" class="variant_id" />
 <?php endif; ?>
+<?php
+
+        if (\Dsc\ArrayHelper::get($item->policies, 'ships_email')) {
+            echo '<input type="email" name="email" class="input-text form-control error" placeholder="Recipient\'s Email Address" required><br />';
+        }
+        
+        if (\Dsc\ArrayHelper::get($item->policies, 'ships_email')) {
+            echo '<input type="recipientName" name="recipientName" class="input-text form-control error" placeholder="Recipient\'s Name" required><br />';
+        }
+        
+        if (\Dsc\ArrayHelper::get($item->policies, 'ships_email')) {
+            echo '<input type="message" name="message" class="input-text form-control error" placeholder="Message" required><br />';
+        }
+?>
     <script>
 
         function matrixLogic($select) {

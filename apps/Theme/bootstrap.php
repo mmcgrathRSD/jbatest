@@ -123,7 +123,8 @@ class ThemeBootstrap extends \Dsc\Bootstrap
             'js/custom.js',
             'js/custom_includes/jba_custom_algolia.js',
             'js/shop_custom.js',
-            'js/estimate_shipping.js'
+            'js/estimate_shipping.js',
+            'js/custom_includes/jba_custom.js'
 		);
 
         foreach ($files as $file)

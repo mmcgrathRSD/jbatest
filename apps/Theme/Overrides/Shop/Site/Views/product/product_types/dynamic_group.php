@@ -11,11 +11,12 @@
                   <div class="product-category-title">
                      <h3><?php echo $item->manufacturer['title']; ?></h3>
                   </div>
-                  <?php echo $this->renderLayout('Shop/Site/Views::product/kits.php')?>
+                  
                   <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/image_modal.php')?>
                   <div class="product-shop ">
                   <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/meta_links.php')?>
                   <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/price_box.php')?>
+                  <div id="kitNotify"></div>
                      <div class="clear"></div>
                      <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/std.php')?>
                      <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/add_to_links.php')?>
@@ -42,4 +43,15 @@
       <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/user_content.php')?>
    </div>
 </div>
+<script>
+   $(document).on('click', '.groupLabel', function (e) {
+      
+      try {
+            $('.sticky_parent').hcSticky('destory');
+         } catch(err) {
+
+      }
+      $('.groupLabel').removeClass('.groupLabel');
+   });
+</script>
 <script src="/shop-assets/js/kit_item.js?<?php echo $cachebuster; ?>"></script>

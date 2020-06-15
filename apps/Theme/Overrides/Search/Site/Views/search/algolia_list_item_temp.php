@@ -32,7 +32,13 @@ $moneyHtml = '<span class=notranslate><sup>'.$currency.'</sup>'.$priceTag.'</spa
             <h2 class="product-name"><a href="{{url}}" title="{{title}}">{{title}}{{#title_suffix}} - {{title_suffix}}{{/title_suffix}}</a></h2>
             <br>
             <div class="price-box">
-            {{#flag.enabled}}<p class="special-price">
+                {{#range_price}}
+                <span class="regular-price">
+                    <span class="price">{{{range_price}}}</span>
+                </span>
+                {{/range_price}}
+                {{^range_price}}
+                {{#flag.enabled}}<p class="special-price">
                 <span class="price-label">{{/flag.enabled}}
                 {{^flag.enabled}}
                 <span class="regular-price">{{/flag.enabled}}
@@ -45,6 +51,7 @@ $moneyHtml = '<span class=notranslate><sup>'.$currency.'</sup>'.$priceTag.'</spa
                     <span class="price">{{previous_default_price}}</span>
                 </p>
                 {{/previous_default_price}}
+                {{/range_price}}
             </div>
             <div id="insert" style="display:none;"></div>
             {{#swatches}}
