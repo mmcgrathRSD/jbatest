@@ -16,7 +16,7 @@ foreach($modules as $key=> $module) {
    </div>
 </div>
 <?php
-   if(!\Audit::instance()->isbot()){
+   if(\Audit::instance()->isbot()){
       $prodCursor = (new \Shop\Models\Products)->collection()->find([
          'publication.sales_channels.slug' => \Base::instance()->get('sales_channel'),
          'publication.status' => 'published',
