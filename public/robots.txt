@@ -6,6 +6,10 @@ Disallow: /shop/wishlist/*
 Disallow: /profiles/*
 Disallow: /search/*
 Disallow: /search/page/*
+Disallow: /sign-in
+Disallow: /login/*
+Disallow: /user/forgot-password
+Disallow: /register
 
 User-agent: Caliperbot/1.0
 Disallow: /
