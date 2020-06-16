@@ -13,7 +13,6 @@
    }
    ?>
 <div class="main row search_container" data-instance-id="search<?php echo $instance_id; ?>">
-<div id="search_selected<?php echo $instance_id; ?>"></div>
 <div id="empty-container<?php echo $instance_id; ?>" style="display: none;"><?php echo $this->renderLayout('Search/Site/Views::search/algolia_custom_empty_template.php');?></div>
    <div class="col-main grid_13 custom_left">
       <div class="category_dynamic_head">
@@ -62,8 +61,9 @@
       </div>
       <div id="clear">
       </div>
+      <div id="search_selected<?php echo $instance_id; ?>" class="refined_results_jba"></div>
       <p></p>
-      <a name="new"></a>    
+      <a name="new"></a>
       <div class="category-products product-columns-3">
          <div class="toolbar">
             <div class="sorter">

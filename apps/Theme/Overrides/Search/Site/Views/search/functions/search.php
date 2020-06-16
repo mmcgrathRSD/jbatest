@@ -165,8 +165,10 @@ $clear_all_exclusions = '';
                         return empty;
                     },
                     allItems: function(allItems) {
+                        console.log(search.helper.state.hierarchicalFacetsRefinements['hierarchicalCategories.subispeed.lvl0'][0]);
+                        console.log(allItems);
                         $.each(allItems.hits, function(key, hit) {
-
+                            
                             if(hit.image) {
                                 hit.image = cl.imageTag(hit.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml()
                             } else {
@@ -506,6 +508,7 @@ $clear_all_exclusions = '';
                                 $('.category-title h1').html(hit.label + ' Parts');
 
                                 $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
+                                    console.log(data);
                                     $('.category-description.std').html(data.result.html);
                                     if(data.result.children) {
                                         $('ul.category-children').html('');
@@ -756,5 +759,30 @@ $clear_all_exclusions = '';
     $(document).on('click', '.collapsible_facet_header_link', function(e) {
         e.preventDefault();
     })
+
+    $(document).on('submit', '.searchautocomplete', function(e) { 
+        e.preventDefault(); 
+        
+        showAlgolia();
+
+        $('html, body').animate({
+            scrollTop: $("#algolia_master").offset().top
+        }, 500);
+    });
+
+    $(document).on('change', '#header_ymm_search_select', function() {
+        hierarchy = $('option:selected',this).attr('data-hierarchy');
+
+        setAlgoliaCategory(search, hierarchy);
+
+        if(!hierarchy) {
+            $('#header_ymm_search_span').html('All');
+        } else {
+            $('#header_ymm_search_span').html(hierarchy);
+        }
+
+        $('#header_ymm_search_input_wrapper').css('padding-left', $('#header_ymm_search_select_wrapper').width());
+        $('#header_ymm_search_select').width($('#header_ymm_search_select_wrapper').width());
+    });
 </script>
 <?php endif; ?>

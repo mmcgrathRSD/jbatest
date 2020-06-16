@@ -30,17 +30,17 @@
                      <div class="clear"></div>
                   </div>
                   <div class="nav-search-container search-visible">
-                     <form class="searchautocomplete UI-SEARCHAUTOCOMPLETE" action="https://www.subispeed.com/catalogsearch/result/" method="get" data-tip="" data-url="//www.subispeed.com/searchautocomplete/ajax/get/" data-minchars="6" data-delay="600">
+                     <form class="searchautocomplete UI-SEARCHAUTOCOMPLETE" action="/search" method="get" data-tip="" data-minchars="6" data-delay="600">
                         <label for="search">Search</label>
                         <div class="nav">
-                           <div class="nav-search-in">
-                              <span class="category-fake UI-CATEGORY-TEXT">All</span>
+                           <div class="nav-search-in" id="header_ymm_search_select_wrapper">
+                              <span class="category-fake UI-CATEGORY-TEXT" id="header_ymm_search_span">All</span>
                               <span class="nav-down-arrow"></span>
-                              <select name="cat" class="category UI-CATEGORY" style="width: 47.2344px;">
+                              <select name="cat" class="category UI-CATEGORY" style="width: 47.2344px;" id="header_ymm_search_select">
                               <?php 
                                  $searchDropdown = \Dsc\System::instance()->get('session')->get('search_dropdown');
                               ?>
-                                 <option value="0" <?php echo empty($searchDropdown) ? 'selected="selected"' : ''; ?> >All</option>
+                                 <option data-hierarchy="" value="0" <?php echo empty($searchDropdown) ? 'selected="selected"' : ''; ?> >All</option>
                                  <?php 
                                  
                                  foreach((new \Shop\Models\Categories)->collection()->find([
@@ -50,13 +50,13 @@
                                           ['sales_channels.0' => ['$exists' => true], 'sales_channels.slug' => \Base::instance()->get('sales_channel')]
                                        ]
                                     ]) as $doc){ ?>
-                                    <option value="<?php echo $doc['path']; ?>" <?php echo !empty($searchDropdown) && $searchDropdown['path'] === $doc['path'] ? 'selected="selected"' : ''; ?>><?php echo $doc['title']; ?></option>
+                                    <option data-hierarchy="<?php echo $doc['hierarchical_categories']; ?>" value="<?php echo $doc['path']; ?>" <?php echo !empty($searchDropdown) && $searchDropdown['path'] === $doc['path'] ? 'selected="selected"' : ''; ?>><?php echo $doc['title']; ?></option>
                                  <?php 
                                     }
                                  ?>
                               </select>
                            </div>
-                           <div class="nav-input UI-NAV-INPUT" style="padding-left: 47.2344px;">
+                           <div class="nav-input UI-NAV-INPUT" style="padding-left: 47.2344px;" id="header_ymm_search_input_wrapper">
                               <input class="input-text UI-SEARCH" type="text" autocomplete="off" name="q" value="" maxlength="50" id="search-box">
                               <input class="input-text UI-SEARCH" style="display: none;" type="text" autocomplete="off" name="q" value="" maxlength="50" id="search-box-mobile">
                            </div>
