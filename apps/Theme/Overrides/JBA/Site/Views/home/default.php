@@ -20,6 +20,7 @@ foreach($modules as $key=> $module) {
       $prodCursor = (new \Shop\Models\Products)->collection()->find([
          'publication.sales_channels.slug' => \Base::instance()->get('sales_channel'),
          'publication.status' => 'published',
+         'product_type' => ['$ne' => 'matrix_subitem']
       ]);
       foreach($prodCursor as $doc){
          $path = sprintf("/part/%s\n", $doc['slug']);
