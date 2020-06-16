@@ -57,17 +57,16 @@ $app->route(['GET /sync-product-images', 'GET /sync-product-images/@magentoid'],
 	$CLImate->red('Have you cleared the product_images folder in Cloudinary?');
 	$id = $params['magentoid'] ?? null;
 	
-	$productsProfile = ['folder' => 'product_images', 'upload-preset'=> 'jba-rawphotos', 'async' =>'true', 'notification_url' => \Base::instance()->get('cloudinary.notifications_url')];
-
-	(new JBAShop\Services\Magento)->syncProductImages($id, $productsProfile);
+	$uploadProfile = [
+		'google' => ['upload-preset'=> 'api_uploads', 'folder' => 'google_images', 'type' => 'upload'],
+		'products' => ['upload-preset'=> 'api_uploads', 'folder' => 'product_images'],
+	];
+	
+	(new JBAShop\Services\Magento)->syncProductImages($id, $uploadProfile);
 });
 
 $app->route(['GET /sync-google-images'], function($f3, $params) use($CLImate, $app) {
-	if($app->get('cloudinary.upload_google_environment') === 'production'){
-		(new JBAShop\Services\Magento)->syncCloudinaryToMongo('google_images', 'upload');
-	}else{
-		(new JBAShop\Services\Magento)->syncCloudinaryToMongo('google-images-test', 'private');
-	}
+	(new JBAShop\Services\Magento)->syncCloudinaryToMongo('google_images', 'upload');
 });
 
 $app->route('GET /sync-category-images', function() use($CLImate) {
