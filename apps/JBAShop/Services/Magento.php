@@ -4,6 +4,8 @@ namespace JBAShop\Services;
 
 use PDO;
 use \DB\SQL;
+use Dsc\ArrayHelper;
+use Dsc\Mongo\Collections\Logs;
 use Exception;
 use \League\CLImate\CLImate;
 
@@ -41,6 +43,19 @@ class Magento
             'cdn_subdomain' => filter_var($app->get('cloudinary.cdn_subdomain'), FILTER_VALIDATE_BOOLEAN),
             'secure' => true
         ));
+    }
+
+    public function sortImages($list){
+        ['images' => $sorted] = $list;
+
+        ksort($sorted);
+        array_unshift($sorted, 'fake');
+        array_values($sorted);
+        unset($sorted[0]);
+
+        $list['sorted_images'] = $sorted;
+
+        return $list;
     }
 
     public static function getDB()
@@ -682,10 +697,9 @@ class Magento
         $this->CLImate->table($failures);
     }
 
-    public function syncProductImages($giveMeAName = null)
+    public function syncProductImages($giveMeAName = null, $uploadProfile = null)
     {
         
-
         $where = $giveMeAName ? "WHERE cpg.entity_id = {$giveMeAName}" : '';
 
         $sql = 
@@ -727,7 +741,6 @@ class Magento
 
         $finalList = [];
 
-
         while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
             if (
                 $row['disabled']
@@ -740,97 +753,129 @@ class Magento
             if ($row['google_image']) {
                 $finalList[$row['product_id']]['google'] = $row['url'];
             }
-
+            
+            //All image groups are now numerically indexed by thier ordering
             if (!$row['disabled'] || $row['featured_image']) {
-                $finalList[$row['product_id']]['images'][] = $row['url'];
+                $finalList[$row['product_id']]['images'][$row['order']] = $row['url'];
+            }
+
+            //Missed Captions
+            if($row['caption']){
+                $finalList[$row['product_id']]['caption'] = $row['caption'];
             }
         }
-        
+        //Sort the images
+        $finalList = array_map(['self', 'sortImages'], $finalList);
 
+        //Log It
+        $this->CLImate->green('All the data has been prepared, we will start sending to cloudinary now');
+        
         foreach ($finalList as $magentoId => $links) {
             try{
-                $product = (new \Shop\Models\Products)
-                ->setCondition('magento.id', (int) $magentoId)
-                ->getItem();
+                $product = (new \Shop\Models\Products)->collection()->findOne([
+                    'magento.id' => $magentoId,
+                ], [
+                    'projection' => [
+                        '_id' => true,
+                        'tracking.model_number' => true,
+                        'magento.id' => true,
+                    ],
+                ]);
             
-            
-                if (empty($product->id)) {
+                
+                if (empty($product)) {
                     $this->CLImate->red('No Product Found ' . $magentoId. ' Skipping..');
                     continue;
                 }
 
                 $this->CLImate->green('Product Found ' . $magentoId . ' Trying Cloudinary');
 
-                //This corresponse to our "tag" for each iamge
-                $model = $product->get('tracking.model_number_flat');
-
-
-    
+                //Grab some the properties from the model we need
+                ['tracking' => ['model_number' => $model], 'magento' =>['id' => $magento]] = $product;
+                                
                 if (!empty($links['google'])) {
+                    $userOptions = ['tags' => "google_{$model}", 'context' => ['magento_id' => $magento]];
+                    $options = array_merge($uploadProfile['google'], $userOptions);
                     
-                    $upload = \Cloudinary\Uploader::upload(trim($links['google']), [
-                        'upload-preset'=> 'jba-rawphotos',
-                        'tags' => "{$model}-google-test",
-                        'type' => 'private',
-                        'format' => 'jpg',
-                        'folder' => 'google-images-test',
-                        'context' => $meta,
-                        'async' => true,
-                    ]);
+                    //Upload the google image
+                    $upload = \Cloudinary\Uploader::upload(trim($links['google']), $options);
 
                     
-                    $this->CLImate->green('Product Found ' . $magentoId . ' Trying Cloudinary');
-                // TODO: make sure admin does NOT delete this field
-                    //$product->set('google_image', $upload['public_id']);
-                    //$product->store();
-                }
-            
-
-
-            foreach ($links['images'] as $i => $image) {
-                $meta = ['order' => $i + 1];
-                if (!empty($image['caption'])) {
-                    $meta['caption'] = $image['caption'];
+                    $this->CLImate->green($magentoId . ' Is On Its Way To Google Images Cloudinary');
                 }
 
-            }
 
+                $this->CLImate->green('About to upload ' . count($links['images']) . ' Product Images');
+                
+                foreach($links['sorted_images'] as $key => $productImage){
+                    $meta = array_filter(['caption'=>$links['caption'], 'order' => $key], 'strlen');
 
-           $productImages = \Cloudinary\Uploader::upload($image, [
-                'upload-preset'=> 'jba-rawphotos',
-                'tags' => "{$model}-test",
-                'type' => 'private',
-                'format' => 'jpg',
-                'folder' => 'product_images_test',
-                'context' => $meta,
-                'async' => true,
-           ]);
+                    $options = array_merge($uploadProfile['products'], ['tags' => $model, 'context' => $meta]);
+                
+                    $upload = \Cloudinary\Uploader::upload($productImage, $options);
+                }
 
-
-            $this->CLImate->blue('Product Image: ' . $model . ' ..');
+                $this->CLImate->blue('Product Image: ' . $model . ' ..');
 
             
             }catch(\Exception $e){
-                //This is empty the first time it 
-                if(empty($giveMeAName)){
-                    (new \Cloudinary\Api)->delete_resources_by_tag("{$model}-test");
-                    (new \Cloudinary\Api)->delete_resources_by_tag("google_{$model}");
-                    //If the sync dies trying to sync cloudinary
-                    $this->syncProductImages($magentoId);
-                }
-
-                $log = \Dsc\Mongo\Collections\Logs::add([
-                    'message' => json_encode(['exception' => $e->getMessage(), 'product' => $model])
-                    
-                ], 'error', 'MagentoSyncs');
-                
-                try{
-                    $log->store();
-                }catch(Exception $e){
-                    //cant even heckin log right
-                }
+                \Dsc\Mongo\Collections\Logs::add([
+                    'message' => json_encode(['exception' => $e->getMessage(), 'product' => $model]),
+                    'locator' => $magentoId,
+                ], 'error', 'imagesync')->store();
+                           
             }
         }
+    }
+
+    //This function takes all the cloudinary images from "google_images" and syncs them to mongo
+    public function syncCloudinaryToMongo($type, $folder){
+        $apiData = [];
+        $nextCursor = null;
+
+        $cloudinaryOptions = [
+            'type' => $type, 
+            'prefix' => $folder, 
+            'tags' => true,
+            'context' => true,
+            'max_results' => 500,
+            'next_cursor' => $nextCursor,
+        ];
+        
+        do {
+            $cloudinaryApi = (new \Cloudinary\Api)->resources($cloudinaryOptions);
+            $apiData = array_merge($cloudinaryApi['resources'], $apiData);
+        
+
+            if($cloudinaryApi['next_cursor']){
+                $nextCursor = $cloudinaryApi['next_cursor'];
+            }
+        } while($cloudinaryApi['next_cursor']);
+
+        $this->CLImate->green('TOTAL IMAGES TO SYNC: ' . count($apiData));
+        
+        foreach($apiData as $googleImage){
+            $product = (new \Shop\Models\Products)->setCondition('magento.id', (int) $googleImage['context']['custom']['magentoid'])->getItem();
+        
+            if(!$product->id){
+                continue;
+            }
+
+            try{
+                $product->set('google_image', $googleImage['public_id']);
+                $product->store();
+                $this->CLImate->green('image synced! ' . $product->get('tracking.model_number'));
+            }catch(Exception $e){
+                \Dsc\Mongo\Collections\Logs::add([
+                    'message' => json_encode(['exception' => $e->getMessage(), 'image' => $googleImage['public_id']]),
+                    'locator' => $product->id,
+                ], 'error', 'cloudinarysync')->store();
+                
+                $this->CLImate->red('Failure, check logs for message.locatator=' . $product->id);
+            }
+        }
+
+        $this->CLImate->green('All Doneski!');
     }
 
     public function syncCategoryImages()

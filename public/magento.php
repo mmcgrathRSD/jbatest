@@ -56,7 +56,17 @@ $app->route('GET /sync-dynamic-group-products', function() {
 $app->route(['GET /sync-product-images', 'GET /sync-product-images/@magentoid'], function($f3, $params) use($CLImate) {
 	$CLImate->red('Have you cleared the product_images folder in Cloudinary?');
 	$id = $params['magentoid'] ?? null;
-	(new JBAShop\Services\Magento)->syncProductImages($id);
+	
+	$uploadProfile = [
+		'google' => ['upload-preset'=> 'api_uploads', 'folder' => 'google_images', 'type' => 'upload'],
+		'products' => ['upload-preset'=> 'api_uploads', 'folder' => 'product_images'],
+	];
+	
+	(new JBAShop\Services\Magento)->syncProductImages($id, $uploadProfile);
+});
+
+$app->route(['GET /sync-google-images'], function($f3, $params) use($CLImate, $app) {
+	(new JBAShop\Services\Magento)->syncCloudinaryToMongo('google_images', 'upload');
 });
 
 $app->route('GET /sync-category-images', function() use($CLImate) {
