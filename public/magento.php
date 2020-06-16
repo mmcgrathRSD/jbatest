@@ -56,7 +56,10 @@ $app->route('GET /sync-dynamic-group-products', function() {
 $app->route(['GET /sync-product-images', 'GET /sync-product-images/@magentoid'], function($f3, $params) use($CLImate) {
 	$CLImate->red('Have you cleared the product_images folder in Cloudinary?');
 	$id = $params['magentoid'] ?? null;
-	(new JBAShop\Services\Magento)->syncProductImages($id);
+	
+	$productsProfile = ['folder' => 'product_images', 'upload-preset'=> 'jba-rawphotos', 'async' =>'true', 'notification_url' => \Base::instance()->get('cloudinary.notifications_url')];
+
+	(new JBAShop\Services\Magento)->syncProductImages($id, $productsProfile);
 });
 
 $app->route(['GET /sync-google-images'], function($f3, $params) use($CLImate, $app) {
