@@ -165,16 +165,12 @@ $clear_all_exclusions = '';
                         return empty;
                     },
                     allItems: function(allItems) {
-                        console.log(search.helper.state.hierarchicalFacetsRefinements['hierarchicalCategories.subispeed.lvl0'][0]);
-                        console.log(allItems);
                         $.each(allItems.hits, function(key, hit) {
                             
                             if(hit.image) {
                                 hit.image = cl.imageTag(hit.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml()
                             } else {
                                 hit.image = cl.imageTag("<?php echo \Base::instance()->get('cloudinary.no_photo'); ?>", {secure: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml();
-
-                                console.log(hit.image);
                             }
 
                             if(hit.image_2) {
@@ -423,7 +419,6 @@ $clear_all_exclusions = '';
                   container: '#search_stats' + instance_id,
                   templates: {
                       body: function(hit) {
-                          console.log(hit);
                           starting_hit = ((hit.hitsPerPage * (hit.page)) + 1);
                           possible_current_hits = ((starting_hit - 1) + hit.hitsPerPage);
                           end_hit = hit.nbHits > possible_current_hits ? possible_current_hits : hit.nbHits;
@@ -439,7 +434,6 @@ $clear_all_exclusions = '';
                   container: '#search2_stats' + instance_id,
                   templates: {
                       body: function(hit) {
-                          console.log(hit);
                           starting_hit = ((hit.hitsPerPage * (hit.page)) + 1);
                           possible_current_hits = ((starting_hit - 1) + hit.hitsPerPage);
                           end_hit = hit.nbHits > possible_current_hits ? possible_current_hits : hit.nbHits;
@@ -491,52 +485,71 @@ $clear_all_exclusions = '';
                     },
                     transformData: {
                         item: function (hit) {
-                            if(hit.isRefined) {
+                            // console.log((Array.isArray(hit.data) && hit.data.length) === 0);
+                            // console.log(hit);
+                            the_one = true;
 
-                                let hasChildRefinements = false;
+                            
 
-                                if(hit.data) {
-                                    hit.data.each(function(item) {
-                                        if(item.isRefined) {
-                                            hasChildRefinements = true;
+                            if(Array.isArray(hit.data)) {
+                                $.each(hit.data, function(key, hit) {
+                                    if($(this)['0'].isRefined) {
+                                        the_one = false;
+                                    }
+                                });
+
+                                if(hit.data.length === 0 || the_one) {
+                                    let hasChildRefinements = false;
+
+                                    if(hit.data) {
+                                        hit.data.each(function(item) {
+                                            if(item.isRefined) {
+                                                hasChildRefinements = true;
+                                            }
+                                        });
+                                    }
+
+                                    $('.category-title h1').html(hit.label + ' Parts');
+
+                                    $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
+                                        if(!data.error) {
+                                            $('.ais-hits a').each(function(hit, key) {
+                                                str = String($(this).attr('href')).split("/");
+                                                $(this).attr('href', '/part' + data.result.crumbs[Object.keys(data.result.crumbs).pop()] + '/' + str[str.length - 1]);
+                                            });
+                                            $('.category-description.std').html(data.result.html);
+                                            if(data.result.children) {
+                                                $('ul.category-children').html('');
+
+                                                data.result.children.each(function(child) {
+                                                    if(child.image) {
+                                                        $('ul.category-children').append('<li><a href="' + child.link + '"><img src="' + child.image + '" alt="' + child.title + '" height="60" width="175" data-algolia-hierarchy="' + child.hierarchical_category + '"></a></li>');
+                                                    }
+                                                    
+                                                });
+                                                
+                                                $('title').html(data.result.seo_title);
+                                            }
+                                            //update rating title
+                                            $('#category-rating-title > strong > span').html(hit.label);
+                                            //get the average.
+                                            var average = !!data.result.rating.average ? data.result.rating.average : 0;
+                                            //get the percent for the average divided by the total stars.
+                                            $('#category-rating-stars > div').css('width',  (average / 5) * 100 + '%');
+                                            //replace the rating value displayed.
+                                            $('#category-rating-values > span[itemprop="ratingValue"]').html(average);
+                                            //replace the review counts.
+                                            $('#category-rating-values > span[itemprop="reviewCount"]').html(data.result.rating.total);
+
                                         }
+                                        
+
+                                    })).then(function() {
+                                        $('.category_dynamic_head').css('height', 'auto').removeClass('category_dynamic_head_loader').delay(800).fadeIn(400);
                                     });
                                 }
+
                                 
-                                // $('.category_dynamic_head').addClass('category_dynamic_head_loader');
-
-                                $('.category-title h1').html(hit.label + ' Parts');
-
-                                $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
-                                    console.log(data);
-                                    $('.category-description.std').html(data.result.html);
-                                    if(data.result.children) {
-                                        $('ul.category-children').html('');
-
-                                        data.result.children.each(function(child) {
-                                            if(child.image) {
-                                                $('ul.category-children').append('<li><a href="' + child.link + '"><img src="' + child.image + '" alt="' + child.title + '" height="60" width="175" data-algolia-hierarchy="' + child.hierarchical_category + '"></a></li>');
-                                            }
-                                            
-                                        });
-                                        
-                                        $('title').html(data.result.seo_title);
-                                    }
-                                    //update rating title
-                                    $('#category-rating-title > strong > span').html(hit.label);
-                                    //get the average.
-                                    var average = !!data.result.rating.average ? data.result.rating.average : 0;
-                                    //get the percent for the average divided by the total stars.
-                                    $('#category-rating-stars > div').css('width',  (average / 5) * 100 + '%');
-                                    //replace the rating value displayed.
-                                    $('#category-rating-values > span[itemprop="ratingValue"]').html(average);
-                                    //replace the review counts.
-                                    $('#category-rating-values > span[itemprop="reviewCount"]').html(data.result.rating.total);
-
-
-                                })).then(function() {
-                                    $('.category_dynamic_head').css('height', 'auto').removeClass('category_dynamic_head_loader').delay(800).fadeIn(400);
-                                });
                             }
 
                             return hit;
