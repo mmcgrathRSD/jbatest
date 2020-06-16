@@ -184,6 +184,15 @@ class Routes extends \Dsc\Routes\Group
             'controller' => 'UserContent',
             'action' => 'process'
         ) );
+
+        $this->add( '/part/@slug/create/@type', 'GET', array(
+            'controller' => 'UserContent',
+            'action' => 'dispatcher'
+        ) );
+        $this->add( '/part/@slug/create/@type', 'POST', array(
+            'controller' => 'UserContent',
+            'action' => 'process'
+        ) );
         
         $this->add( '/shop/product/@slug/create/answer/@questionid', 'POST', array(
         		'controller' => 'UserContent',
