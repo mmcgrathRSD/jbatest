@@ -7,7 +7,7 @@ $price = $item->price();
     <div class="f-left">
         <div class="price-box">
             <span class="regular-price">
-            <span class="price"><?php echo $this->renderLayout('Shop/Site/Views::product/blocks/lockup/price.php')?></span>                                    </span>
+                <span class="price <?php if($item->{'product_type'} == 'dynamic_group') : ?>dyn_kit_price<?php endif; ?>"><?php echo $this->renderLayout('Shop/Site/Views::product/blocks/lockup/price.php')?></span>                                    </span>
             <?php if(!empty($previous_price) && $previous_price < $price && filter_var($item->get('flag.enabled'), FILTER_VALIDATE_BOOLEAN)) : ?>
                 <p class="old-price">
                     <span class="price-label"></span>
