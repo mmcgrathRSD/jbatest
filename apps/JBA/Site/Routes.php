@@ -50,7 +50,6 @@ class Routes extends \Dsc\Routes\Group{
 				'action' => 'returnHandoff'
 		));
 		
-		
 		$this->add( '/reset/test', 'GET', array(
 				'controller' => 'Home',
 				'action' => 'resetTest'
