@@ -40,7 +40,7 @@ class ContactUs extends \Dsc\Controller
                     'brand_id' => $this->app->get('zendesk_api.brand_id'),
                     "custom_fields" => [
                         'id'    => $this->app->get('zendesk_api.custom_fields_id'),
-                        'value' => 'Tracking'
+                        'value' => $type
                     ],
                     'subject' => $finalSubject,
                     'comment' => [
