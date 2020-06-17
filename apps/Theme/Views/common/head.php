@@ -28,15 +28,16 @@
 
     //]]>
   </script>
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/js/olegnax/fancybox/jquery.fancybox-1.3.4.css" />
+  <!-- <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/js/olegnax/fancybox/jquery.fancybox-1.3.4.css" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/styles.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/widgets.css" media="all" />
+  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/widgets.css" media="all" /> -->
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/mirasvit/searchautocomplete/amazon.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/mirasvit_searchindex.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/mirasvit/seo/mirasvit_seo.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/mirasvit/seositemap/sitemap.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/olegnax/ajaxcart.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/slideshow.css" media="all" />
+  <!-- <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/mirasvit_searchindex.css" media="all" /> -->
+  <!-- <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/mirasvit/seo/mirasvit_seo.css" media="all" /> -->
+  <!-- <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/mirasvit/seositemap/sitemap.css" media="all" /> -->
+  <!-- <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/olegnax/ajaxcart.css" media="all" /> -->
+
+  <!-- <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/slideshow.css" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/rs-plugin/css/settings.css" media="all" />
   <link rel="stylesheet" type="text/css" href="/theme/css/jba/megamenu.css?<?php echo $cachebuster; ?>" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/local.css" media="all" />
@@ -44,12 +45,14 @@
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/grid.css" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/retina.css" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/options_base_default.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/override.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/js/amasty/amconf/css/amconf.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/js/amasty/amconf/css/tooltipster.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/override.css" media="all" /> -->
+
+  <!-- <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/js/amasty/amconf/css/amconf.css" media="all" />
+  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/js/amasty/amconf/css/tooltipster.css" media="all" /> -->
+  
+  <!-- <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/print.css" media="print" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/magestore/mobilelibrary.css" defer />
-  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/magestore/giftvoucher.css" defer />
+  <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/magestore/giftvoucher.css" defer /> -->
   <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800' rel='stylesheet' type='text/css'>
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
 

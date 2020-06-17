@@ -1,10 +1,14 @@
+<?php
+$sales_channel = \Base::instance()->get('sales_channel');
+?>
 <div class="header-container full-header">
    <div class="header header-2 site-width">
       <div class="table-container">
          <div class="table-cell v-align-cell logo-container">
             <a href="/" title="SubiSpeed - 2015 WRX / STI Parts and Accessories" class="logo">
-            <strong>SubiSpeed - 2015 WRX / STI Parts and Accessories</strong>
-            <img class="retina" width="240" height="42" src="https://www.subispeed.com/media/olegnax/athlete/subispeed_logo.png" alt="SubiSpeed - Your source for Subaru WRX / STI parts!">
+            <strong><?php echo \Base::instance()->get('meta.title'); ?></strong>
+            <img class="retina logo-image" width="240" height="42" src="https://www.subispeed.com/media/olegnax/athlete/subispeed_logo.png" alt="SubiSpeed - Your source for Subaru WRX / STI parts!">
+            <div class="logo-image-div"></div>
             </a>
          </div>
          <?php if($checkoutmode == 0) : ?>
@@ -47,7 +51,7 @@
                                     'search_dropdown' => true,
                                     '$or' => [
                                           ['sales_channels.0' => ['$exists' => false]],
-                                          ['sales_channels.0' => ['$exists' => true], 'sales_channels.slug' => \Base::instance()->get('sales_channel')]
+                                          ['sales_channels.0' => ['$exists' => true], 'sales_channels.slug' => $sales_channel]
                                        ]
                                     ]) as $doc){ ?>
                                     <option data-hierarchy="<?php echo $doc['hierarchical_categories']; ?>" value="<?php echo $doc['path']; ?>" <?php echo !empty($searchDropdown) && $searchDropdown['path'] === $doc['path'] ? 'selected="selected"' : ''; ?>><?php echo $doc['title']; ?></option>
@@ -83,7 +87,7 @@
                </div>
                <ul id="nav">
                <?php
-               $topNav = (new \Admin\Models\Navigation)->setCondition('title', 'Top Nav')->getItem();
+               $topNav = (new \Admin\Models\Navigation)->setCondition('title', $sales_channel)->getItem();
                $menuId = (string) $topNav->id;
                $tops = (new \Admin\Models\Navigation)->setState('filter.parent', $menuId)->setState('order_clause', array( 'tree'=> 1, 'lft' => 1 ))->getList();
 

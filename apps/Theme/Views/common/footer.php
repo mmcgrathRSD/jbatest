@@ -43,16 +43,18 @@
                <div class="athlete_footer_connect">
                   <h4 class="title">Connect with us.</h4>
                   <!-- <a title="Rss" class="social-icon icon-rss " href="#" target="_social"></a> -->
-                  <a title="Facebook" class="social-icon icon-facebook " href="//facebook.com/SubiSpeed" target="_social"></a>
-                  <a title="Twitter" class="social-icon icon-twitter " href="//twitter.com/SubiSpeedDotCom" target="_social"></a>
+                  <a title="Facebook" class="social-icon icon-facebook " href="<?php echo \Base::instance()->get('social.facebook_link'); ?>" target="_social"></a>
+                  <a title="Twitter" class="social-icon icon-twitter " href="<?php echo \Base::instance()->get('social.twitter_link'); ?>" target="_social"></a>
                   <a title="Mail" class="social-icon icon-mail " href="/contacts/" target="_social"></a>
-                  <a title="Youtube" class="social-icon icon-youtube " href="//youtube.com/SubiSpeed" target="_social"></a>
-                  <a title="Instagram" class="social-icon icon-instagram " href="//instagram.com/subispeed" target="_social"></a>
+                  <a title="Youtube" class="social-icon icon-youtube " href="<?php echo \Base::instance()->get('social.youtube_link'); ?>" target="_social"></a>
+                  <a title="Instagram" class="social-icon icon-instagram " href="<?php echo \Base::instance()->get('social.instagram_link'); ?>" target="_social"></a>
                </div>
             </div>
          </div>
          <div class="facebook-block">
-            <div class="fb-like fb_iframe_widget" data-share="false" data-send="false" data-layout="standard" data-width="270" data-height="40" data-show-faces="false" data-font="arial" data-colorscheme="dark" data-action="like" fb-xfbml-state="rendered" fb-iframe-plugin-query="action=like&app_id=195555774072&color_scheme=dark&container_width=270&font=arial&height=35&href=https%3A%2F%2Fwww.subispeed.com%2F&layout=standard&locale=en_US&sdk=joey&send=false&share=false&show_faces=false&width=270" style="height: 30px"><span style="vertical-align: bottom; width: 270px; height: 60px;"><iframe name="f3a61a1aced8364" width="270px" height="40px" title="fb:like Facebook Social Plugin" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" allow="encrypted-media" src="https://www.facebook.com/plugins/like.php?action=like&app_id=195555774072&channel=https%3A%2F%2Fstaticxx.facebook.com%2Fconnect%2Fxd_arbiter.php%3Fversion%3D45%23cb%3Dfedcfd90556bb4%26domain%3Dwww.subispeed.com%26origin%3Dhttps%253A%252F%252Fwww.subispeed.com%252Ff9d00abb9d5af%26relation%3Dparent.parent&color_scheme=dark&container_width=270&font=arial&height=35&href=https%3A%2F%2Fwww.subispeed.com%2F&layout=standard&locale=en_US&sdk=joey&send=false&share=false&show_faces=false&width=270" style="border: none; visibility: visible; width: 270px; height: 60px;" class=""></iframe></span></div>
+            <div id="fb-root"></div>
+            <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v7.0&appId=204930700266539&autoLogAppEvents=1" nonce="vefcQnsN"></script>
+            <div class="fb-like" data-href="<?php echo \Base::instance()->get('meta.site_url'); ?>" data-width="" data-layout="standard" data-action="like" data-size="small" data-share="false"></div>
             <div class="athlete_footer_customer_service">
             </div>
          </div>
@@ -66,13 +68,15 @@
    <img src="https://www.subispeed.com/media/wysiwyg/olegnax/athlete/amex.png" height="33" width="54" alt="American Express">
    <img src="https://www.subispeed.com/media/wysiwyg/olegnax/athlete/discover.png" height="33" width="54" alt="Discover">
    <img src="https://www.subispeed.com/media/wysiwyg/olegnax/athlete/paypal.png" height="33" width="54" alt="PayPal"></div>
-         <address>© 2014 SubiSpeed.  Powered by JB Autosports.
+         <address>© <?php echo \Base::instance()->get('meta.copyright_date') . ' ' . \Base::instance()->get('meta.retailer'); ?>.  Powered by JB Autosports.
 
 
    </address>
       </div>
    </div>
 <?php endif; ?>
+
+
 
 <?php if ($this->app->get('DEBUG')) { ?>
 <div class="footer-bottom col-lg-12 col-md-12 col-sm-12 col-xs-12" style="
