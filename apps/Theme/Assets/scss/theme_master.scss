@@ -1,0 +1,29 @@
+/* Palette */
+$primary: #0736f8;
+$secondary: #f0a548;
+$gray: #282828;
+$ltgray: #d9d9d9;
+$ltgray_bg: #ebebeb;
+$white: #fff;
+$bold: 500;
+$CTA: #FF960F;
+
+/* Measurments */
+$padding: 15px;
+$margin: 15px;
+$double_margin: 30px;
+$border_width: 1px;
+$border_radius: 0px;
+$font-size: 14px;
+
+$breakpoints: (
+    "xs":768px,
+    "sm":992px,
+    "md":1200px
+);
+
+.logo_url {
+    background-image: url(https://images.jbautosports.com/image/upload/v1592414552/dev_assets/subispeed_logo.png);
+}
+
+@import "theme/scss/theme";

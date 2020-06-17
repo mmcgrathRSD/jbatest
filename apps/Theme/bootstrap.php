@@ -89,7 +89,9 @@ class ThemeBootstrap extends \Dsc\Bootstrap
         //\Minify\Factory::registerPath($this->app->get('PATH_ROOT') . "public/");
 
         // register the scss css files
-        \Minify\Factory::registerScssSource($this->app->get('PATH_ROOT') . "apps/Theme/Assets/scss/theme_master_" . $this->app->get('sales_channel') . ".scss", $this->app->get('PATH_ROOT') . "apps/Theme/Assets/scss/scss_master.css");
+        // \Minify\Factory::registerScssSource($this->app->get('PATH_ROOT') . "apps/Theme/Assets/scss/theme_master_" . $this->app->get('sales_channel') . ".scss", $this->app->get('PATH_ROOT') . "apps/Theme/Assets/scss/scss_master.css");
+
+        \Minify\Factory::registerScssSource($this->app->get('PATH_ROOT') . "apps/Theme/Assets/scss/theme_master.scss", $this->app->get('PATH_ROOT') . "apps/Theme/Assets/scss/scss_master.css");
         
 
         // add the OLD css assets to be minified
