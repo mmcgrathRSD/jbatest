@@ -1,43 +1,76 @@
-<tmpl type="modules" name="contact-us" />
-<div class="col-lg-9 col-lg-offset-3 col-md-9 col-md-offset-3 col-sm-12 col-xs-12">
-    <h4><strong>NEED HELP WITH SOMETHING ELSE? SEND US A REQUEST</strong></h4>
-    <p>Most questions are responded within 24 hours. For Immediate assistance , please call us or<br />
-            use our live chat feature</p>
-    <div class="row">
-        <div id="contactFormBox">
-            <form method="post" id="contactForm">
-                <div class="col-xs-6 ">
-                    <div class="form-group">
-                        <label>Name*</label> <input class="form-control" placeholder="Name" type="text" name="customer" required/>
+<div class="main row clearfix">
+    <div class="col-main grid_18">     	                    
+        <tmpl type="modules" name="contact-us" />
+
+        <form method="post" action="/contact-us">
+            <div class="fieldset">
+                <h2 class="legend theme_font">Contact Information</h2>
+                <ul class="form-list">
+                    <li class="fields">
+                        <div class="field">
+                            <label for="name" class="required"><em>*</em>Name</label>
+                            <div class="input-box">
+                                <input name="z_name" id="name" title="Name" value=""
+                                    class="input-text required-entry" type="text" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="email" class="required"><em>*</em>Email</label>
+                            <div class="input-box">
+                                <input name="z_requester" id="email" title="Email" value=""
+                                    class="input-text required-entry validate-email" type="text" required>
+                            </div>
+                        </div>
+                    </li>
+                    <div class="input-box">
+                        <label for="order">Order Number</label><br>
+                        <input name="z_order" id="order" title="Order Number" value="" class="input-text"
+                            type="text">
                     </div>
-                </div>
-                <div class="col-xs-6 ">
-                    <div class="form-group">
-                        <label>Email Address*</label> <input class="form-control" placeholder="Email" type="email" name="email" required />
-                    </div>
-                </div>
-                <div class="col-xs-6 ">
-                    <div class="form-group">
-                        <label>Tel Number*</label> <input class="form-control" placeholder="Tel Number" type="text" name="phone" required />
-                    </div>
-                </div>
-                <div class="col-xs-6 ">
-                    <div class="form-group">
-                        <label>Topic*</label> <input class="form-control" placeholder="Topic" type="text" name="topic" required/>
-                    </div>
-                </div>
-                <div class="col-xs-12 ">
-                    <div class="form-group">
-                        <label>Message*</label>
-                        <textarea class="form-control" rows="7" name="message" required></textarea>
-                    </div>
-                </div>
-                <div class="col-xs-12 ">
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-lg btn-block">SUBMIT</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+                    <li><br>
+                        <label for="telephone">Telephone</label>
+                        <div class="input-box">
+                            <input name="z_telephone" id="telephone" title="Telephone" value="" class="input-text"
+                                type="text">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="input-box">
+                            <label for="subject">Subject</label><br>
+                            <input name="z_subject" id="subject" title="Subject" value="" class="input-text"
+                                type="text">
+                        </div><br>
+
+                        <label for="type" class="required"><em>*</em>Type</label>
+                        <select class="required-entry" name="z_drop-down" required>
+                            <option value="">Please select question type</option>
+                            <option value="Tracking">Where can I track my order? Has my order shipped?</option>
+                            <option value="Inventory">Do you have this product in stock? How long would it take to receive?</option>
+                            <option value="Damaged">My parts were damaged during shipment!</option>
+                            <option value="Warranty">My parts aren't working correctly or have stopped working!</option>
+                            <option value="Technical">I have pre-sale questions about certain products.</option>
+                            <option value="Install">I'm not sure how to install the part I just purchased from you...</option>
+                            <option value="RMA">I'd like to cancel my order or I'd like to return items from my order.</option>
+                            <option value="Other">I've got questions that don't pertain to products on your website.</option>
+                        </select>
+                    </li>
+                    <li class="wide">
+                        <br>
+                        <label for="comment" class="required"><em>*</em>Comment</label>
+                        <div class="input-box">
+                            <textarea name="z_description" id="comment" title="Comment"
+                                class="required-entry input-text" cols="5" rows="3" required></textarea>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <input class="mhhs-input" type="text" name="url" autocomplete="off" autofill="off" style="display: none;">
+            <div class="buttons-set">
+                <p class="required">* Required Fields</p>
+                <button type="submit" title="Submit" class="button"><span><span>Submit</span></span></button>
+            </div>
+        </form>
+
+        <div class="m20-top"></div>
     </div>
 </div>

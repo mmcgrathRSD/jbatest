@@ -32,7 +32,7 @@
         "premierperformance/admin": "dev-master",
         "premierperformance/assets": "dev-jba2020_2",
         "premierperformance/data": "dev-master",
-        "premierperformance/library": "dev-master",
+        "premierperformance/library": "dev-jba2020",
         "premierperformance/mailer": "dev-jba2020",
         "premierperformance/minify": "dev-master",
         "premierperformance/modules": "dev-master",
@@ -55,7 +55,8 @@
         "ryanwinchester/netsuite-php": "2017.1.*",
         "maknz/slack": "^1.7",
         "filp/whoops": "^2.3",
-        "guzzlehttp/oauth-subscriber": "^0.3.0"
+        "guzzlehttp/oauth-subscriber": "^0.3.0",
+        "zendesk/zendesk_api_client_php": "^2.2"
     },
     "autoload": {
         "files": ["RocketShipIt/RocketShipIt/RocketShipIt.php"],
@@ -64,4 +65,3 @@
         }
     }
 }
-
