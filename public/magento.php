@@ -105,6 +105,10 @@ $app->route('GET /sync-rally-emails', function() {
 	(new JBAShop\Services\Magento)->syncEmailsFromRally();
 });
 
+$app->route('GET /test-async-cloudinary', function() {
+	(new JBAShop\Services\Magento)->testCloudinaryAsync(5);
+});
+
 /**
  * This method syncs all users from magento to mongo
  * @param int $minutes - Optionally pass amount of minuets, to only sync users created within that timeframe
