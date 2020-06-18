@@ -2474,7 +2474,7 @@ class Magento
         //GlobalConfig
         $uploadProfile = [
             'google' => ['upload-preset'=> 'api_uploads', 'folder' => 'api_testing_google', 'type' => 'upload'],
-            'products' => ['upload-preset'=> 'api_uploads', 'folder' => 'api_testing_products'],
+            'products' => ['upload-preset'=> 'api_uploads', 'folder' => 'api_testing_products', 'type' => 'private'],
         ];
 
         
