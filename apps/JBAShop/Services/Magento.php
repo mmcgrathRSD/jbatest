@@ -1322,6 +1322,7 @@ class Magento
                 sel.parent_product_id
             having
                 count(*) = 1)
+            AND parent_id NOT IN(14550)
         ";
 
         //This query returns 1 record for each dynamic group member. the PDO::FETCH_GROUP is a helper to group all magento for a given dynamic group together
