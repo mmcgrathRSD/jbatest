@@ -1,8 +1,12 @@
 <?php
 echo "<pre>";
-print_r($this->app->get('cloudinary'));
-
-
-foreach($this->app->get('cloudinary') as $log){
-    print_r($log);
+$data = $this->app->get('cloudinary');
+echo "<b>TOTAL UPLOADED: " . count($data) . "</b><br/><br/>";
+foreach($data as $doc){
+    $body = json_decode($doc['body']);
+    echo 'Time:' . $body->timestamp . "<br/>";
+    echo 'Type:' . $body->notification_type . "<br/>";
+    echo 'Type:' . $body->public_id . "<br/><br/>";
 }
+
+?>

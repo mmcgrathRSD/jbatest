@@ -59,7 +59,7 @@ $app->route(['GET /sync-product-images', 'GET /sync-product-images/@magentoid'],
 	
 	$uploadProfile = [
 		'google' => ['upload-preset'=> 'api_uploads', 'folder' => 'google_images', 'type' => 'upload'],
-		'products' => ['upload-preset'=> 'api_uploads', 'folder' => 'product_images'],
+		'products' => ['upload-preset'=> 'api_uploads', 'folder' => 'product_images', 'type' => 'private'],
 	];
 	
 	(new JBAShop\Services\Magento)->syncProductImages($id, $uploadProfile);
