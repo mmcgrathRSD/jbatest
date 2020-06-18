@@ -1926,7 +1926,7 @@ class Magento
                 try{
                     $product->save();
                     array_push($data, ['Matrix Item Created! ', $product->get('magento.id'), '✅']);
-                }catch(Exeption $e){
+                }catch(Exception $e){
                     array_push($data, ['Error Creating Matrix Parent', $e->getMessage(), '❌']);
                 }
                 $this->CLImate->table($data);
