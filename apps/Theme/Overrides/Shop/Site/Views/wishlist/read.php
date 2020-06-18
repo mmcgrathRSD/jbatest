@@ -19,14 +19,14 @@
 
                         </div>
                     </div>
-                    <form class="form-inline" action="/shop/wishlist/send" method="POST" id="wishListEmail">
+                    <!-- <form class="form-inline" action="/shop/wishlist/send" method="POST" id="wishListEmail">
                         <input type='hidden' id='captchatoken' name='captchatoken'/>
                         <div class="form-group">
                             <label for="exampleInputName2">Email Wishlist:&nbsp;&nbsp;</label>
                             <input type="email" name="email" required class="form-control input-text" style="margin-right: 5px;" id="email" no-validation="true" placeholder="Email"><button type="submit" class="button btn-submit"><span><span>Send Wishlist</span></span></button>
                         </div>
                         
-                    </form>
+                    </form> -->
                     </div>
                     <div class="" id="wishListEmailBox">
                         <div class="form-inline">
