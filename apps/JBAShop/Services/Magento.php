@@ -2464,4 +2464,40 @@ class Magento
 
         
     }
+
+    public function testCloudinaryAsync($amount){
+        $model = 'SOMEFAKEMODEL';
+        $magento = 1111111;
+        $image = 'https://via.placeholder.com/150.jpg';
+
+
+        //GlobalConfig
+        $uploadProfile = [
+            'google' => ['upload-preset'=> 'api_uploads', 'folder' => 'api_testing_google', 'type' => 'upload'],
+            'products' => ['upload-preset'=> 'api_uploads', 'folder' => 'api_testing_products'],
+        ];
+
+        
+        //Google Config
+        $userOptions = ['tags' => "test_google_{$model}", 'context' => ['magento_id' => $magento]];
+        $googleOptions = array_merge($uploadProfile['google'], $userOptions);
+
+        //Product Config
+        $meta = ['caption'=> 'im a caption!', 'order' => 1];
+        $productOptions = array_merge($uploadProfile['products'], ['tags' => $model, 'context' => $meta]);
+        
+        $images = array_fill(0, $amount, $image);
+
+        //Send the google images
+        array_walk($images, function($image) use($googleOptions){
+            $uploadGoogle = \Cloudinary\Uploader::upload($image, $googleOptions);
+        });
+
+        //Send Product Images
+        array_walk($images, function($image) use($productOptions){
+            $uploadProduct = \Cloudinary\Uploader::upload($image, $productOptions);
+        });
+        
+
+    }
 }
