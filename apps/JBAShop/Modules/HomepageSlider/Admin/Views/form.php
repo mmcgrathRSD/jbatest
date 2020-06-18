@@ -71,16 +71,80 @@
     }
 </style>
 <div id="hero-options">
-    <label>Change slide with timer?</label><br />
-    <label class="radio-inline">
-        <input type="radio" name="Hero_Options[timer]" value="yes" <?php if(isset($item->get('Hero_Options')['timer']) && $item->get('Hero_Options')['timer'] == "yes" ){echo "checked='checked'";} ?>> Yes
-    </label>
-    <label class="radio-inline">
-       <input type="radio" name="Hero_Options[timer]" value="no" <?php if(isset($item->get('Hero_Options')['timer']) && $item->get('Hero_Options')['timer'] == "no" ){echo "checked='checked'";} ?>> No
-    </label>
+    <div class="row">
+        <div class="col-sm-6">
+            <label>Change slide with timer?</label><br />
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[timer]" value="yes" <?php if(isset($item->get('Hero_Options')['timer']) && $item->get('Hero_Options')['timer'] == "yes" ){echo "checked='checked'";} ?>> Yes
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[timer]" value="no" <?php if(isset($item->get('Hero_Options')['timer']) && $item->get('Hero_Options')['timer'] == "no" ){echo "checked='checked'";} ?>> No
+            </label>
+        </div>
+        <div class="col-sm-6">
+            <label>Transition timer (in milliseconds)</label><br />
+            <input type="text" class="form-control"  name="Hero_Options[length]" value="<?php if(isset($item->get('Hero_Options')['length'])) { echo $item->get('Hero_Options')['length']; }?>">
+        </div>
 
-    <label>Length of timer (in seconds)</label><br />
-    <input type="text" class="form-control"  name="Hero_Options[length]" value="<?php if(isset($item->get('Hero_Options')['length'])) { echo $item->get('Hero_Options')['length']; }?>">
+        <div class="col-sm-6">
+            <label>Auto Height Speed</label>
+            <input type="number" class="form-control" name="Hero_Options[auto_height_speed]" min="0" value="<?php if(isset($item->get('Hero_Options')['auto_height_speed'])) { echo $item->get('Hero_Options')['auto_height_speed']; }?>">
+        </div>
+
+        <div class="col-sm-6">
+            <label>Speed (in milliseconds)</label><br />
+            <input type="text" class="form-control" name="Hero_Options[speed]" value="<?php if(isset($item->get('Hero_Options')['speed'])) { echo $item->get('Hero_Options')['speed']; }?>">
+        </div>
+
+        <div class="col-sm-6">
+            <label>Pause On Hover?</label><br />
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[pause_on_hover]" value="yes" <?php if(isset($item->get('Hero_Options')['pause_on_hover']) && $item->get('Hero_Options')['pause_on_hover'] == "yes" ){echo "checked='checked'";} ?>> Yes
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[pause_on_hover]" value="no" <?php if(isset($item->get('Hero_Options')['pause_on_hover']) && $item->get('Hero_Options')['pause_on_hover'] == "no" ){echo "checked='checked'";} ?>> No
+            </label>
+        </div>
+        <div class="col-sm-6">
+            <label>Allow Wrap?</label><br />
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[allow_wrap]" value="yes" <?php if(isset($item->get('Hero_Options')['allow_wrap']) && $item->get('Hero_Options')['allow_wrap'] == "yes" ){echo "checked='checked'";} ?>> Yes
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[allow_wrap]" value="no" <?php if(isset($item->get('Hero_Options')['allow_wrap']) && $item->get('Hero_Options')['allow_wrap'] == "no" ){echo "checked='checked'";} ?>> No
+            </label>
+        </div>
+
+        <div class="col-sm-6">
+            <label>Log?</label><br />
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[log]" value="yes" <?php if(isset($item->get('Hero_Options')['log']) && $item->get('Hero_Options')['log'] == "yes" ){echo "checked='checked'";} ?>> Yes
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[log]" value="no" <?php if(isset($item->get('Hero_Options')['log']) && $item->get('Hero_Options')['log'] == "no" ){echo "checked='checked'";} ?>> No
+            </label>
+        </div>
+
+        <div class="col-sm-6">
+            <label>Sync?</label><br />
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[sync]" value="yes" <?php if(isset($item->get('Hero_Options')['sync']) && $item->get('Hero_Options')['sync'] == "yes" ){echo "checked='checked'";} ?>> Yes
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[sync]" value="no" <?php if(isset($item->get('Hero_Options')['sync']) && $item->get('Hero_Options')['sync'] == "no" ){echo "checked='checked'";} ?>> No
+            </label>
+        </div>
+
+        <div class="col-sm-6">
+            <label>Swipe?</label><br />
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[swipe]" value="yes" <?php if(isset($item->get('Hero_Options')['swipe']) && $item->get('Hero_Options')['swipe'] == "yes" ){echo "checked='checked'";} ?>> Yes
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="Hero_Options[swipe]" value="no" <?php if(isset($item->get('Hero_Options')['swipe']) && $item->get('Hero_Options')['swipe'] == "no" ){echo "checked='checked'";} ?>> No
+            </label>
+        </div>
+    </div>
 </div>
 <div id="hero-images">
     <div class="clearfix"></div>
@@ -92,41 +156,67 @@
             <strong>Slide #<?php echo $i; ?></strong>
         </h4>
         <div class="hero-slide-inner">
-
-            <label>Desktop Image</label><br />
+            <label>Desktop Slide Image</label><br />
             <div class="portlet-content">
                 <div class="input-group">
                     <div class="input-group-addon">Cloudinary ID</div>
-                    <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][desktop_image]" id="HERO" value="<?php if(isset($Slide['desktop_image'])){echo $Slide['desktop_image'];} ?>">
+                    <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][desktop_image][src]" id="HERO" value="<?php if(isset($Slide['desktop_image']['src'])){echo $Slide['desktop_image']['src'];} ?>">
                     <div class="input-group-addon"> PUBLIC ID</div>
+                </div>
+                <div class="input-group">
+                    <label>Height</label>
+                    <input type="number" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][desktop_image][height]" value="<?php if(isset($Slide['desktop_image']['height'])){echo $Slide['desktop_image']['height'];} ?>">
                 </div>
             </div>
 
-            <label>Mobile Image</label><br />
+            <label>Mobile Slide Image</label><br />
             <div class="portlet-content">
                 <div class="input-group">
                     <div class="input-group-addon">Cloudinary ID</div>
-                    <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][mobile_image]" id="HERO" value="<?php if(isset($Slide['mobile_image'])){echo $Slide['mobile_image'];} ?>">
+                    <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][mobile_image][src]" id="HERO" value="<?php if(isset($Slide['mobile_image']['src'])){echo $Slide['mobile_image']['src'];} ?>">
                     <div class="input-group-addon"> PUBLIC ID</div>
                 </div>
+                <div class="input-group">
+                    <label>Height</label>
+                    <input type="number" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][mobile_image][height]" value="<?php if(isset($Slide['mobile_image']['height'])){echo $Slide['mobile_image']['height'];} ?>">
+                </div>
             </div>
-            <label>Link</label><br />
-            <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][link]" value="<?php if(isset($Slide['link'])){echo $Slide['link'];} ?>">
-
-            <label>Text</label><br />
-            <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][text]" value="<?php if(isset($Slide['text'])){echo $Slide['text'];} ?>">
             
-            <label>Alt Text</label><br />
-            <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][alt]" value="<?php if(isset($Slide['alt'])){echo $Slide['alt'];} ?>">
+            <label>Text Color</label><br     />
+            <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][text_color]" value="<?php echo isset($Slide['text_color']) ? $Slide['text_color'] : '#ffffff'; ?>">
+            <p class="help-block">Use a 6 digit hex value e.g. #ffffff</p>
 
-            <label>Font Color (6 digit hex only. Example: #ffffff)</label><br />
-            <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][color]" value="<?php if(isset($Slide['color'])){echo $Slide['color'];} ?>">
+            <label>Title</label><br />
+            <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][title]" value="<?php if(isset($Slide['title'])){echo $Slide['title'];} ?>">
+            
+            <label>Sub Title</label><br />
+            <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][sub_title]" value="<?php if(isset($Slide['sub_title'])){echo $Slide['sub_title'];} ?>">
+            
+            <label>Link</label><br />
+            <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][link][href]" value="<?php if(isset($Slide['link']['href'])){echo $Slide['link']['href'];} ?>">
+            
+            <label>Link Text</label><br />
+            <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][link][text]" value="<?php if(isset($Slide['link']['text'])){echo $Slide['link']['text'];} ?>">
 
+            <label>Slide Banner Link</label>
+            <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][slide_banner][href]" value="<?php if(isset($Slide['slide_banner']['href'])){echo $Slide['slide_banner']['href'];} ?>">
+            
+            <label>Slide Banner Image</label>
+            <div class="portlet-content">
+                <div class="input-group">
+                    <div class="input-group-addon">Cloudinary ID</div>
+                    <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][slide_banner][src]" value="<?php if(isset($Slide['slide_banner']['src'])){echo $Slide['slide_banner']['src'];} ?>">
+                    <div class="input-group-addon"> PUBLIC ID</div>
+                </div>
+                <div class="input-group">
+                    <label>Alt Tag</label>
+                    <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][slide_banner][alt]" value="<?php if(isset($Slide['slide_banner']['src'])){echo $Slide['slide_banner']['alt'];} ?>">
+                </div>
+            </div>
+           
             <label>Google Analytics Internal Promo ID</label><br />
             <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][promo]" value="<?php if(isset($Slide['promo'])){echo $Slide['promo'];} ?>">
         </div>
-
-
     </div>
 
     <?php $i++; } ?>
@@ -143,59 +233,77 @@
                 </div>
             </div>
         </fieldset>
-    <?php } ?>
-
-
+        <?php } ?>
         <template type="text/template" id="add-slide-template">
-        <fieldset class="template well clearfix">
-            <a class="remove-image btn btn-xs btn-danger pull-right" onclick="RemoveRelatedImage(this);" href="javascript:void(0);">
-                <i class="fa fa-times"></i>
-            </a>
-            <label>New Slide</label>
-            <div class="form-group clearfix">
-                <label>Desktop Image</label><br />
-                <div class="portlet-content">
-                    <div class="input-group">
-                        <div class="input-group-addon">Cloudinary ID</div>
-                        <input type="text" class="form-control" name="Hero_Slides[slide{id}][desktop_image]" id="HERO" value="">
-                        <div class="input-group-addon"> PUBLIC ID</div>
+            <fieldset class="template well clearfix">
+                <a class="remove-image btn btn-xs btn-danger pull-right" onclick="RemoveRelatedImage(this);" href="javascript:void(0);">
+                    <i class="fa fa-times"></i>
+                </a>
+                <label>New Slide</label>
+                <div class="form-group clearfix">
+                    <label>Desktop Slide Image</label><br />
+                    <div class="portlet-content">
+                        <div class="input-group">
+                            <div class="input-group-addon">Cloudinary ID</div>
+                            <input type="text" class="form-control" name="Hero_Slides[slide{id}][desktop_image][src]" id="HERO" value="">
+                            <div class="input-group-addon"> PUBLIC ID</div>
+                        </div>
+                        <div class="input-group">
+                            <label>Height</label>
+                            <input type="number" class="form-control" name="Hero_Slides[slide{id}][desktop_image][height]" id="HERO" value="">
+                        </div>
                     </div>
-                </div>
 
-                <label>Mobile Image</label><br />
-                <div class="portlet-content">
-                    <div class="input-group">
-                        <div class="input-group-addon">Cloudinary ID</div>
-                        <input type="text" class="form-control" name="Hero_Slides[slide{id}][mobile_image]" id="HERO" value="">
-                        <div class="input-group-addon"> PUBLIC ID</div>
+                    <label>Mobile Slide Image</label><br />
+                    <div class="portlet-content">
+                        <div class="input-group">
+                            <div class="input-group-addon">Cloudinary ID</div>
+                            <input type="text" class="form-control" name="Hero_Slides[slide{id}][mobile_image][src]" id="HERO" value="">
+                            <div class="input-group-addon"> PUBLIC ID</div>
+                        </div>
+                        <div class="input-group">
+                            <label>Height</label>
+                            <input type="number" class="form-control" name="Hero_Slides[slide{id}][mobile_image][height]" id="HERO" value="">
+                        </div>
                     </div>
+                    
+                    <label>Title</label>
+                    <input type="text" class="form-control" name="Hero_Slides[slide{id}][title]" value="">
+                    
+                    <label>Sub Title</label>
+                    <input type="text" class="form-control" name="Hero_Slides[slide{id}][sub_title]" value="">
+
+                    <label>Link href</label>
+                    <input type="text" class="form-control" name="Hero_Slides[slide{id}][link][href]" value="">
+
+                    <label>Link Text</label>
+                    <input type="text" class="form-control" name="Hero_Slides[slide{id}][link][text]" value="">
+
+                    <label>Slide Banner Link</label>
+                    <input type="text" class="form-control" name="Hero_Slides[slide{id}][slide_banner][href]" value="">
+
+                    
+                    <label>Slide Banner Image</label><br />
+                    <div class="portlet-content">
+                        <div class="input-group">
+                            <div class="input-group-addon">Cloudinary ID</div>
+                            <input type="text" class="form-control" name="Hero_Slides[slide{id}][slide_banner][src]" value="">
+                            <div class="input-group-addon"> PUBLIC ID</div>
+                        </div>
+                        <div class="input-group">
+                            <label>Alt Tag</label>
+                            <input type="text" class="form-control" name="Hero_Slides[slide{id}][slide_banner][alt]" value="">
+                        </div>
+                    </div>
+
+                    <label>Google Analytics Internal Promo ID</label><br />
+                    <input type="text" class="form-control" name="Hero_Slides[slide{id}][promo]" value="">
                 </div>
-                <label>Link</label><br />
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][link]" value="">
-
-                <label>Text</label><br />
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][text]" value="">
-                
-                <label>Alt Text</label><br />
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][alt]" value="">
-
-                <label>Font Color (6 digit hex only. Example: #ffffff)</label><br />
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][color]" value="">
-
-                <label>Google Analytics Internal Promo ID</label><br />
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][promo]" value="">
-
-            </div>
-
-        </fieldset>
-    </template>
+            </fieldset>
+        </template>
         <div class="form-group">
         <a class="btn btn-warning" id="add-slide-image">Add New Slide</a>
     </div>
-
-
-
-
 
     <div id="new-slider-images" class="form-group"></div>
         <script>
@@ -221,14 +329,8 @@
     });
     </script>
 
-
-
-
-
         <!-- /.portlet -->
     </div>
-
-
 
 </div>
 
