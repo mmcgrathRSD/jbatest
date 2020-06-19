@@ -19,7 +19,7 @@
             </ul>
         </div>
     </div>
-    <tmpl type="modules" name="account_page_sidebar" />
+    <tmpl type="modules" name="account-page-sidebar" />
 
     <?php if (count($wishlistItems)): ?>
         <div class="block block-wishlist">

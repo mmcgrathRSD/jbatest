@@ -9,7 +9,7 @@ foreach($modules as $key=> $module) {
       <div class="main row clearfix">
          <div class="col-main grid_18">
             <div class="std">
-               <tmpl type="modules" name="homepage-mid" />
+               <tmpl type="modules" name="homepage-mid-slider" />
             </div>
          </div>
       </div>

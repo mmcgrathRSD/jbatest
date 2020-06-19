@@ -34,26 +34,6 @@
                 <label>Alt tag</label>
                 <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][image][alt]" id="HERO" value="<?php if(isset($option['image']['alt'])){echo $option['image']['alt'];} ?>">
             </div>
-            <div class="col-sm-6">
-                <label>Image Width</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][image][width]" id="HERO" value="<?php if(isset($option['image']['width'])){echo $option['image']['width'];} ?>">
-            </div>
-            <div class="col-sm-6">
-                <label>Image Height</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][image][height]" id="HERO" value="<?php if(isset($option['image']['height'])){echo $option['image']['height'];} ?>">
-            </div>
-            <div class="col-sm-12">
-                <label>Line 1</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][line1]" value="<?php if(isset($option['line1'])) { echo $option['line1']; }?>">
-            </div>
-            <div class="col-sm-12">
-                <label>Line 2</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][line2]" value="<?php if(isset($option['line2'])) { echo $option['line2']; }?>">
-            </div>
-            <div class="col-sm-12">
-                <label>Line 3</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][line3]" value="<?php if(isset($option['line3'])) { echo $option['line3']; }?>">
-            </div>
             <div class="col-sm-12">
                 <label>Link</label>
                 <input type="text" class="form-control" name="Hero_Slides[slide<?php echo $i; ?>][link][href]" value="<?php if(isset($option['link']['href'])) { echo $option['link']['href']; }?>">
@@ -99,33 +79,13 @@
                 <label>Alt tag</label>
                 <input type="text" class="form-control" name="Hero_Slides[slide{id}][image][alt]" id="HERO" value="">
             </div>
-            <div class="col-sm-6">
-                <label>Image Width</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][image][width]" id="HERO" value="">
-            </div>
-            <div class="col-sm-6">
-                <label>Image Height</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][image][height]" id="HERO" value="">
-            </div>
-            <div class="col-sm-12">
-                <label>Line 1</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][line1]" value="">
-            </div>
-            <div class="col-sm-12">
-                <label>Line 2</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][line2]" value="">
-            </div>
-            <div class="col-sm-12">
-                <label>Line 3</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][line3]" value="">
-            </div>
             <div class="col-sm-12">
                 <label>Link</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][href]" value="">
+                <input type="text" class="form-control" name="Hero_Slides[slide{id}][link][href]" value="">
             </div>
             <div class="col-sm-12">
                 <label>Link Text</label>
-                <input type="text" class="form-control" name="Hero_Slides[slide{id}][text]" value="">
+                <input type="text" class="form-control" name="Hero_Slides[slide{id}][link][text]" value="">
             </div>
         </fieldset>
 </template>

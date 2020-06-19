@@ -258,7 +258,7 @@
         </div>
          <?php endif;
          ?>
-         <tmpl type="modules" name="account_page_sidebar" />
+         <tmpl type="modules" name="account-page-sidebar" />
    </div>
 </div>
 </div>

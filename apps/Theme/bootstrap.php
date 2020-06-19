@@ -34,6 +34,7 @@ class ThemeBootstrap extends \Dsc\Bootstrap
             // register this theme's module positions with the admin
             \Modules\Factory::registerPositions(array(
                 'sidebar-slider',
+                'homepage-mid-slider',
                 'homepage-slider',
 				'homepage-category-boxes',
             	'footer-promo',
