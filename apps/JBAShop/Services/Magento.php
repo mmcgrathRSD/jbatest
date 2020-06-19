@@ -1805,6 +1805,7 @@ class Magento
             WHERE
                 cpe.type_id = 'configurable' 
                 AND cpe.entity_id NOT IN ( SELECT entity_id FROM catalog_product_entity_int WHERE attribute_id = 96 AND VALUE = 2 AND store_id = 0 ) 
+                AND cpe.entity_id >= 9839
                 ORDER BY cpe.entity_id, relation.child_id, attribute_ordering, attribute_title_id, attribute_title, attribute_option_ordering, attribute_option_value
             ";
 
@@ -1830,13 +1831,13 @@ class Magento
                     array_push($data, ['Matrix Parent NOT in mongo: ', $parentId, '❌']);
                 }
 
+                if (empty($product->_id)) {
+                    continue;
+                }
+
                 //This handles situation where matrix parent doesnt have sales channels (assign both)
                 if (empty($product->get('publication.sales_channels'))) {
                     $product->set('sales_channel_ids', array_column($salesChannels, 'id'));
-                }
-
-                if (empty($product->_id)) {
-                    continue;
                 }
 
                 $product->set('product_type', 'matrix');
