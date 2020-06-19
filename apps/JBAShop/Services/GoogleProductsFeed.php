@@ -124,7 +124,7 @@ class GoogleProductsFeed
 				$item = array_merge([
 					'title'                     => $title,
 					'link'                      => $link,
-					'description'               => preg_replace('/(\s)+/', ' ', $product->get('short_description')),
+					'description'               => preg_replace('/(\s)+/', ' ', str_replace('\"' ,'"', trim(strip_tags($product->get('short_description'))))),
 					'g:id'                      => $modelNumber,
 				    'g:identifier_exists'       => $gidentifier_exists,
 				    'g:gtin'                    => $gtin,
