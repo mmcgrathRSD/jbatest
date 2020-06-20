@@ -324,64 +324,14 @@ class Magento
                 
                 $category = (new \Shop\Models\Categories)->setCondition('magento.id', $row['id'])->getItem();
 
-                if(empty($category)){
-                    $category = new \Shop\Models\Categories();
-                }
-                
                 $category
-                    ->set('title', $row['name'])
-                    ->set('description', $row['description'])
-                    ->set('magento.id', $row['id'])
-                    ->set('magento.parent_id', $row['parent_id'])
-                    ->set('gm_product_category', 'Vehicles & Parts > Vehicle Parts & Accessories')
-                    ->set('seo.page_title', $row['page_title'])
-                    ->set('seo.meta_description', $row['meta_description'])
-                    ->set('seo.meta_keywords', explode(',',$row['meta_keywords']));
-
-                if (in_array($row['parent_id'], array_keys($categoryIds))) {
-                    $category->set('parent', $categoryIds[$row['parent_id']]);
-                } else {
-                    $incomplete = true;
-                    $this->CLImate->yellow($row['url_path'] . '(' . $row['id'] . ')');
-                    continue;
-                }
+                    ->set('description', $row['description']);
                 
-                //Add Sales Channels To Categories
-                $categorySalesChannels = [];
-                if ($row['channel'] === 'subispeed') {
-                    $categorySalesChannels[] = $salesChannels['subispeed'];
-                }
-                if ($row['channel'] === 'ftspeed') {
-                    $categorySalesChannels[] = $salesChannels['ftspeed'];
-                }
-                if(!empty($categorySalesChannels)){
-                    $category->set('sales_channels', $categorySalesChannels);
-                }
-
                 //Advance the progress bar, output the cat title
                 $progress->advance(1, $category['title']);
 
                 $category->save();
-                $categoryIds[$row['id']] = $category->id;
-
-                //See if the redirect already exists
-                $redirect = (new \Redirect\Admin\Models\Routes)->setCondition('url.alias', $row['url_path'])->getItem();
-
-                if(empty($redirect)){
-                    $redirect = new \Redirect\Admin\Models\Routes();
-                }
-
-                $redirect->set('title', 'Magento category redirect: ' . $row['name'])
-                    ->set('url.alias', $row['url_path'])
-                    ->set('url.redirect', $category->url())
-                    ->set('magento', true);
                 
-                try{
-                    $redirect->save();
-                }catch(Exception $e){
-                    //If redirect already exists, do nothing
-                    $this->CLImate->red($e->getMessage());
-                }
             }
         } while ($incomplete);
     }
@@ -2430,6 +2380,9 @@ class Magento
                 'publication.sales_channels' => ['$exists' => true, '$not' => ['$size' => 0]]
             ],
             [
+                'sort' => ['tracking.model_number' => 1]
+            ],
+            [
                 'batchSize' => 50,
                 'noCursorTimeout' => true,
             ]
@@ -2440,7 +2393,7 @@ class Magento
                 $product = (new \Shop\Models\Products)->bind($doc);
                 $product->getImagesForProductFromCloudinary();
             }catch(Exception $e){
-
+                $this->CLImate->red($e->getMessage());
             }
 
             $this->CLImate->green('Product Images Synced' . $product->get('tracking.model_number_flat'));
