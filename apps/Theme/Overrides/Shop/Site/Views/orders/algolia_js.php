@@ -1,4 +1,4 @@
-<?php $site_type = \Base::instance()->get('SITE_TYPE'); ?>
+<?php echo $site_type = \Base::instance()->get('SITE_TYPE'); ?>
 <?php if (!empty($this->app->get('algolia.read_api_key')) && !empty($this->app->get('algolia.app_id')) && $checkoutmode == 0) : ?>
     <script>
         var searchOrders = instantsearch({
@@ -9,7 +9,7 @@
                 facets: [
                     'user_id'
                 ],
-                filters: 'user_id: <?php echo $this->auth->getIdentity()->reload()->get('netsuite.internalId'); ?>'
+                filters: 'user_id = <?php echo (int) $this->auth->getIdentity()->reload()->get('netsuite.internalId'); ?>'
             },
         });
         
