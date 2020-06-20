@@ -2380,9 +2380,7 @@ class Magento
                 'publication.sales_channels' => ['$exists' => true, '$not' => ['$size' => 0]]
             ],
             [
-                'sort' => ['tracking.model_number' => 1]
-            ],
-            [
+                'sort' => ['tracking.model_number' => 1],
                 'batchSize' => 50,
                 'noCursorTimeout' => true,
             ]
@@ -2393,7 +2391,7 @@ class Magento
                 $product = (new \Shop\Models\Products)->bind($doc);
                 $product->getImagesForProductFromCloudinary();
             }catch(Exception $e){
-                $this->CLImate->red($e->getMessage());
+                $this->CLImate->red('ERROR: ' . $e->getMessage());
             }
 
             $this->CLImate->green('Product Images Synced' . $product->get('tracking.model_number_flat'));
