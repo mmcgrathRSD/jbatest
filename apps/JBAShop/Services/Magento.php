@@ -1083,8 +1083,7 @@ class Magento
     public function syncDynamicGroupProducts()
     {
 
-        $sql = "
-        SELECT
+        $sql = "SELECT
             *
         FROM
             (
@@ -1325,6 +1324,19 @@ class Magento
             AND parent_id NOT IN(14550)
         ";
 
+        $salesChannels = [
+            'ftspeed' => [
+                'id' => '5e18ce8bf74061555646d847',
+                'title' => 'FTSpeed',
+                'slug' => 'ftspeed'
+            ],
+            'subispeed' => [
+                'id' => '5841b1deb38c50ba028b4567',
+                'title' => 'SubiSpeed',
+                'slug' => 'subispeed'
+            ]
+        ];
+
         //This query returns 1 record for each dynamic group member. the PDO::FETCH_GROUP is a helper to group all magento for a given dynamic group together
         //For example, $productGroup will contain all recrods for a given dynamic group
         $select = $this->db->prepare($sql);
@@ -1336,8 +1348,6 @@ class Magento
             $progress = $this->CLImate->progress()->total(count($rows));
 
             foreach($rows as $magentoID => $productGroup){
-                $options = [];
-
                 //The dynamic group parent is now created in the "productInfo" sync. 
                 $groupParent = (new \Shop\Models\Products)->setCondition('magento.id', $magentoID)->getItem();
 
@@ -1345,50 +1355,20 @@ class Magento
                     $failures[] = ['No Parent Found For ', $magentoID];
                     continue;
                 }
+
+                $currentSalesChannels  = [];
                 
-                foreach($productGroup as $productOption){
-                    
-
-                    //Dynamic Kit Option Properties
-                    $options[$productOption['option_id']]['id'] = new \MongoDB\BSON\ObjectID();
-                    $options[$productOption['option_id']]['title'] = $productOption['option_title'];
-                    $options[$productOption['option_id']]['allow_none'] = $productOption['required'] ? false : true;
-                    $options[$productOption['option_id']]['quantity'] = (int) $productOption['value_required_quantity'];
-                    $options[$productOption['option_id']]['discount_percentage'] = 0;
-
-                    //Lookup the model number, changed to not fail the whole group if a child doesnt exist in NS.
-                    $netSuiteItemId = (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOption['value_model_number']))->itemId;
-
-                    //Only write the child option to the values array if it exists in NS
-                    if($netSuiteItemId){
-                        //Dynamic Kit option value properties
-                        $options[$productOption['option_id']]['values'][] = [
-                            'id' => new \MongoDB\BSON\ObjectID(),
-                            'model_number' => $netSuiteItemId,
-                            'magento_id' => $productOption['value_model_number'],
-                            'option_id' => $productOption['option_id'],
-                            'title' => $productOption['option_title']
-                        ];
-                    }
+                if(!empty($productGroup[0]['subispeed'])){
+                    $currentSalesChannels[] = $salesChannels['subispeed'];
+                }
+                if(!empty($productGroup[0]['ftspeed'])){
+                    $currentSalesChannels[] = $salesChannels['ftspeed'];
                 }
 
-                //remove any options that dont have any values
-                $options = array_filter(array_values($options), function($option){
-                    return array_key_exists('values', $option);
-                });
-                
-            
-                //Build/Update the dyanmic kit and save it to mongo
-                $groupParent
-                    ->set('product_type', 'dynamic_group')
-                    ->set('kit_options', $options);
-                
-                if($groupParent->get('publication.status') == 'unpublished'){
-                    $groupParent->set('publication.status', 'published');
-                }
+                $groupParent->set('publication.sales_channels', $currentSalesChannels);
 
                 try{
-                    $groupParent->save();
+                    $groupParent->store();
                 }catch(Exception $e){
                     $this->CLImate->red($e->getMessage());
                 }
@@ -1945,7 +1925,9 @@ class Magento
             'projection' => [
                 'copy' => true,
                 'tracking.model_number' => true
-            ]
+            ],
+            'batchSize' => 50,
+            'noCursorTimeout' => true,
         ]);
 
         foreach ($productDocs as $doc) {
