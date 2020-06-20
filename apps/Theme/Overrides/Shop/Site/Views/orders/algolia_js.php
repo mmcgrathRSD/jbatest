@@ -1,4 +1,4 @@
-<?php echo $site_type = \Base::instance()->get('SITE_TYPE'); ?>
+<?php $site_type = \Base::instance()->get('SITE_TYPE'); ?>
 <?php if (!empty($this->app->get('algolia.read_api_key')) && !empty($this->app->get('algolia.app_id')) && $checkoutmode == 0) : ?>
     <script>
         var searchOrders = instantsearch({
