@@ -2389,12 +2389,19 @@ class Magento
         foreach($products as $doc){
             try{
                 $product = (new \Shop\Models\Products)->bind($doc);
-                $product->getImagesForProductFromCloudinary();
+                $count = $product->getImagesForProductFromCloudinary();
             }catch(Exception $e){
                 $this->CLImate->red('ERROR: ' . $e->getMessage());
             }
 
-            $this->CLImate->green('Product Images Synced' . $product->get('tracking.model_number_flat'));
+            if($count > 0){
+                $this->CLImate->green($count . ' Product Images Synced' . $product->get('tracking.model_number_flat'));
+            }else{
+                $this->CLImate->red('No Images Found For:' . $product->get('tracking.model_number_flat'));
+            }
+
+            $this->CLImate->green('sleeping..');
+            sleep(1);
         }
 
         

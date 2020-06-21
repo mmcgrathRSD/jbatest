@@ -66,7 +66,7 @@ $app->route(['GET /sync-product-images', 'GET /sync-product-images/@magentoid'],
 });
 
 $app->route(['GET /sync-google-images'], function($f3, $params) use($CLImate, $app) {
-	(new JBAShop\Services\Magento)->syncCloudinaryToMongo('google_images', 'upload');
+	(new JBAShop\Services\Magento)->syncCloudinaryToMongo('upload', 'google_images');
 });
 
 $app->route('GET /sync-category-images', function() use($CLImate) {
