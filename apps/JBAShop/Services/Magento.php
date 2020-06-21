@@ -727,7 +727,7 @@ class Magento
                 ], [
                     'projection' => [
                         '_id' => true,
-                        'tracking.model_number' => true,
+                        'tracking.model_number_flat' => true,
                         'magento.id' => true,
                     ],
                 ]);
