@@ -741,10 +741,10 @@ class Magento
                 $this->CLImate->green('Product Found ' . $magentoId . ' Trying Cloudinary');
 
                 //Grab some the properties from the model we need
-                ['tracking' => ['model_number' => $model], 'magento' =>['id' => $magento]] = $product;
+                ['tracking' => ['model_number_flat' => $model], 'magento' =>['id' => $magento]] = $product;
                                 
                 if (!empty($links['google'])) {
-                    $userOptions = ['tags' => "google_{$model}", 'context' => ['magento_id' => $magento]];
+                    $userOptions = ['tags' => "{$model}", 'context' => ['magento_id' => $magento]];
                     $options = array_merge($uploadProfile['google'], $userOptions);
                     
                     //Upload the google image
@@ -784,8 +784,8 @@ class Magento
         $nextCursor = null;
 
         $cloudinaryOptions = [
-            'type' => $type, 
-            'prefix' => $folder, 
+            'type' => 'upload', 
+            'prefix' => 'google_images/', 
             'tags' => true,
             'context' => true,
             'max_results' => 500,
@@ -2380,7 +2380,7 @@ class Magento
                 'publication.sales_channels' => ['$exists' => true, '$not' => ['$size' => 0]]
             ],
             [
-                'sort' => ['tracking.model_number' => 1],
+                'sort' => ['tracking.model_number' => -1],
                 'batchSize' => 50,
                 'noCursorTimeout' => true,
             ]
@@ -2397,7 +2397,7 @@ class Magento
             if($count > 0){
                 $this->CLImate->green($count . ' Product Images Synced' . $product->get('tracking.model_number_flat'));
             }else{
-                $this->CLImate->red('No Images Found For:' . $product->get('tracking.model_number_flat'));
+                $this->CLImate->red('No Images Found For:' . $product->get('tracking.model_number'));
             }
 
             $this->CLImate->green('sleeping..');
@@ -2442,4 +2442,6 @@ class Magento
         
 
     }
+
+    
 }
