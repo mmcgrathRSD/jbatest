@@ -37,7 +37,7 @@
                         <td>
                             <h3 class="product-name"><a href="/part/<?php echo \Dsc\ArrayHelper::get($item, 'product.slug'); ?>" title="<?php echo \Dsc\ArrayHelper::get($item, 'product.title'); ?>"><?php echo \Dsc\ArrayHelper::get($item, 'product.title'); ?></a></h3>
                             <div class="description std">
-                                <div class="inner"><?php echo \Dsc\ArrayHelper::get($item, 'product.short_description'); ?></div>
+                                <div class="inner"><?php echo \Dsc\ArrayHelper::get($item, 'product.description'); ?></div>
                             </div>
                         </td>
                         <td>
