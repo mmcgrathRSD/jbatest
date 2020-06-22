@@ -76,10 +76,7 @@
    </div>
 <?php endif; ?>
 
-<script type="text/javascript">
-var pkBaseURL = (("https:" == document.location.protocol) ? "https://" : "http://");
-document.write(unescape("%3Cscript async src='" + pkBaseURL + "s3.amazonaws.com/aascript/stage.subispeed.com/abandonaid-stage.subispeed.com.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
+
 
 <?php if ($this->app->get('DEBUG')) { ?>
 <div class="footer-bottom col-lg-12 col-md-12 col-sm-12 col-xs-12" style="
