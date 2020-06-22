@@ -8,7 +8,7 @@
     <?php
         $slides = $module->model->get('Hero_Slides');
         foreach($slides as $key => $slide){
-            $imgUrl = \cloudinary_url(\Audit::instance()->isMobile() ? $slide['moblile_image']['src'] : $slide['desktop_image']['src'], [
+            $imgUrl = \cloudinary_url(\Audit::instance()->isMobile() ? $slide['mobile_image']['src'] : $slide['desktop_image']['src'], [
                 'fetch_format' => 'auto',
                 'sign_url' => true,
                 'secure' => true
