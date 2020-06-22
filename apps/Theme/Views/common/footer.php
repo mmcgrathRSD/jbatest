@@ -18,10 +18,6 @@
                      <li><a href="/shop/giftcards/balance">Check Gift Card</a>
                      </li>
                   </ul>
-                  <p></p>
-                  <p>
-                     <script type="text/javascript" src="https://sealserver.trustwave.com/seal.js?style=invert"></script>
-                  </p>
                </div>
                <div class="one_half last">
                   <h4><a name="footer2"></a>Company</h4>
