@@ -63,11 +63,11 @@
 
    <div class="copyright-container">
       <div class="site-width">
-         <div class="cc-icons"><img src="https://www.subispeed.com/media/wysiwyg/olegnax/athlete/visa.png" height="33" width="54" alt="Visa">
-   <img src="https://www.subispeed.com/media/wysiwyg/olegnax/athlete/mastercard.png" height="33" width="54" alt="Mastercard">
-   <img src="https://www.subispeed.com/media/wysiwyg/olegnax/athlete/amex.png" height="33" width="54" alt="American Express">
-   <img src="https://www.subispeed.com/media/wysiwyg/olegnax/athlete/discover.png" height="33" width="54" alt="Discover">
-   <img src="https://www.subispeed.com/media/wysiwyg/olegnax/athlete/paypal.png" height="33" width="54" alt="PayPal"></div>
+         <div class="cc-icons"><img src="/theme/img/jba/visa.png" height="33" width="54" alt="Visa">
+   <img src="/theme/img/jba/mastercard.png" height="33" width="54" alt="Mastercard">
+   <img src="/theme/img/jba/amex.png" height="33" width="54" alt="American Express">
+   <img src="/theme/img/jba/discover.png" height="33" width="54" alt="Discover">
+   <img src="/theme/img/jba/paypal.png" height="33" width="54" alt="PayPal"></div>
          <address>© <?php echo \Base::instance()->get('meta.copyright_date') . ' ' . \Base::instance()->get('meta.retailer'); ?>.  Powered by JB Autosports.
 
 
