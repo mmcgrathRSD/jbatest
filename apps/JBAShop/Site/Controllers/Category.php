@@ -108,8 +108,7 @@ class Category extends \Shop\Site\Controllers\Category
                         "categoryName" => $category->title,
                         "categorySize" => \Shop\Models\Products::collection()->count(['categories.slug' => $category->get('slug')]),
                         "categoryProducts" => $catProds,
-                        "pageType" => "catalog/category/view",
-                        "site_type" => "d"
+                        "pageType" => "catalog/category/view"
                     ]
                 ]);
                 $this->app->set('gtm.event', ['ecommerce' => ['impressions' => $catProds]]);
