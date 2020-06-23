@@ -34,7 +34,7 @@ class Product extends \Shop\Admin\Controllers\Product
         }
 
         try {
-            $item = $this->getModel()->setState('filter.id', $id)->getItem();
+            $item = $this->getModel()->setCondition('_id', new \MongoDB\BSON\ObjectId($id))->getItem();
         } catch ( \Exception $e ) {
             \Dsc\System::instance()->addMessage( "Invalid Item: " . $e->getMessage(), 'error');
             $this->app->reroute( $this->list_route );
