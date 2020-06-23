@@ -514,7 +514,7 @@ class Magento
                     ->set('magento.id', $row['id'])
                     ->set('title', !empty($titleMatches) ? trim($titleMatches[0]) : $row['default_title'])
                     ->set('copy', $row['long_description'])
-                    ->set('short_description', $row['short_description'])
+                    ->set('description', $row['short_description'])
                     ->set('categories', $newProductCategories)
                     ->set('metadata.created', \Dsc\Mongo\Metastamp::getDate($row['created_at']))
                     //seo stuff, we might need to split this out later by sales channel 
