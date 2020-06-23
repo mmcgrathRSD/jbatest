@@ -159,7 +159,6 @@ class GoogleProductsFeed
 			}
 		}catch(\Exception $e){
 			//do nothing
-			var_dump("{$e->getMessage()} \n {$e->getFile()} @ {$e->getLine()}");die('ooopsies');
 		}
 		$this->endXML($productsWriter);
 
