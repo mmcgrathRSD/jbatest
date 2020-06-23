@@ -4,7 +4,7 @@
 	<?php $slides = (array) $module->model->get('Hero_Slides');
 		foreach($slides as $key => $slide){ ?>
 			<div class="slide slide-193 <?php echo $key === 0 ? 'first' : ''; ?>">
-			<?php $imgUrl = \cloudinary_url(\Audit::instance()->isMobile() ? $slide['moblile_image']['src'] : $slide['desktop_image']['src'], [
+			<?php $imgUrl = \cloudinary_url(\Audit::instance()->isMobile() ? $slide['mobile_image']['src'] : $slide['desktop_image']['src'], [
                         'fetch_format' => 'auto',
                         'sign_url' => true,
 	                    'secure' => true
