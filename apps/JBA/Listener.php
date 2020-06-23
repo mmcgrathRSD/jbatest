@@ -44,13 +44,6 @@ class Listener extends \Prefab
                     $user->save();
                     \Dsc\System::instance()->get('auth')->setIdentity( $user );
                 }
-
-				// if (hash('sha256', $parts[1] . $password) == $parts[0]) {
-				// 	$user->set('password', $hash);
-				// 	$user->clear('old.password');
-				// 	$user->save();
-				// 	\Dsc\System::instance()->get('auth')->setIdentity( $user );
-				// }
 			}
 		} catch ( \Exception $e ) {
 			$this->setError('Invalid Email');
