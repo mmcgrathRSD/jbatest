@@ -429,10 +429,10 @@ $app->route('GET /queueabandonedcartemails', '\RallyShop\Models\CartsAbandoned::
  */
 $app->route('GET /save-matrix-items',
 		function() {	
-			$docs = (new \RallyShop\Models\Products)->collection()->find(['product_type' => 'matrix' ]);
+			$docs = (new \Shop\Models\Products)->collection()->find(['product_type' => 'matrix' ]);
 			foreach ($docs as $doc) {	
 			    try {
-			        (new \RallyShop\Models\Products)->bind($doc)->save();
+			        (new \Shop\Models\Products)->bind($doc)->save();
 			    } catch (\Exception $e) {
 			    }
 			}
