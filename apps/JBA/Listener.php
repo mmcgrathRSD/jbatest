@@ -26,13 +26,13 @@ class Listener extends \Prefab
 			$model->setState('filter.email', $username_input);
 
 			if ($user = $model->getItem()) {
-				$old = $user->{'old.password'};
+				$old = $user->get('old.password');
 				$parts = explode(':', $old);
 
                 if(hash('sha256', $parts[1] . $password) == $parts[0]){
                     $newPassword = password_hash($password, PASSWORD_DEFAULT);
                     $user->set('password', $newPassword);
-                    $user->clear('old.password');
+                    $user->clear('old');
                     $user->save();
                     \Dsc\System::instance()->get('auth')->setIdentity( $user );
                 }
@@ -40,7 +40,7 @@ class Listener extends \Prefab
                 if(hash('md5', $parts[1] . $password) == $parts[0]){
                     $newPassword = password_hash($password, PASSWORD_DEFAULT);
                     $user->set('password', $newPassword);
-                    $user->clear('old.password');
+                    $user->clear('old');
                     $user->save();
                     \Dsc\System::instance()->get('auth')->setIdentity( $user );
                 }
