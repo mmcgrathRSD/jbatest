@@ -51,7 +51,7 @@
                 <select 
                     name="<?php echo $attribute['id']; ?>" 
                     id="<?php echo $attribute['id']; ?>" 
-                    data-name="<?php echo $attribute['id']; ?>" 
+                    data-name="<?php echo $attribute['title']; ?>" 
                     data="<?php echo $key; ?>"
                     class="required-entry super-attribute-select super-attribute-select-order-<?php echo $key; ?>" 
                     <?php echo ($key > 0) ? 'disabled' : ''; ?>
@@ -178,3 +178,33 @@
     </div>
 </form>
 </div>
+
+<script type="text/javascript">
+    $('.addToCartForm').submit(function(e) {
+        // stop submitting form
+        e.preventDefault();
+
+
+        var $form = $(this);
+
+        // add data
+        $('.matrix-option').remove();
+        $('.super-attribute-select').each(function(i) {
+            var attribute = $(this).data('name');
+            var value = $(this).find('option:selected').text();
+
+            $("<input />")
+                .addClass('matrix-option')
+                .attr('type', 'hidden')
+                .attr('name', 'options[' + i + ']')
+                .attr('value', JSON.stringify({
+                    attribute: attribute,
+                    value: value
+                }))
+                .appendTo($form);
+        });
+
+        // continue submitting form
+        return true;
+    });
+</script>
