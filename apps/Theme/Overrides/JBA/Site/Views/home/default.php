@@ -15,18 +15,3 @@ foreach($modules as $key=> $module) {
       </div>
    </div>
 </div>
-<?php
-   if(\Audit::instance()->isbot()){
-      $prodCursor = (new \Shop\Models\Products)->collection()->find([
-         'publication.sales_channels.slug' => \Base::instance()->get('sales_channel'),
-         'publication.status' => 'published',
-         'product_type' => ['$ne' => 'matrix_subitem']
-      ]);
-      foreach($prodCursor as $doc){
-         $path = sprintf("/part/%s\n", $doc['slug']);
-         echo <<<HTML
-         <a href="{$path}">$path</a>
-         HTML;
-      }
-   }
-?>
