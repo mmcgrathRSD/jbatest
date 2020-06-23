@@ -65,90 +65,102 @@ class GoogleProductsFeed
 		$productIds = [];
 		$productsWriter = $this->startXML($name);
 		$progress = $mate->progress()->total(count($categories));
+		try{
+			//for each category collect all products and generate xml feed entries
+			foreach ($categories as $category) {
+				$progress->advance(0, $category['title']);
+				$googleProductCategory = $category['gm_product_category'];
+				$query = [
+					'publication.sales_channels.slug' => \Base::instance()->get('sales_channel'),
+					'categories.0.id'    => new \MongoDB\BSON\ObjectID((string) $category['_id'])
+				];
 
-		//for each category collect all products and generate xml feed entries
-		foreach ($categories as $category) {
-			$progress->advance(0, $category['title']);
-			$googleProductCategory = $category['gm_product_category'];
-			$query = [
-			    'publication.sales_channels.slug' => \Base::instance()->get('sales_channel'),
-				'categories.0.id'    => new \MongoDB\BSON\ObjectID((string) $category['_id'])
-			];
+				$products = $productCollection->find($query);
+				foreach ($products as $data) {
+					/** @var \JBAShop\Models\Products $product */
+					$product = (new \JBAShop\Models\Products())->bind($data);
+					$additionalItemInfo = [];
 
-			$products = $productCollection->find($query);
-			foreach ($products as $data) {
-				/** @var \JBAShop\Models\Products $product */
-				$product = (new \JBAShop\Models\Products())->bind($data);
-				$additionalItemInfo = [];
+					if(!empty($product->specs)){//if the item has specs then we will try and attach apparel data.
+						$specs =  array_map('strtolower', $product->specs);//lowercase all attributes stored in specs.
+						$additionalItemInfo = array_filter([
+							'g:gender' => $specs['Gender'] ?? 'unisex',//set gender, if no spec is set we default to unisex.
+							'g:color' => $specs['Color'],//if this isn't set then that's on data team I guess.
+							'g:age_group' => $specs['Age Group'] ?? 'adult',//set to adult if no age group set.
+							'g:size' => in_array($specs['Size'], ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl']) ? $specs['Size'] : null,//once again if this isn't set it's on the data team.
+						]);// remove any empty values from array.
+					}
 
-				if(!empty($product->specs)){//if the item has specs then we will try and attach apparel data.
-					$specs =  array_map('strtolower', $product->specs);//lowercase all attributes stored in specs.
-					$additionalItemInfo = array_filter([
-						'g:gender' => $specs['Gender'] ?? 'unisex',//set gender, if no spec is set we default to unisex.
-						'g:color' => $specs['Color'],//if this isn't set then that's on data team I guess.
-						'g:age_group' => $specs['Age Group'] ?? 'adult',//set to adult if no age group set.
-						'g:size' => in_array($specs['Size'], ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl']) ? $specs['Size'] : null,//once again if this isn't set it's on the data team.
-					]);// remove any empty values from array.
+					$productId = (string) $product->id;
+
+					if (in_array($productId, $productIds)) {
+						continue;
+					}
+
+					if($product->get('product_type') === 'group'){
+						$additionalItemInfo['g:group_item'] = 'yes';
+					}
+
+					$productIds[] = $productId;
+					$modelNumber = $product->get('tracking.model_number');
+					$gtin = $product->get('tracking.upc');
+					$mpn = trim(substr($modelNumber, strpos($modelNumber, ' ')));
+					$title = $product->title;
+					$link = $product->generateStandardURL(true);
+
+					if(strtolower($product->get('manufacturer.title')) == 'cobb tuning') {
+						$price = $product->price(null, null, null, 'map');
+					} else {
+						$price = $product->price();
+					}
+
+					$stock = ($product->inventory() > 0 || $product->getDropshipItem()) ? 'in stock' : 'out of stock';//if the inventory is in stock or if it's a dropship only item
+					$gidentifier_exists = 'yes';
+					if(empty(trim($gtin)) || !$this->isValidBarcode($gtin)) {
+						//If there is not an identifier don't include the value in the array
+						$gidentifier_exists = null;
+						$gtin = null;
+					}
+
+					//if has flat_shipping fee add shipping data;
+					if($product->get('shipping.is_large_freight_item')){
+						$additionalItemInfo = array_merge(['g:shipping' => [
+							'g:price'=> number_format((float)$product->getHandlingFee(), 2, '.',  ''),//google doesn't want the ,'s
+						]], $additionalItemInfo);
+					}
+
+					//merge all non null values
+					$item = array_merge(array_filter([
+						'title'                     => $title,
+						'link'                      => $link,
+						'description'               => preg_replace('/(\s)+/', ' ', strip_tags( $product->get('description'))),
+						'g:id'                      => $modelNumber,
+						'g:identifier_exists'       => $gidentifier_exists,
+						'g:gtin'                    => $gtin,
+						'g:mpn'                     => $mpn,
+						'g:price'                   => $price,
+						'g:image_link'              => $product->productFeedsImage([],!empty($product->get('google_image')) ? 'google_image' : 'featured_image.slug'),
+						'g:manufacturer'            => $product->get('manufacturer.title'),//See line 136
+						'g:brand'                   => $product->get('manufacturer.title'),
+						'g:condition'               => 'new',
+						'g:availability'            => $stock,
+						'g:google_product_category' => $googleProductCategory,//According to David "Looks like we are populating the category with the above data for all parts/feeds." RSD has something similar to this so we will utilize that functionality.
+						'g:product_type'            => $googleProductCategory,//From the sample xml provided by David data this value falls under the same rules as above.
+						'g:shipping_weight'         => !empty($product->get('shipping.weight')) ? $product->get('shipping.weight') : 1
+					]), $additionalItemInfo);
+
+					if ($item['g:price'] == 0) {
+						continue;
+					}
+
+					$this->addItem($productsWriter, $item);
 				}
-
-				$productId = (string) $product->id;
-
-				if (in_array($productId, $productIds)) {
-					continue;
-				}
-
-				if($product->get('product_type') === 'group'){
-					$additionalItemInfo['g:group_item'] = 'yes';
-				}
-
-				$productIds[] = $productId;
-				$modelNumber = $product->get('tracking.model_number');
-				$gtin = $product->get('tracking.upc');
-				$mpn = trim(substr($modelNumber, strpos($modelNumber, ' ')));
-				$title = $product->title;
-				$link = $product->generateStandardURL(true);
-
-				if(strtolower($product->get('manufacturer.title')) == 'cobb tuning') {
-				    $price = $product->price(null, null, null, 'map');
-				} else {
-				    $price = $product->price();
-				}
-				
-				$stock = ($product->inventory() > 0 || $product->getDropshipItem()) ? 'in stock' : 'out of stock';//if the inventory is in stock or if it's a dropship only item
-				$gidentifier_exists = 'yes';
-				if(empty(trim($gtin)) || !$this->isValidBarcode($gtin)) {
-				    $gidentifier_exists = 'no';
-                    $gtin = null;
-				}
-				
-				$item = array_merge([
-					'title'                     => $title,
-					'link'                      => $link,
-					'description'               => preg_replace('/(\s)+/', ' ', str_replace('\"' ,'"', trim(strip_tags($product->get('short_description'))))),
-					'g:id'                      => $modelNumber,
-				    'g:identifier_exists'       => $gidentifier_exists,
-				    'g:gtin'                    => $gtin,
-					'g:mpn'                     => $mpn, //TODO: Get with David to see why they don't send this info
-					'g:price'                   => $price,
-					'g:image_link'              => $product->productFeedsImage(!empty($product->get('google_image')) ? 'google_image' : 'featured_image.slug'),
-					'g:manufacturer'            => $product->get('manufacturer.title'),//See line 136
-					'g:brand'                   => $product->get('manufacturer.title'),
-					'g:condition'               => 'new',
-					'g:availability'            => $stock,
-					'g:google_product_category' => $googleProductCategory,//According to David "Looks like we are populating the category with the above data for all parts/feeds." RSD has something similar to this so we will utilize that functionality. 
-					'g:product_type'            => $googleProductCategory,//From the sample xml provided by David data this value falls under the same rules as above.
-					'g:shipping_weight'         => !empty($product->get('shipping.weight')) ? $product->get('shipping.weight') : 1
-				], $additionalItemInfo);
-
-				if ($item['g:price'] == 0) {
-					continue;
-				}
-
-				$this->addItem($productsWriter, $item);
+				$progress->advance(1);
 			}
-			$progress->advance(1);
+		}catch(\Exception $e){
+			//do nothing
+			var_dump("{$e->getMessage()} \n {$e->getFile()} @ {$e->getLine()}");die('ooopsies');
 		}
-
 		$this->endXML($productsWriter);
 
 		return $this->fileName;
@@ -223,14 +235,17 @@ class GoogleProductsFeed
 	 * @param \XMLWriter $writer
 	 * @param array $array
 	 */
-	protected function addItem(\XMLWriter $writer, array $array)
+	protected function addItem(\XMLWriter $writer, array $array, $elementName = 'item')
 	{
-		$writer->startElement('item');
+		$writer->startElement($elementName);
 		foreach ($array as $k => $v) {
 			if (in_array($k, $this->cleanKeys)) {
 				$v = $this->cleanString($v);
+			}else if(is_array($v)){
+				$this->addItem($writer, $v, $k);
+			}else{
+				$writer->writeElement($k, $v);
 			}
-			$writer->writeElement($k, $v);
 		}
 		$writer->endElement();
 	}
