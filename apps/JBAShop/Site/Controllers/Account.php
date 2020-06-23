@@ -37,7 +37,7 @@ class Account extends \Shop\Site\Controllers\Account
             //set the last name
             $account->set('last_name', $this->inputfilter->clean( $this->app->get('POST.last_name'), 'string' ));
             //save the account data.
-            $account->save();
+            $account->store();
             //push message to user.
             \Dsc\System::addMessage('The account information has been saved.', 'success');
         }catch(\Exception $e){
