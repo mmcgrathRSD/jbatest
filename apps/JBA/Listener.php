@@ -22,18 +22,35 @@ class Listener extends \Prefab
 
 		// now check via email
 		try {
-
 			$model = new \Users\Models\Users;
 			$model->setState('filter.email', $username_input);
-			if ($user = $model->getItem()) {
 
-				if (password_verify($password, $user->{'old.password'}))
-				{
-					$user->set('password', $hash);
-					$user->clear('old.password');
-					$user->save();
-					\Dsc\System::instance()->get('auth')->setIdentity( $user );
-				}
+			if ($user = $model->getItem()) {
+				$old = $user->{'old.password'};
+				$parts = explode(':', $old);
+
+                if(hash('sha256', $parts[1] . $password) == $parts[0]){
+                    $newPassword = password_hash($password, PASSWORD_DEFAULT);
+                    $user->set('password', $newPassword);
+                    $user->clear('old.password');
+                    $user->save();
+                    \Dsc\System::instance()->get('auth')->setIdentity( $user );
+                }
+
+                if(hash('md5', $parts[1] . $password) == $parts[0]){
+                    $newPassword = password_hash($password, PASSWORD_DEFAULT);
+                    $user->set('password', $newPassword);
+                    $user->clear('old.password');
+                    $user->save();
+                    \Dsc\System::instance()->get('auth')->setIdentity( $user );
+                }
+
+				// if (hash('sha256', $parts[1] . $password) == $parts[0]) {
+				// 	$user->set('password', $hash);
+				// 	$user->clear('old.password');
+				// 	$user->save();
+				// 	\Dsc\System::instance()->get('auth')->setIdentity( $user );
+				// }
 			}
 		} catch ( \Exception $e ) {
 			$this->setError('Invalid Email');
