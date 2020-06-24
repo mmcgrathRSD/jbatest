@@ -1,56 +1,32 @@
-
-    <?php if (empty($order->id)) { ?>
-        <h1>Order not found. <a href="./shop"><small>Go Shopping</small></a></h1>
-    <?php } else { ?>
-
-         <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-9">
-                <h1>
-                    Thank you for your order!<br/>
-                    <small>Your order number is <span id="HEYJASON"><?php echo $order->number; ?></span>.</small>
-                </h1>
-                <p>You will receive an email confirmation shortly at <b><?php echo $order->user_email; ?></b></p>
+<?php if (empty($order->id)) { ?>
+    <h1>Order not found. <a href="./shop"><small>Go Shopping</small></a></h1>
+<?php } else { ?>
+    <div class="main row">
+        <div class="col-main grid_13 custom_right">
+            <div class="page-title">
+                <h1>Your order has been received.</h1>
             </div>
-            <div class="col-xs-12 col-sm-12 col-md-3">
+            <h2 class="sub-title">Thank you for your purchase!</h2>
+            <p>Your order # is: <?php echo $order->number; ?>.</p>
+            <p>You will receive an order confirmation email with details of your order and a link to track its progress.</p>
+            <div class="buttons-set">
+                <button type="button" class="button" title="Continue Shopping" onclick="window.location='/'"><span><span>Continue Shopping</span></span></button>
             </div>
         </div>
+        <div class="col-right sidebar grid_5 custom_right"></div>
+    </div>
 
-        <?php
+    <?php
         $this->order = $order;
         $settings = \Shop\Models\Settings::fetch();
-        ?>
+    
+        /* ?> [tracking pixels] */
+        echo $this->renderView('Shop/Site/Views::confirmation/tracking_custom.php');
 
-        <?php /* ?> [tracking pixels] */ ?>
-        <?php echo $this->renderView('Shop/Site/Views::confirmation/tracking_custom.php'); ?>
-
-
-
-        <?php
-        if ($settings->{'order_confirmation.gtm.enabled'} == 1 && empty(\Base::instance()->get('disable_order_tracking', false)))
-        {
-        	echo $this->renderView('Shop/Site/Views::confirmation/tracking_gtm.php');
+        if ($settings->{'order_confirmation.gtm.enabled'} == 1 && empty(\Base::instance()->get('disable_order_tracking', false))) {
+            echo $this->renderView('Shop/Site/Views::confirmation/tracking_gtm.php');
         }
-        echo $this->renderView('Shop/Site/Views::confirmation/facebook_pixel.php');
-        ?>
+    ?>
 
-		<tmpl type="modules" name="confirmation-end" />
-
-        <?php /* ?>
-        <p>
-        [upsells of related products]
-        </p>
-        */ ?>
-
-        <?php /* ?>
-        <p>
-        [upsells with "false urgency"]
-        </p>
-        */ ?>
-
-        <?php /* ?>
-        <p>
-        [newsletter signup w/one-click]
-        </p>
-        */ ?>
-
-    <?php } ?>
+    <tmpl type="modules" name="confirmation-end" />
+<?php } ?>

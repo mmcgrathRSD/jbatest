@@ -25,4 +25,26 @@ class Account extends \Shop\Site\Controllers\Account
 
 		echo $this->theme->render('Shop/Site/Views::account/orders.php');
     }
+
+    public function updateCustomer(){
+        //get the user
+        $identity = $this->getIdentity()->reload();
+        try{
+            //get the account
+            $account = (new \Shop\Models\Account)->setCondition('_id', $identity->id)->getItem();
+            //set the first_name
+            $account->set('first_name',  $this->inputfilter->clean( $this->app->get('POST.first_name'), 'string' ));
+            //set the last name
+            $account->set('last_name', $this->inputfilter->clean( $this->app->get('POST.last_name'), 'string' ));
+            //save the account data.
+            $account->store();
+            //push message to user.
+            \Dsc\System::addMessage('The account information has been saved.', 'success');
+        }catch(\Exception $e){
+            //do nothing besides push default error message to user.
+            \Dsc\System::addMessage('Something went wrong.', 'error');
+        }
+        //redirect back to user's account.
+        $this->app->reroute('/shop/account');
+    }
 }

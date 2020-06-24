@@ -586,6 +586,11 @@ class Routes extends \Dsc\Routes\Group
             'controller' => 'Account',
             'action' => 'productReviews'
         ) );
+
+        $this->add('/customer/account/edit/', 'POST', [
+            'controller' => 'Account',
+            'action' => 'updateCustomer'
+        ]);
                 
         $this->add( '/shop/product/@slug/reviews/images/@skip', 'GET', array(
             'controller' => 'ProductReviews',

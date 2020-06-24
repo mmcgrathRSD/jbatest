@@ -76,12 +76,12 @@
                                 <a href="/part/<?php echo $item->slug; ?>"><?php echo $item->title(); ?></a>
                             </h2>
                             <?php 
-                            if (!$assembled) {
-                                foreach ($item->getKitOptions() as $kitOption) {
-                                    $product = $kitOption->values()[0]->product();
-                                    echo ($kitOption->quantity > 1 ? $kitOption->quantity . 'x ' : '1x ') . '<strong>' . $product->modelNumber() . '</strong><br />';
+                                if (!$assembled) {
+                                    foreach ($item->getKitOptions() as $kitOption) {
+                                        $product = $kitOption->values()[0]->product();
+                                        echo ($kitOption->quantity > 1 ? $kitOption->quantity . 'x ' : '1x ') . '<strong>' . $product->modelNumber() . '</strong><br />';
+                                    }
                                 }
-                            } 
                             ?>
                         </td>
                         <td class="a-center td-price">
@@ -139,6 +139,13 @@
                     </h2>
                     <?php if (\Dsc\ArrayHelper::get($item, 'attribute_title')) { ?>
                         <small><?php echo \Dsc\ArrayHelper::get($item, 'attribute_title'); ?></small>
+                    <?php } else if (!empty($item['options'])) {  ?>
+                        <dl class="item-options">
+                            <?php foreach ((array) $item['options'] as $option): ?>
+                                <dt><?php echo \Dsc\ArrayHelper::get($option, "attribute"); ?></dt>
+                                <dd><?php echo \Dsc\ArrayHelper::get($option, "value"); ?></dd>
+                            <?php endforeach; ?>
+                        </dl>
                     <?php } ?>
                 </td>
                 <td class="a-center td-price">

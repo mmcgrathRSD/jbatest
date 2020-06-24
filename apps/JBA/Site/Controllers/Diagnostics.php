@@ -71,17 +71,19 @@ class Diagnostics extends \Dsc\Controller
         try {
             //Get all sales channels
             $channels = (new \Shop\Models\SalesChannels())->getItems();
-            //target the analytics file path from config.
-            $path = \Base::instance()->get('analytics.file_path'); 
             //feed file paths
             $feeds = [];
             //for each channel generate a google product feed xml file.
             foreach($channels as $channel){
+                $path = "/var/www/static.{$channel->get('slug')}.com/google/";
                 //add file path to feeds so we can compress.
-                $feeds[] = (new \JBAShop\Services\GoogleProductsFeed($path))->generateFeeds($channel->get('slug') . '_products');
+                $feeds[$path] = (new \JBAShop\Services\GoogleProductsFeed($path))->generateFeeds($channel->get('slug') . '_products');
             }
-            //Compress feeds if any
-            (new \JBAShop\Services\GoogleProductsFeed())->compressFeeds($feeds);
+            foreach($feeds as $key => $feed){
+                //Compress feeds if any
+                (new \JBAShop\Services\GoogleProductsFeed($key))->compressFeeds($feeds);
+            }
+
         } catch (\Exception $e) {
             $this->sendNewRelicError('Error Creating Google Product Feed', $e);
         }
