@@ -203,12 +203,13 @@ $clear_all_exclusions = '';
                                 });
                             };
 
-                            hit.default_price = currency_format.format(hit.default_price);
-
-                            if('previous_default_price' in hit && hit.previous_default_price) {
+                            if('previous_default_price' in hit && hit.previous_default_price && hit.previous_default_price > hit.default_price) {
                                 hit.previous_default_price = currency_format.format(hit.previous_default_price);
+                            } else {
+                                delete hit.previous_default_price;
                             }
-                            
+
+                            hit.default_price = currency_format.format(hit.default_price);
                         });
 
                         return allItems;
