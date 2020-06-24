@@ -1,8 +1,5 @@
 <div class="content-container">
     <div class="main row">
-        <div class="col-left sidebar grid_5 custom_left">
-            <tmpl type="modules" name="account-page-sidebar" />
-        </div>
         <div class="col-main grid_13 custom_left">
             <div class="breadcrumbs">
                 <ul>
@@ -21,6 +18,9 @@
             <div class="std">
                 <?php echo $item->{'copy'}; ?>
             </div>
+        </div>
+        <div class="col-left sidebar grid_5 custom_left">
+            <tmpl type="modules" name="account-page-sidebar" />
         </div>
     </div>
 </div>
