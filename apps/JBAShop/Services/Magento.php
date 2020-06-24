@@ -1899,6 +1899,23 @@ class Magento
                 }
 
                 if (!filter_var($img, FILTER_VALIDATE_URL)) {
+                    $parsed = parse_url($img);
+                    $img = '';
+
+                    if (isset($parsed['scheme'])) {
+                        $img .= $parsed['scheme'] . '://';
+                    }
+
+                    if (isset($parsed['host'], $parsed['path'])) {
+                        $parsed['path'] = implode('/', array_map(function($v){
+                            return rawurlencode($v);
+                        }, explode('/', $parsed['path'])));
+
+                        $img .= $parsed['host'] . $parsed['path'];
+                    }
+                }
+
+                if (!filter_var($img, FILTER_VALIDATE_URL)) {
                     continue;
                 }
 
@@ -1966,6 +1983,23 @@ class Magento
                     $img = 'https://subispeed.com' . $img;
                 } else if (strpos($img, 'images/') === 0) {
                     $img = 'https://subispeed.com/' . $img;
+                }
+
+                if (!filter_var($img, FILTER_VALIDATE_URL)) {
+                    $parsed = parse_url($img);
+                    $img = '';
+
+                    if (isset($parsed['scheme'])) {
+                        $img .= $parsed['scheme'] . '://';
+                    }
+
+                    if (isset($parsed['host'], $parsed['path'])) {
+                        $parsed['path'] = implode('/', array_map(function($v){
+                            return rawurlencode($v);
+                        }, explode('/', $parsed['path'])));
+
+                        $img .= $parsed['host'] . $parsed['path'];
+                    }
                 }
 
                 if (!filter_var($img, FILTER_VALIDATE_URL)) {
