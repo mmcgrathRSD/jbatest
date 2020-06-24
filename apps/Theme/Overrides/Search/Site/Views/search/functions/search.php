@@ -512,8 +512,6 @@ $clear_all_exclusions = '';
                                                     }
                                                     
                                                 });
-                                                
-                                                
                                             }
 
                                             $('title').html(data.result.seo_title);
@@ -529,7 +527,7 @@ $clear_all_exclusions = '';
 
                                             $.each(data.result.crumbs, function (key, crumb) {
                                                 if(crumb != last_crumb) {
-                                                    $('div[data-instance-id="search' + instance_id + '"] .breadcrumbs ul').append('<li style="display: inline-block;" typeof="v:Breadcrumb"> <span>/</span> <a href="' + crumb + '" title="' + key + '" rel="v:url" property="v:title">' + key + '</a>&nbsp;</li>');
+                                                    $('div[data-instance-id="search' + instance_id + '"] .breadcrumbs ul').append('<li style="display: inline-block;" typeof="v:Breadcrumb"> <span>/</span> <a href="/scp' + crumb + '" title="' + key + '" rel="v:url" property="v:title">' + key + '</a>&nbsp;</li>');
                                                 } else {
                                                     $('div[data-instance-id="search' + instance_id + '"] .breadcrumbs ul').append('<li style="display: inline-block;"> <span>/</span> <strong>' + key + '</strong> </li>');
                                                 }
