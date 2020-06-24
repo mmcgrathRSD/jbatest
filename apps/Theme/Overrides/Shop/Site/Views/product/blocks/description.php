@@ -6,7 +6,6 @@
     <div class="product-tabs-content tabs-content std" id="product_tabs_description_tabbed_contents" style="">
         <h2>Details</h2>
         <div class="std">
-            <h4 align="center"><?php echo $item->title; ?></h4>
             <div class="container">
             <?php echo $item->copy; ?>
             </div>
