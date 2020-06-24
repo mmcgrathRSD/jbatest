@@ -44,6 +44,7 @@
             <span class="search_title">Search</span>
             <?php endif; ?>
          </div>
+         <?php if(!$this->app->get('master_search')) : ?>
          <div class="category-description std">
             <?php echo $item->description; ?>
          </div>
@@ -58,6 +59,7 @@
             </li>
             <?php endforeach; ?>
          </ul>
+         <?php endif; ?>
       </div>
       <div id="clear">
       </div>

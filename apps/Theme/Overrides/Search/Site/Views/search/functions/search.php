@@ -118,7 +118,7 @@ $clear_all_exclusions = '';
 					facets: facets,
 					facetsRefinements: facet_refinements,
 					<?php if($type == 'shop.categories' || !empty($hierarchical_refinement)) : ?>
-					hierarchicalFacets: 'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.subispeed.lvl0',
+					hierarchicalFacets: 'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl0',
 					hierarchicalFacetsRefinements: hierarchical_facet_refinements,
 					<?php endif; ?>
 				},
@@ -465,16 +465,16 @@ $clear_all_exclusions = '';
                 instantsearch.widgets.hierarchicalMenu({
                     container: '#search_filter_categories' + instance_id,
                     attributes: [
-                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl0',
-                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl1',
-                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl2',
-                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl3',
-                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl4',
-                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl5',
-                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl6',
-                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl7',
-                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl8',
-                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') : ''; ?>.lvl9'
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl0',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl1',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl2',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl3',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl4',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl5',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl6',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl7',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl8',
+                        'hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl9'
                     ],
                     limit: 100,
                     templates: {
@@ -485,62 +485,65 @@ $clear_all_exclusions = '';
                     },
                     transformData: {
                         item: function (hit) {
-                            // console.log((Array.isArray(hit.data) && hit.data.length) === 0);
-                            // console.log(hit);
-                            the_one = true;
 
-                            
+                            if(instance_id) {
+                                let algolia_hierarchy = search.helper.state.hierarchicalFacetsRefinements["hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl0"][0];
 
-                            if(Array.isArray(hit.data)) {
-                                $.each(hit.data, function(key, hit) {
-                                    if($(this)['0'].isRefined) {
-                                        the_one = false;
-                                    }
-                                });
-
-                                if(hit.data.length === 0 || the_one) {
-                                    let hasChildRefinements = false;
-
-                                    if(hit.data) {
-                                        hit.data.each(function(item) {
-                                            if(item.isRefined) {
-                                                hasChildRefinements = true;
-                                            }
-                                        });
-                                    }
-
-                                    $('.category-title h1').html(hit.label + ' Parts');
-
+                                if(algolia_hierarchy == hit.value) {
                                     $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
                                         if(!data.error) {
-                                            $('.ais-hits a').each(function(hit, key) {
+                                            $('div[data-instance-id="search' + instance_id + '"] .category-title h1').html(hit.label + ' Parts');
+
+                                            $('div[data-instance-id="search' + instance_id + '"] .ais-hits a').each(function(hit, key) {
                                                 str = String($(this).attr('href')).split("/");
                                                 $(this).attr('href', '/part' + data.result.crumbs[Object.keys(data.result.crumbs).pop()] + '/' + str[str.length - 1]);
                                             });
-                                            $('.category-description.std').html(data.result.html);
+                                            $('div[data-instance-id="search' + instance_id + '"] .category-description.std').html(data.result.html);
+
+                                            $('div[data-instance-id="search' + instance_id + '"] ul.category-children').html('');
+
                                             if(data.result.children) {
-                                                $('ul.category-children').html('');
+                                                
 
                                                 data.result.children.each(function(child) {
                                                     if(child.image) {
-                                                        $('ul.category-children').append('<li><a href="' + child.link + '"><img src="' + child.image + '" alt="' + child.title + '" height="60" width="175" data-algolia-hierarchy="' + child.hierarchical_category + '"></a></li>');
+                                                        $('div[data-instance-id="search' + instance_id + '"] ul.category-children').append('<li><a href="' + child.link + '"><img src="' + child.image + '" alt="' + child.title + '" height="60" width="175" data-algolia-hierarchy="' + child.hierarchical_category + '"></a></li>');
                                                     }
                                                     
                                                 });
                                                 
-                                                $('title').html(data.result.seo_title);
+                                                
                                             }
-                                            //update rating title
-                                            $('#category-rating-title > strong > span').html(hit.label);
-                                            //get the average.
-                                            var average = !!data.result.rating.average ? data.result.rating.average : 0;
-                                            //get the percent for the average divided by the total stars.
-                                            $('#category-rating-stars > div').css('width',  (average / 5) * 100 + '%');
-                                            //replace the rating value displayed.
-                                            $('#category-rating-values > span[itemprop="ratingValue"]').html(average);
-                                            //replace the review counts.
-                                            $('#category-rating-values > span[itemprop="reviewCount"]').html(data.result.rating.total);
 
+                                            $('title').html(data.result.seo_title);
+
+                                            //update rating title
+                                            $('div[data-instance-id="search' + instance_id + '"] #category-rating-title > strong > span').html(hit.label);
+                                            
+                                            $('.ratings').remove();
+
+                                            let last_crumb = data.result.crumbs[Object.keys(data.result.crumbs).pop()]
+
+                                            $('div[data-instance-id="search' + instance_id + '"] .breadcrumbs ul').html('<li style="display: inline-block;" typeof="v:Breadcrumb"> <a href="/" title="Home" rel="v:url" property="v:title">Home</a>&nbsp;</li>');
+
+                                            $.each(data.result.crumbs, function (key, crumb) {
+                                                if(crumb != last_crumb) {
+                                                    $('div[data-instance-id="search' + instance_id + '"] .breadcrumbs ul').append('<li style="display: inline-block;" typeof="v:Breadcrumb"> <span>/</span> <a href="' + crumb + '" title="' + key + '" rel="v:url" property="v:title">' + key + '</a>&nbsp;</li>');
+                                                } else {
+                                                    $('div[data-instance-id="search' + instance_id + '"] .breadcrumbs ul').append('<li style="display: inline-block;"> <span>/</span> <strong>' + key + '</strong> </li>');
+                                                }
+
+                                            });
+
+                                        } else {
+                                            $('div[data-instance-id="search' + instance_id + '"] .category-title h1').html(hit.label + ' Parts');
+
+                                            $('div[data-instance-id="search' + instance_id + '"] .breadcrumbs ul').html('<li style="display: inline-block;" typeof="v:Breadcrumb"> <a href="/" title="Home" rel="v:url" property="v:title">Home</a>&nbsp;</li>');
+
+                                            $('div[data-instance-id="search' + instance_id + '"] .breadcrumbs ul').append('<li style="display: inline-block;"> <span>/</span> <strong>' + hit.label + '</strong> </li>');
+
+                                            $('div[data-instance-id="search' + instance_id + '"] .category-description.std').html('');
+                                            $('div[data-instance-id="search' + instance_id + '"] ul.category-children').html('');
                                         }
                                         
 
@@ -548,8 +551,6 @@ $clear_all_exclusions = '';
                                         $('.category_dynamic_head').css('height', 'auto').removeClass('category_dynamic_head_loader').delay(800).fadeIn(400);
                                     });
                                 }
-
-                                
                             }
 
                             return hit;
