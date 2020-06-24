@@ -187,7 +187,7 @@ class Magento
 
                 //If we found a valid netsuite user, update the netsuite object on the corresponding mongo user
                 if ($netsuiteUser) {
-                    array_push($data, ['Netsuite User Found!', $netsuiteUser['email'], ✅]);
+                    array_push($data, ['Netsuite User Found!', $netsuiteUser['email'], "✅"]);
 
                     $newUser->set('netsuite', [
                         'externalId' => $netsuiteUser['externalId'],
@@ -196,16 +196,16 @@ class Magento
                     ]);
                 } else {
                     //No netsuite user was found for this Magento customer
-                    array_push($data, ['No Netsuite User Found!', $netsuiteUser['email'], ❌]);
+                    array_push($data, ['No Netsuite User Found!', $netsuiteUser['email'], "❌"]);
                 }
 
                 $newUser->save();
                 //New user was successfully transwered from Magento to Mongo
-                array_push($data, ['New Mongo User Created From Magento!', $newUser->email, ✅]);
+                array_push($data, ['New Mongo User Created From Magento!', $newUser->email, "✅"]);
             } catch (Exception $e) {
                 $this->CLImate->red($e->getMessage());
                 //This fixes CLImate exception of pushing empty array to table() 
-                array_push($data, ['Email Already Exists... Skipping', $user['email'], ❌]);
+                array_push($data, ['Email Already Exists... Skipping', $user['email'], "❌"]);
             }
 
             //Write our output for this iteration of the loop
@@ -781,7 +781,7 @@ class Magento
     //This function takes all the cloudinary images from "google_images" and syncs them to mongo
     public function syncCloudinaryToMongo($type, $folder){
         $apiData = [];
-        $nextCursor = null;
+
 
         $cloudinaryOptions = [
             'type' => 'upload', 
@@ -789,7 +789,6 @@ class Magento
             'tags' => true,
             'context' => true,
             'max_results' => 500,
-            'next_cursor' => $nextCursor,
         ];
         
         do {
@@ -798,16 +797,17 @@ class Magento
         
 
             if($cloudinaryApi['next_cursor']){
-                $nextCursor = $cloudinaryApi['next_cursor'];
+                $cloudinaryOptions['next_cursor'] = $cloudinaryApi['next_cursor'];
             }
         } while($cloudinaryApi['next_cursor']);
 
         $this->CLImate->green('TOTAL IMAGES TO SYNC: ' . count($apiData));
         
         foreach($apiData as $googleImage){
-            $product = (new \Shop\Models\Products)->setCondition('magento.id', (int) $googleImage['context']['custom']['magentoid'])->getItem();
+            $product = (new \Shop\Models\Products)->setCondition('magento.id', (int) $googleImage['context']['custom']['magento_id'])->getItem();
         
             if(!$product->id){
+                $this->CLImate->red('NO image found for ' . $googleImage['context']['custom']['magento_id']);
                 continue;
             }
 
@@ -929,6 +929,7 @@ class Magento
         LEFT JOIN catalog_product_entity_varchar AS url_key ON ( rv_overall.entity_pk_value = url_key.entity_id AND url_key.store_id = 0 AND url_key.attribute_id = 97 )
         LEFT JOIN catalog_product_entity_varchar AS url_path ON ( rv_overall.entity_pk_value = url_path.entity_id AND url_path.store_id = 0 AND url_path.attribute_id = 98 )
         LEFT JOIN catalog_product_entity_varchar AS default_name ON ( rv_overall.entity_pk_value = default_name.entity_id AND default_name.store_id = 0 AND default_name.attribute_id = 71 )
+        WHERE created_at > '2020-06-08 22:30:41'
         ";
 
         $select = $this->db->prepare($sql);
@@ -1461,8 +1462,8 @@ class Magento
             AND `status` != 'declined'
             AND `file` NOT IN (
                 SELECT `value`
-                FROM catalog_product_entity_media_gallery
-            )";
+                FROM catalog_product_entity_media_gallery)
+            AND created_at > '2020-06-19 00:00:00'";
 
         $select = $this->db->prepare($sql);
         $select->execute();
