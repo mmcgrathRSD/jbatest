@@ -12,7 +12,7 @@
 
     <?php foreach($ymmMapping as $make => $makes) :
             foreach($makes as $model => $models) : ?>
-                <div class="makeModel <?php echo $make . '_' . $model; ?>">
+                <div class="makeModel one_fourth <?php echo $make . '_' . $model; ?>">
                     <span class="make_model"><?php echo $make . ' ' . $model; ?></span>
                     <span class="makeModelsub">
                         <div class="make_model_border"></div>
