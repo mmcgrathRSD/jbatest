@@ -83,7 +83,7 @@ class GoogleProductsFeed
 
 				$modelNumber = $product->get('tracking.model_number');
 				$gtin = $product->get('tracking.upc');
-				$mpn = trim(substr($modelNumber, strpos($modelNumber, ' ')));
+				$mpn = $product->get('oem.model_number');
 				$title = $product->get('title');
 				$link = 'https://' . $channel->get('domain') . "/" . $product->generateCanonicalURL(false);
 
