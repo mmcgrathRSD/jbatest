@@ -51,13 +51,17 @@ class GoogleProductsFeed
 						'service'
 					]
 			],
+			'$or' => [
+				'google_image' => ['$exists' => true],
+				'featured_image.slug' => ['$exists' => true],
+			],
 			'publication.sales_channels.slug' => $channel->get('slug'),
 			'publication.status'    => 'published'
 		];
 		$products = $productCollection->find($query, [
 			'sort' => ['tracking.model_number' => 1],
 			'batchSize' => 50,
-			'noCursorTimeout' => true
+			'noCursorTimeout' => true,
 		]);
 
 		$mate->blue("{$channel->get('slug')} feeds.");
@@ -91,7 +95,7 @@ class GoogleProductsFeed
 				$gtin = $product->get('tracking.upc');
 				$mpn = $product->get('tracking.oem_model_number');
 				$title = $product->get('title');
-				$link = 'https://' . $channel->get('domain') . "/" . $product->generateCanonicalURL(false);
+				$link = 'https://' . $channel->get('domain') . $product->generateCanonicalURL(false);
 
 				if(strtolower($product->get('manufacturer.title')) == 'cobb tuning') {
 					$price = $product->price(null, null, null, 'map');
@@ -125,7 +129,13 @@ class GoogleProductsFeed
 					'g:gtin'                    => $gtin,
 					'g:mpn'                     => $mpn,
 					'g:price'                   => $price,
-					'g:image_link'              => $product->productFeedsImage([],!empty($product->get('google_image')) ? 'google_image' : 'featured_image.slug'),
+					'g:image_link'              =>  \cloudinary_url(!empty($product->get('google_image')) ? $product->get('google_image') : $product->get('featured_image.slug'), [
+						'type' => !empty($product->get('google_image')) ? 'upload' :'private',
+						'fetch_format' => 'auto',
+						'sign_url' => true,
+						'secure' => true,
+						'transformation' => \Base::instance()->get('cloudinary.category')
+					]),
 					'g:manufacturer'            => $product->get('manufacturer.title'),//See line 136
 					'g:brand'                   => $product->get('manufacturer.title'),
 					'g:condition'               => 'new',
