@@ -77,7 +77,7 @@ class Diagnostics extends \Dsc\Controller
             foreach($channels as $channel){
                 $path = "/var/www/static.{$channel->get('slug')}.com/google/";
                 //add file path to feeds so we can compress.
-                $feeds[$path] = (new \JBAShop\Services\GoogleProductsFeed($path))->generateFeeds($channel->get('slug'));
+                $feeds[$path] = (new \JBAShop\Services\GoogleProductsFeed($path))->generateFeeds($channel);
             }
             foreach($feeds as $key => $feed){
                 //Compress feeds if any

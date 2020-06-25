@@ -39,13 +39,13 @@ class GoogleProductsFeed
 	public function generateFeeds($channel)
 	{
 		$mate = new CLImate();
-		$name = $channel . '_products';
+		$name = $channel->get('slug') . '_products';
 		/** @var \MongoCollection $collection */
 		$productCollection = \Shop\Models\Products::collection();
 		$productsWriter = $this->startXML($name);
 		$query = [
 			'product_type' => ['$nin' => ['dynamic_group', 'matrix', 'gift_certificate', 'service']],
-			'publication.sales_channels.slug' => $channel,
+			'publication.sales_channels.slug' => $channel->get('slug'),
 			'publication.status'    => 'published'
 		];
 		$products = $productCollection->find($query, [
@@ -54,7 +54,7 @@ class GoogleProductsFeed
 			'noCursorTimeout' => true
 		]);
 
-		$mate->blue("{$channel} feeds.");
+		$mate->blue("{$channel->get('slug')} feeds.");
 		$progress = $mate->progress()->total($productCollection->count($query));
 
 		foreach ($products as $data) {
@@ -85,7 +85,7 @@ class GoogleProductsFeed
 				$gtin = $product->get('tracking.upc');
 				$mpn = trim(substr($modelNumber, strpos($modelNumber, ' ')));
 				$title = $product->get('title');
-				$link = $product->generateCanonicalURL(true);
+				$link = 'https://' . $channel->get('domain') . "/" . $product->generateCanonicalURL(false);
 
 				if(strtolower($product->get('manufacturer.title')) == 'cobb tuning') {
 					$price = $product->price(null, null, null, 'map');
