@@ -44,7 +44,14 @@ class GoogleProductsFeed
 		$productCollection = \Shop\Models\Products::collection();
 		$productsWriter = $this->startXML($name);
 		$query = [
-			'product_type' => ['$nin' => ['dynamic_group', 'matrix', 'gift_certificate', 'service']],
+			'product_type' => [
+				'$nin' => [
+						'dynamic_group',
+						'matrix',
+						'gift_certificate',
+						'service'
+					]
+			],
 			'publication.sales_channels.slug' => $channel->get('slug'),
 			'publication.status'    => 'published'
 		];
@@ -83,7 +90,7 @@ class GoogleProductsFeed
 
 				$modelNumber = $product->get('tracking.model_number');
 				$gtin = $product->get('tracking.upc');
-				$mpn = $product->get('oem.model_number');
+				$mpn = $product->get('tracking.oem_model_number');
 				$title = $product->get('title');
 				$link = 'https://' . $channel->get('domain') . "/" . $product->generateCanonicalURL(false);
 
