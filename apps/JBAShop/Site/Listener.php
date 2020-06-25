@@ -228,66 +228,66 @@ class Listener extends \Prefab
         /*
         * FITS ROUTES /FITS/@SLUG, /FITS/@SLUG/@CAT/, /FITS/@SLUG/@CAT/@PRODUCT
         */
-        $ymmRoutes = [];
-        // ymms
-        $ymms = (new \Shop\Models\YearMakeModels)->collection()->find(
-            ['publication.status' => 'published'],
-            ['sort' => ['metadata.last_modified_time' => -1]]
-        );
+        // $ymmRoutes = [];
+        // // ymms
+        // $ymms = (new \Shop\Models\YearMakeModels)->collection()->find(
+        //     ['publication.status' => 'published'],
+        //     ['sort' => ['metadata.last_modified_time' => -1]]
+        // );
         
-        foreach($ymms as $vehicle) {
-            $climate->blue(time() - $time . ' adding vehicle ' . $vehicle['slug']);
-            $ymm_counts++;
-            $created = @$vehicle['metadata']['created']['time'];
-            $lastMod = @$vehicle['metadata']['last_modified']['time'];
-            $sitemap->addItem(
-                '/fits/'.$vehicle['slug'].'',
-                '1.0',
-                'daily',
-                @$vehicle['metadata']['last_modified']['time']
-            );
-            /* Lets build the vehicle pages by category */
-            $products_model = (new \Shop\Models\Products);
-            $products_model->setState('filter.publication_status',  'published');
-            $products_model->setState('filter.ymm.slug',  $vehicle['slug']);
-            $conditions = $products_model->conditions();          
-            $catids = $products_model->collection()->distinct('categories.id', $conditions);           		
-            $categories = (new  \Shop\Models\Categories)->collection()->find([
-                '_id' => ['$in' => $catids],
-                '$or' => [
-                    ['sales_channels.0' => ['$exists' => false]],
-                    ['sales_channels.slug' => \Base::instance()->get('sales_channel')]
-                ]
-            ],
-            ['sort' => ['title' => 1]]);
+        // foreach($ymms as $vehicle) {
+        //     $climate->blue(time() - $time . ' adding vehicle ' . $vehicle['slug']);
+        //     $ymm_counts++;
+        //     $created = @$vehicle['metadata']['created']['time'];
+        //     $lastMod = @$vehicle['metadata']['last_modified']['time'];
+        //     $sitemap->addItem(
+        //         '/fits/'.$vehicle['slug'].'',
+        //         '1.0',
+        //         'daily',
+        //         @$vehicle['metadata']['last_modified']['time']
+        //     );
+        //     /* Lets build the vehicle pages by category */
+        //     $products_model = (new \Shop\Models\Products);
+        //     $products_model->setState('filter.publication_status',  'published');
+        //     $products_model->setState('filter.ymm.slug',  $vehicle['slug']);
+        //     $conditions = $products_model->conditions();
+        //     $catids = $products_model->collection()->distinct('categories.id', $conditions);
+        //     $categories = (new  \Shop\Models\Categories)->collection()->find([
+        //         '_id' => ['$in' => $catids],
+        //         '$or' => [
+        //             ['sales_channels.0' => ['$exists' => false]],
+        //             ['sales_channels.slug' => \Base::instance()->get('sales_channel')]
+        //         ]
+        //     ],
+        //     ['sort' => ['title' => 1]]);
 
-            foreach ($categories as $ymmCat) {
-                $ymm_category_counts++;
-                $created = @$ymmCat['metadata']['created']['time'];
-                $lastMod = @$ymmCat['metadata']['last_modified']['time'];
-                $sitemap->addItem(
-                    '/fits/'.$vehicle['slug'].'/'.$ymmCat['slug'],
-                    '1.0',
-                    'daily',
-                    @$ymmCat['metadata']['last_modified']['time']
-                );
-                $products_model = (new \Shop\Models\Products);    
-                $products_model->setState('filter.publication_status',  'published');
-                $products_model->setState('filter.ymm.slug',  $vehicle['slug']);
-                $products_model->setState('filter.category.slug',  $ymmCat['slug']);
-                /*   $lists = $products_model->getItems();
+        //     foreach ($categories as $ymmCat) {
+        //         $ymm_category_counts++;
+        //         $created = @$ymmCat['metadata']['created']['time'];
+        //         $lastMod = @$ymmCat['metadata']['last_modified']['time'];
+        //         $sitemap->addItem(
+        //             '/fits/'.$vehicle['slug'].'/'.$ymmCat['slug'],
+        //             '1.0',
+        //             'daily',
+        //             @$ymmCat['metadata']['last_modified']['time']
+        //         );
+        //         $products_model = (new \Shop\Models\Products);
+        //         $products_model->setState('filter.publication_status',  'published');
+        //         $products_model->setState('filter.ymm.slug',  $vehicle['slug']);
+        //         $products_model->setState('filter.category.slug',  $ymmCat['slug']);
+        //         /*   $lists = $products_model->getItems();
                 
-                foreach($lists as $item) {
-                    $ymm_category_product_counts++;
-                    $ymmRoutes[] = [
-                        'loc' => '/fits/'.$vehicle['slug'].'/'.$ymmCat['slug'].'/'.$item->slug,
-                        'pri' => '1.0',
-                        'change' => 'daily',
-                        'mod' => @$item->get('metadata.last_modified.time')
-                    ];
-                }*/
-            }
-        }
+        //         foreach($lists as $item) {
+        //             $ymm_category_product_counts++;
+        //             $ymmRoutes[] = [
+        //                 'loc' => '/fits/'.$vehicle['slug'].'/'.$ymmCat['slug'].'/'.$item->slug,
+        //                 'pri' => '1.0',
+        //                 'change' => 'daily',
+        //                 'mod' => @$item->get('metadata.last_modified.time')
+        //             ];
+        //         }*/
+        //     }
+        // }
     
         /*
         * CATEGORY PAGES
