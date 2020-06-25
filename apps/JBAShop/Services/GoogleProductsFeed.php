@@ -52,8 +52,8 @@ class GoogleProductsFeed
 					]
 			],
 			'$or' => [
-				'google_image' => ['$exists' => true],
-				'featured_image.slug' => ['$exists' => true],
+				['google_image' => ['$exists' => true]],
+				['featured_image.slug' => ['$exists' => true]],
 			],
 			'publication.sales_channels.slug' => $channel->get('slug'),
 			'publication.status'    => 'published'
