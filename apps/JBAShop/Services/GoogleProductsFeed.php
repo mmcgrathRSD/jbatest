@@ -48,7 +48,6 @@ class GoogleProductsFeed
 			'product_type' => [
 				'$nin' => [
 						'matrix',
-						'dynamic_group',
 						'gift_certificate',
 						'service'
 					]
@@ -64,7 +63,6 @@ class GoogleProductsFeed
 			'sort' => ['tracking.model_number' => 1],
 			'batchSize' => 50,
 			'noCursorTimeout' => true,
-			'limit' => 20
 		]);
 
 		$mate->blue("{$channel->get('slug')} feeds.");
