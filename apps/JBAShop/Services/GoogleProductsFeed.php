@@ -46,7 +46,6 @@ class GoogleProductsFeed
 		$query = [
 			'product_type' => [
 				'$nin' => [
-						'dynamic_group',
 						'matrix',
 						'gift_certificate',
 						'service'
