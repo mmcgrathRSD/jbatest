@@ -40,6 +40,7 @@ class GoogleProductsFeed
 	{
 		$mate = new CLImate();
 		$name = $channel->get('slug') . '_products';
+		\JBAShop\Services\Magento::setCloudinaryCNAME("images.{$channel->get('slug')}.com");
 		/** @var \MongoCollection $collection */
 		$productCollection = \Shop\Models\Products::collection();
 		$productsWriter = $this->startXML($name);
@@ -47,6 +48,7 @@ class GoogleProductsFeed
 			'product_type' => [
 				'$nin' => [
 						'matrix',
+						'dynamic_group',
 						'gift_certificate',
 						'service'
 					]
@@ -62,6 +64,7 @@ class GoogleProductsFeed
 			'sort' => ['tracking.model_number' => 1],
 			'batchSize' => 50,
 			'noCursorTimeout' => true,
+			'limit' => 20
 		]);
 
 		$mate->blue("{$channel->get('slug')} feeds.");
@@ -118,7 +121,7 @@ class GoogleProductsFeed
 						'g:price'=> number_format((float)$product->getHandlingFee(), 2, '.',  ''),//google doesn't want the ,'s
 					]], $additionalItemInfo);
 				}
-
+				
 				//merge all non null values
 				$item = array_merge(array_filter([
 					'title'                     => $title,
