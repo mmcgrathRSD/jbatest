@@ -40,17 +40,16 @@ class GoogleProductsFeed
 	{
 		$mate = new CLImate();
 		$name = $channel . '_products';
-		/** @var \MongoDb $mongo */
-		$mongo = \Dsc\System::instance()->get('mongo');
 		/** @var \MongoCollection $collection */
-		$productCollection = \Dsc\Mongo\Helper::getCollection('shop.products');
-		$productIds = [];
+		$productCollection = \Shop\Models\Products::collection();
 		$productsWriter = $this->startXML($name);
 		$query = [
+			'product_type' => ['$nin' => ['dynamic_group', 'matrix', 'gift_certificate', 'service']],
 			'publication.sales_channels.slug' => $channel,
 			'publication.status'    => 'published'
 		];
 		$products = $productCollection->find($query, [
+			'sort' => ['tracking.model_number' => 1],
 			'batchSize' => 50,
 			'noCursorTimeout' => true
 		]);
@@ -76,23 +75,17 @@ class GoogleProductsFeed
 				}
 
 				$productId = (string) $product->id;
-
-				if (in_array($productId, $productIds)) {
-					continue;
-				}
-
 				$googleProductCategory = $product->get('gm_product_category');
 
 				if($product->get('product_type') === 'group'){
 					$additionalItemInfo['g:group_item'] = 'yes';
 				}
 
-				$productIds[] = $productId;
 				$modelNumber = $product->get('tracking.model_number');
 				$gtin = $product->get('tracking.upc');
 				$mpn = trim(substr($modelNumber, strpos($modelNumber, ' ')));
 				$title = $product->get('title');
-				$link = $product->generateStandardURL(true);
+				$link = $product->generateCanonicalURL(true);
 
 				if(strtolower($product->get('manufacturer.title')) == 'cobb tuning') {
 					$price = $product->price(null, null, null, 'map');
