@@ -10,7 +10,7 @@
                         <li>
                         <label for="country" class="required"><em>*</em>Country</label>
                         <div class="input-box">
-                            <select name="country_id" id="estimateShippingCountry" class="validate-select" title="Country">
+                            <select name="country" id="estimateShippingCountry" class="validate-select" title="Country">
                                 <option disabled <?php if (empty($cart->{'checkout.shipping_address.country'})) { echo 'selected'; } ?>> <strong>Select Country</strong> </option>
                                 <?php $countries = \Shop\Models\Countries::defaultList(); ?>
 
