@@ -2484,7 +2484,8 @@ class Magento
         $matrixProducts = (new \Shop\Models\Products)->collection()->find(
             [
                 'publication.status' => 'published',
-                'product_type' => 'matrix'
+                'product_type' => 'matrix',
+                'tracking.model_number' => 'SUBISPEED-2015-WRX-TR-TAIL-PARENT',
             ],
             [
                 'noCursorTimeout' => true,
@@ -2495,17 +2496,12 @@ class Magento
         foreach($matrixProducts as $product){
             $productModel = (new \Shop\Models\Products)->bind($product);
             
-            
-            foreach((array) $productModel->attributes as $attributeKey => $attribute){
-                $swatchCount = count(array_column((array) $attribute['options'], 'swatch'));
-                if(!$swatchCount){
-                    continue;
-                }
+            $lastAttribute = end($productModel->get('attributes'));
+            $swatchCount = count(array_column((array) $lastAttribute['options'], 'swatch'));
+            $optionCount = count($lastAttribute['options']);
 
-                foreach($attribute['options'] as $optionKey => $option){
-                    //Check if no $option['swatch'] values exists
-                    $productModel->set("attributes.$attributeKey.options.$optionKey.use_product_photo", empty($option['swatch']));
-                }
+            if($swatchCount && $swatchCount < $optionCount){
+                $productModel->set('use_product_photo_as_swatch', true);
             }
             
             $productModel->store();
