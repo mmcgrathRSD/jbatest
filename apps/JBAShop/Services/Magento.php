@@ -2484,8 +2484,7 @@ class Magento
         $matrixProducts = (new \Shop\Models\Products)->collection()->find(
             [
                 'publication.status' => 'published',
-                'product_type' => 'matrix',
-                'tracking.model_number' => 'SUBISPEED-2015-WRX-TR-TAIL-PARENT',
+                'product_type' => 'matrix'            
             ],
             [
                 'noCursorTimeout' => true,
