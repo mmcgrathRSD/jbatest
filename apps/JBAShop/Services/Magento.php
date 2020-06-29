@@ -2477,5 +2477,43 @@ class Magento
 
     }
 
+    public function fixItemMatrixImages(){
+        // 1. Get all published matrix items with a sales channel
+        // 2. Loop through all the matrix items and look for attribute options without a swatch value
+        // 3. If no swatch, set "use_product_photo" to true, else false
+        $matrixProducts = (new \Shop\Models\Products)->collection()->find(
+            [
+                'publication.status' => 'published',
+                'product_type' => 'matrix',
+                'tracking.model_number' => 'SUBISPEED-2015-WRX-TR-TAIL-PARENT'
+            ],
+            [
+                'noCursorTimeout' => true,
+                'batchSize' => 500,
+            ]
+        );
+
+        foreach($matrixProducts as $product){
+            $newAttributes = [];
+            $newOptions = [];
+
+            foreach($product['attributes'] as $attributeKey => $attribute){
+                foreach($attribute['options'] as $option){
+                    if(!isset($option['swatch'])){
+                        $newOptions[] = array_merge($option, ['use_product_photo' => true]);
+                    }else{
+                        $newOptions[] = array_merge($option, ['use_product_photo' => false]);
+                    }
+                }
+
+                $newAttributes[$attributeKey] = array_merge($attribute, ['options' => $newOptions]);
+            }
+            
+            //Set the newly built attributes array on the product
+            $productModel = (new \Shop\Models\Products)->bind($product);
+            $productModel->set('attributes', $newAttributes);
+            $productModel->save();
     
+        }
+    }
 }
