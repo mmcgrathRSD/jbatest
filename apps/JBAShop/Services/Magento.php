@@ -2484,7 +2484,8 @@ class Magento
         $matrixProducts = (new \Shop\Models\Products)->collection()->find(
             [
                 'publication.status' => 'published',
-                'product_type' => 'matrix'
+                'product_type' => 'matrix',
+                'tracking.model_number' => 'SUBISPEED-2015-WRX-TR-TAIL-PARENT',
             ],
             [
                 'noCursorTimeout' => true,
@@ -2493,25 +2494,22 @@ class Magento
         );
 
         foreach($matrixProducts as $product){
-            $newAttributes = [];
-            $newOptions = [];
-
-            foreach($product['attributes'] as $attributeKey => $attribute){
-                foreach($attribute['options'] as $option){
-                    if(!isset($option['swatch'])){
-                        $newOptions[] = array_merge($option, ['use_product_photo' => true]);
-                    }else{
-                        $newOptions[] = array_merge($option, ['use_product_photo' => false]);
-                    }
+            $productModel = (new \Shop\Models\Products)->bind($product);
+            
+            
+            foreach((array) $productModel->attributes as $attributeKey => $attribute){
+                $swatchCount = count(array_column((array) $attribute['options'], 'swatch'));
+                if(!$swatchCount){
+                    continue;
                 }
 
-                $newAttributes[$attributeKey] = array_merge($attribute, ['options' => $newOptions]);
+                foreach($attribute['options'] as $optionKey => $option){
+                    //Check if no $option['swatch'] values exists
+                    $productModel->set("attributes.$attributeKey.options.$optionKey.use_product_photo", empty($option['swatch']));
+                }
             }
             
-            //Set the newly built attributes array on the product
-            $productModel = (new \Shop\Models\Products)->bind($product);
-            $productModel->set('attributes', $newAttributes);
-            $productModel->save();
+            $productModel->store();
     
         }
     }
