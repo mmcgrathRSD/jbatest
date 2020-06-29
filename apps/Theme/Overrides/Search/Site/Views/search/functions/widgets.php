@@ -266,7 +266,7 @@ if (!empty($item)) {
    </div>
    <?php
    $headers = \Base::instance()->get('HEADERS');
-   if (\Audit::instance()->isBot() && preg_match('/(moz|dot)bot/', $headers['User-Agent'])) {
+   if (\Audit::instance()->isBot() && preg_match('/(roger|dot)bot/i', $headers['User-Agent'])) {
       $aggregate = [
          [
             '$match' => [
