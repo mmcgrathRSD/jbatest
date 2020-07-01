@@ -2541,7 +2541,7 @@ class Magento
 
             $productModel->set('use_product_photo_as_swatch', true);
 
-            $productModel->store();
+            $productModel->save();
         }
     }
 }
