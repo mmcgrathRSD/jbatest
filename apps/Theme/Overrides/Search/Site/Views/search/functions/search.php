@@ -187,7 +187,7 @@ $clear_all_exclusions = '';
                                         new_swatch_values.push(
                                             {
                                                 "key": value_key,
-                                                "value": cl.imageTag(value, {secure: true, sign_url: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.swatch'); ?>', class: "amconf-image", alt: value_key, title: value_key}).toHtml()
+                                                "value": cl.imageTag(value, {secure: true, sign_url: true, type: value.indexOf('product_images') == 0 ? 'private' : 'upload', transformation: '<?php echo \Base::instance()->get('cloudinary.swatch'); ?>', class: "amconf-image", alt: value_key, title: value_key}).toHtml()
                                             }
                                         );
                                     });
