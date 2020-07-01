@@ -7,7 +7,7 @@
 		<div class="wrapper">
 			<div class="page">
 				<!-- Google Tag Manager (noscript) -->
-				<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PFV89B"
+				<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<?php echo \Base::instance()->get('analytics.gtm'); ?>"
 				height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 				<?php echo $this->renderLayout('Shop/Site/Views::common/datalayer.php'); ?>
 				<!-- End Google Tag Manager (noscript) -->

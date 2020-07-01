@@ -92,8 +92,8 @@
 
             var options_selected = [];
             
-            $('.super-attribute-select option:selected:enabled').each(function() {
-                options_selected.push($select.val());
+            $('.super-attribute-select option:selected:enabled').each(function(key, option) {
+                options_selected.push($(option).val());
             });
 
             if($('.product-options select[data="' + next_number + '"]').length) {

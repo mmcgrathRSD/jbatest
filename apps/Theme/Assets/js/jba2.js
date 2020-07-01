@@ -17677,7 +17677,7 @@ jQuery(function($){
 		if ( $(this).hasClass('hover') ) {
 			return true;
 		}
-		e.preventDefault();
+		
 		$('ul.products-grid li.item').removeClass('hover');
 		$(this).addClass('hover');
 		gridAnimateEnter(this);

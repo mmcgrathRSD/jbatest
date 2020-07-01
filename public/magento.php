@@ -139,6 +139,13 @@ $app->route('GET /get-product-images-from-cloudinary', function($f3) use($CLImat
 	(new JBAShop\Services\Magento)->getProductImagesFromCloudinary();
 });
 
+/**
+ * Fix Matrix Item Images With New Logic
+ */
+$app->route('GET /fix-matrix-images', function($f3) use($CLImate) {
+	(new JBAShop\Services\Magento)->fixItemMatrixImages();
+});
+
 /**************************/
 
 

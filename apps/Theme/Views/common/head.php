@@ -32,6 +32,7 @@
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/athlete/default/css/styles.css" media="all" />
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/widgets.css" media="all" /> -->
   <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/mirasvit/searchautocomplete/amazon.css" media="all" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/jba/amazon.css" media="all" />
   <!-- <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/mirasvit_searchindex.css" media="all" /> -->
   <!-- <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/mirasvit/seo/mirasvit_seo.css" media="all" /> -->
   <!-- <link rel="stylesheet" type="text/css" href="https://www.subispeed.com/skin/frontend/base/default/css/mirasvit/seositemap/sitemap.css" media="all" /> -->

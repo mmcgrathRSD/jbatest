@@ -135,7 +135,7 @@ button.button > span:before { width: 100%; }
 .no-touch button.button:hover > span:after { width: 100%;}
 
 button.btn-cart span { padding: 0 23px 0 12px; height: 54px; line-height: 54px; font-size: 15px; font-weight: 900;}
-button.btn-cart span span { padding:0 0 0 40px; background: url('../images/i_btn_cart.png') 0 -24px no-repeat;}
+button.btn-cart span span { padding:0 0 0 40px; background: url('/theme/img/jba/i_btn_cart.png') 0 -24px no-repeat;}
 .no-touch button.btn-cart:hover span span { background-position:0 13px}
 	/* inverted */
 	button.btn-cart.icon-white span span { background-position:0 13px;}
@@ -231,7 +231,7 @@ p.control input.radio { margin-right:6px; }
 .header-dropdown ul li{line-height:18px; }
 .header-dropdown ul li a{display:block; padding:0px 5px; color:#322c29; text-decoration:none; white-space:nowrap; }
 .header-dropdown .btn-edit {background-image: url('../images/athlete/btn_edit_sprite.png');}
-.header-dropdown .btn-remove {background-image: url('../images/athlete/btn_remove_small_sprite.png');}
+.header-dropdown .btn-remove {background-image: url('/theme/img/jba/btn_remove_small_sprite.png');}
 .header-dropdown .btn-edit, .header-dropdown .btn-remove,
 .header-dropdown .btn-edit:hover, .header-dropdown .btn-remove:hover { width:14px; height:14px;}
 	
@@ -894,11 +894,11 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 		padding: 0 16px 0 14px;
 		font-size: 15px; line-height: 35px;
 	}
-	.title-buttons button.button span span { padding: 0 26px 0 0; background:url(../images/athlete/next-icon.png) no-repeat right 50%;}
-	.title-buttons button.button:hover span span {background:url(../images/athlete/next-icon-roll.png) no-repeat right 50%;}
+	.title-buttons button.button span span { padding: 0 26px 0 0; background:url("/theme/img/jba/next-icon.png") no-repeat right 50%;}
+	.title-buttons button.button:hover span span {background:url('/theme/img/jba/next-icon-roll.png') no-repeat right 50%;}
 		/* inverted */
-		.title-buttons button.button.icon-white span span { background:url(../images/athlete/next-icon-roll.png) no-repeat right 50%;}
-		.title-buttons button.button.icon-white:hover span span { background:url(../images/athlete/next-icon.png) no-repeat right 50%;}
+		.title-buttons button.button.icon-white span span { background:url("/theme/img/jba/next-icon-roll.png") no-repeat right 50%;}
+		.title-buttons button.button.icon-white:hover span span { background:url("/theme/img/jba/next-icon.png") no-repeat right 50%;}
 
 	/* Shoping cart footer blocks */
 	.top-line {padding-top: 30px; border-top: 1px solid #e5e5e5;}
@@ -939,13 +939,13 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 		padding: 0 16px 0 14px;
 		font-size: 15px; line-height: 35px;
 	}
-	.block_totals button.button span span { padding: 0 26px 0 0; background:url(../images/athlete/next-icon.png) no-repeat right 50%;}
+	.block_totals button.button span span { padding: 0 26px 0 0; background:url("/image/img/jba/next-icon.png") no-repeat right 50%;}
 	.block_totals button.btn-button:hover > span { color: #000;}
-	/* .no-touch  */.block_totals button.button:hover span span { background:url(../images/athlete/next-icon-roll.png) no-repeat right 50%;}
+	/* .no-touch  */.block_totals button.button:hover span span { background:url("/theme/img/jba/next-icon-roll.png") no-repeat right 50%;}
 	
 		/* inverted */
-		.block_totals button.button.icon-white span span { background:url(../images/athlete/next-icon-roll.png) no-repeat right 50%;}
-		/* .no-touch  */.block_totals button.button.icon-white:hover span span { background:url(../images/athlete/next-icon.png) no-repeat right 50%;}
+		.block_totals button.button.icon-white span span { background:url("/theme/img/jba/next-icon-roll.png") no-repeat right 50%;}
+		/* .no-touch  */.block_totals button.button.icon-white:hover span span { background:url("/theme/img/jba/next-icon.png") no-repeat right 50%;}
 
 	.block_totals button.btn-button:hover > span:after { background:#fff;}
 	
@@ -1170,7 +1170,7 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 	.link-wishlist {font-weight: normal;}
 	.btn-remove, .btn-remove:hover { width: 21px; height: 21px;}
 	.btn-remove {
-		background-image:url(../images/athlete/btn_remove_sprite.png);		
+		background-image:url("/theme/img/jba/btn_remove_sprite.png");		
 		background-repeat: no-repeat;		
 	}
 		.btn-remove { background-position: 0 100%;}
@@ -1312,7 +1312,7 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 		.block-wishlist .btn-remove {
 			position: absolute; right: 0; top: 0;
 			width: 14px; height: 14px;
-			background-image: url('../images/athlete/btn_remove_small_sprite.png'); background-position: 0 100%;
+			background-image: url('/theme/img/jba/btn_remove_small_sprite.png'); background-position: 0 100%;
 		}		
 		.block-wishlist .btn-remove:hover {background-position: 0 0;}
 			/* inverted (default) */
@@ -1514,7 +1514,7 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 .toolbar-switch .toolbar-dropdown { display:none; }
 .toolbar-switch select { display:none; }
 
-.toolbar-switch .toolbar-title {position:relative; z-index:4; padding:0 40px 0 10px; background-image: url('../images/selectbox_arrow.png'); background-repeat: no-repeat;}
+.toolbar-switch .toolbar-title {position:relative; z-index:4; padding:0 40px 0 10px; background-image: url('/theme/img/jba/selectbox_arrow.png'); background-repeat: no-repeat;}
 
 	.toolbar-switch .toolbar-title { background-position: right -27px;}
 	.over .toolbar-title { background-position: right 0;}
@@ -1679,7 +1679,7 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 .products-grid .actions .add-to-links li { float: left; width: 43px; background: #141414; margin:10px 0 0; opacity: 0; visibility: hidden }
 
 .products-grid .actions .add-to-link .separator {display: none;}
-.products-grid .actions li button.button { background-image: url('../images/i_btn_cart.png'); background-repeat: no-repeat;}
+.products-grid .actions li button.button { background-image: url('/theme/img/jba/i_btn_cart.png'); background-repeat: no-repeat;}
 .products-grid .actions li button.button span:before, .products-grid .actions li button.button span:after {background:transparent none;}
 .product-view .products-grid .actions li button.button span:before, .product-view .products-grid .actions li button.button span:after {background:transparent none;}
 
@@ -1825,7 +1825,7 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 }
 .products-list .add-to-links button.button span span {
 	padding-left: 34px; padding-right: 0;
-	background: url('../images/i_btn_cart.png') no-repeat 0 -34px;
+	background: url('/theme/img/jba/i_btn_cart.png') no-repeat 0 -34px;
 }
 .products-list .add-to-links button.button:hover span span { background-position: 0 2px;}
 .products-list .add-to-links button.button.icon-white span span {background-position: 0 2px;}
@@ -1990,7 +1990,7 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 .product-view .product-img-box .more-views ul {margin:0 }
 .product-view .product-img-box .more-views li {padding: 0; margin: 0; background:transparent none; }
 .product-view .product-img-box .more-views ul.slides li {margin: 0 11px 0 0; }
-.product-view .product-img-box .more-views-nav a {position: absolute; z-index: 3; top:50%; display:block; width: 26px; height: 26px; margin:-13px 0 0; padding: 0; line-height:26px; background:#000 url('../images/athlete/slider_arrows.png') 2px 0 no-repeat; overflow:hidden; text-indent: 99em; }
+.product-view .product-img-box .more-views-nav a {position: absolute; z-index: 3; top:50%; display:block; width: 26px; height: 26px; margin:-13px 0 0; padding: 0; line-height:26px; background:#000 url('/theme/img/jba/slider_arrows.png') 2px 0 no-repeat; overflow:hidden; text-indent: 99em; }
 .product-view .product-img-box .more-views-nav a.prev{left:-5px; }
 .product-view .product-img-box .more-views-nav a.next{ right:-5px; background-position: -17px 100%; }
 .product-view .product-img-box .more-views-nav a:hover{background-color:#fff; background-position: -18px 0 }
@@ -2024,7 +2024,7 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 .product-view .dedicated-review-box .average-rating strong {letter-spacing: -0.055em;}
 
 .dedicated-review-box .average-rating .rating-large,
-.dedicated-review-box .average-rating .rating-large .rating { height: 21px; margin: 0; padding: 0; background-image: url('../images/bkg_rating_large.png') }
+.dedicated-review-box .average-rating .rating-large .rating { height: 21px; margin: 0; padding: 0; background-image: url('/theme/img/jba/bkg_rating_large.png') }
 .dedicated-review-box .average-rating .rating-large { width: 130px; margin: 7px 0 10px; }
 .dedicated-review-box .average-rating .ratings-table { margin:-2px 0 0 49px; }
 .dedicated-review-box .average-rating .ratings-table th { padding: 0; font-weight: 300; }
@@ -2121,7 +2121,7 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 .qty-container label {float: right; line-height: 28px; padding: 0 17px 0 0; margin: 0; }
 .product-view .qty-container label {color: #626261;}
 
-.qty-container .qty-math {display: block; width:14px; height: 14px; margin: 0 0 2px 4px; padding: 0; background-image: url('../images/athlete/qty_math.png'); background-repeat: no-repeat; }
+.qty-container .qty-math {display: block; width:14px; height: 14px; margin: 0 0 2px 4px; padding: 0; background-image: url('/theme/img/jba/qty_math.png'); background-repeat: no-repeat; }
 .qty-container .qty-dec { margin-bottom: 0 }
 
 	.qty-container .qty-math { /* background-color: #fff; */ background-position: 0 100%;}
@@ -2141,7 +2141,7 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 
 /* Prevnext links */
 .prev-next {float:right; margin:22px 0 0;}
-.prev-next a {display:block; float:left; width: 26px; height: 26px; padding: 0; line-height:26px; background-image: url('../images/athlete/slider_arrows.png');  background-repeat: no-repeat; overflow:hidden; text-indent: 99em; }
+.prev-next a {display:block; float:left; width: 26px; height: 26px; padding: 0; line-height:26px; background-image: url('/theme/img/jba/slider_arrows.png');  background-repeat: no-repeat; overflow:hidden; text-indent: 99em; }
 .prev-next a + a {margin-left: 2px;}
 
 
@@ -2158,7 +2158,7 @@ ul.block-tw-list span {color: #7a7a7a; color: rgba(0,0,0,.62);}
 		.no-touch .prev-next a.product-prev.icon-white:hover { background-position: 3px 100%;}
 
 /* Rating */
-.rating-box, .rating-box .rating { height:8px; background:url(../images/bkg_rating.png) no-repeat;}
+.rating-box, .rating-box .rating { height:8px; background:url("/theme/img/jba/bkg_rating.png") no-repeat;}
 .rating-box { width:49px;}
 .rating-box .rating { background-position: 0 100%;}
 .main p.no-rating a {text-decoration: none;display: inline-block;padding: 1px 4px;}
@@ -2250,7 +2250,7 @@ ul.tier-prices.product-pricing {margin-top: 14px;}
 }
 .title-container .slider-nav { display:inline-block; padding:0 24px 0 0; margin-top: -1px; background: #fff; vertical-align:middle;}
 .title-container .slider-nav li { display: inline-block; vertical-align: middle; margin: 0; padding: 0; /* background: #000; */}
-.title-container .slider-nav a { display:block; width: 20px; height: 26px; margin: 0; padding: 0; line-height:26px; background-image: url('../images/athlete/slider_arrows.png'); background-repeat: no-repeat; overflow:hidden; text-indent: 99em; }
+.title-container .slider-nav a { display:block; width: 20px; height: 26px; margin: 0; padding: 0; line-height:26px; background-image: url('/theme/img/jba/slider_arrows.png'); background-repeat: no-repeat; overflow:hidden; text-indent: 99em; }
 
 	.title-container .slider-nav a { background-color:#fff; background-position:100% 0;}
 	.title-container .slider-nav a.next { background-position: 0 100%;}
@@ -2316,7 +2316,7 @@ ul.tier-prices.product-pricing {margin-top: 14px;}
 .brands-slider-container .title-container { position: relative; z-index: 3; line-height: 21px; margin: -11px 0 -12px; }
 .brands-slider-container .title-container .slider-nav {padding:0; }
 .brands-slider-container .title-container .slider-nav li {background: transparent; }
-.brands-slider-container .title-container .slider-nav a{width: 22px; height: 21px; line-height:21px; background-color:transparent; background-image: url('../images/athlete/brands_slider_arrows.png'); }
+.brands-slider-container .title-container .slider-nav a{width: 22px; height: 21px; line-height:21px; background-color:transparent; background-image: url('/theme/img/brands_slider_arrows.png'); }
 	
 	.brands-slider-container .title-container .slider-nav a { background-color:#fff; background-position: 0 0;}
 	.brands-slider-container .title-container .slider-nav a.next { background-position: 100% 100%;}

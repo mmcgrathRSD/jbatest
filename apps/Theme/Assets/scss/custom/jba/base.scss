@@ -42,3 +42,12 @@ body {
     p, h2,h3 { orphans: 3; widows: 3;}
     h2,h3 {page-break-after: avoid;}
 }
+
+.cart-table a:hover, #wishlist-table a:hover {
+    color: #ffffff!important;
+}
+
+#fancybox-content button {
+    padding-left: 10px;
+    padding-right: 10px;
+}

@@ -802,8 +802,8 @@ website:   	http://www.themepunch.com
 .tp-rightarrow.square-old								{	z-index:100;cursor:pointer; position:relative;	background:url(../assets/arrow_right2.png) no-repeat top left;	width:12px;	height:17px;   float:left;	margin-left:0px; margin-top:-9px;}
 
 
-.tp-leftarrow.default									{	z-index:100;cursor:pointer; position:relative;	background:#000 url('../../images/athlete/banners_slider_arrows.png') 0 0 no-repeat;	width:49px;	height:74px;}
-.tp-rightarrow.default									{	z-index:100;cursor:pointer; position:relative;	background:#000 url('../../images/athlete/banners_slider_arrows.png') 100% 100% no-repeat;	width:49px;	height:74px;}
+.tp-leftarrow.default									{	z-index:100;cursor:pointer; position:relative;	background:#000 url('/theme/img/jba/banners_slider_arrows.png') 0 0 no-repeat;	width:49px;	height:74px;}
+.tp-rightarrow.default									{	z-index:100;cursor:pointer; position:relative;	background:#000 url('/theme/img/jba/banners_slider_arrows.png') 100% 100% no-repeat;	width:49px;	height:74px;}
 .slideshow-container .tp-leftarrow.default {left: 10px !important;}
 .slideshow-container .tp-rightarrow.default {right: 10px !important;}
 

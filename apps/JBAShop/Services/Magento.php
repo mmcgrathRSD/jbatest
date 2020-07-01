@@ -1900,6 +1900,23 @@ class Magento
                 }
 
                 if (!filter_var($img, FILTER_VALIDATE_URL)) {
+                    $parsed = parse_url($img);
+                    $img = '';
+
+                    if (isset($parsed['scheme'])) {
+                        $img .= $parsed['scheme'] . '://';
+                    }
+
+                    if (isset($parsed['host'], $parsed['path'])) {
+                        $parsed['path'] = implode('/', array_map(function($v){
+                            return rawurlencode($v);
+                        }, explode('/', $parsed['path'])));
+
+                        $img .= $parsed['host'] . $parsed['path'];
+                    }
+                }
+
+                if (!filter_var($img, FILTER_VALIDATE_URL)) {
                     continue;
                 }
 
@@ -1967,6 +1984,23 @@ class Magento
                     $img = 'https://subispeed.com' . $img;
                 } else if (strpos($img, 'images/') === 0) {
                     $img = 'https://subispeed.com/' . $img;
+                }
+
+                if (!filter_var($img, FILTER_VALIDATE_URL)) {
+                    $parsed = parse_url($img);
+                    $img = '';
+
+                    if (isset($parsed['scheme'])) {
+                        $img .= $parsed['scheme'] . '://';
+                    }
+
+                    if (isset($parsed['host'], $parsed['path'])) {
+                        $parsed['path'] = implode('/', array_map(function($v){
+                            return rawurlencode($v);
+                        }, explode('/', $parsed['path'])));
+
+                        $img .= $parsed['host'] . $parsed['path'];
+                    }
                 }
 
                 if (!filter_var($img, FILTER_VALIDATE_URL)) {
@@ -2444,5 +2478,34 @@ class Magento
 
     }
 
+    public function fixItemMatrixImages(){
+        // 1. Get all published matrix items with a sales channel
+        // 2. Loop through all the matrix items and look for attribute options without a swatch value
+        // 3. If no swatch, set "use_product_photo" to true, else false
+        $matrixProducts = (new \Shop\Models\Products)->collection()->find(
+            [
+                'publication.status' => 'published',
+                'product_type' => 'matrix'            
+            ],
+            [
+                'noCursorTimeout' => true,
+                'batchSize' => 500,
+            ]
+        );
+
+        foreach($matrixProducts as $product){
+            $productModel = (new \Shop\Models\Products)->bind($product);
+            
+            $lastAttribute = end($productModel->get('attributes'));
+            $swatchCount = count(array_column((array) $lastAttribute['options'], 'swatch'));
+            $optionCount = count($lastAttribute['options']);
+
+            if($swatchCount && $swatchCount < $optionCount){
+                $productModel->set('use_product_photo_as_swatch', true);
+            }
+            
+            $productModel->store();
     
+        }
+    }
 }

@@ -1,17 +1,25 @@
+<?php
+    $cache = \Cache::instance();
+    if (!$cache->exists('product_ymms_.' . (string) $item->id, $ymmMapping )) {
+        $ymmMapping = $item->getYMMMapping();
+        $cache->set('product_ymms_.' . (string) $item->id, $ymmMapping, 86400);
+    }
+?>
+
+
 <div class="product-tabs-container clearfix">
     <ul class="product-tabs clearfix">
         <li class="active"><a href="#" class="jba_tabs" data-tab="product_tabs_description_tabbed_contents">Description</a></li>
         <li><a href="#" class="jba_tabs" data-tab="product_tabs_additional_tabbed_contents">Additional</a></li>
+        <?php if (!empty($ymmMapping)) : ?><li><a href="#" class="jba_tabs" data-tab="product_tabs_fitment_tabbed_contents">Fitment</a></li><?php endif; ?>
     </ul>
     <div class="product-tabs-content tabs-content std" id="product_tabs_description_tabbed_contents" style="">
         <h2>Details</h2>
         <div class="std">
-            <h4 align="center"><?php echo $item->title; ?></h4>
             <div class="container">
             <?php echo $item->copy; ?>
             </div>
             <div id="clear"></div>
-            <?php echo $this->renderView ( 'Shop/Site/Views::product/blocks/new_confirmed_fitment_inner.php' ); ?>
         </div>
         <?php if(!empty($kitSpecsSingle) || !empty($kitSpecsMulti)) : ?>
 <div class="row real-clearfix description_section">
@@ -74,4 +82,14 @@
         </table>
         <script type="text/javascript">decorateTable('product-attribute-specs-table')</script>
     </div>
+    <?php if (!empty($ymmMapping)) : ?>
+    <div class="product-tabs-content tabs-content " id="product_tabs_fitment_tabbed_contents" style="display: none;">
+        <div class="std">
+            <div class="container">
+            <?php echo $this->renderView ( 'Shop/Site/Views::product/blocks/new_confirmed_fitment_inner.php' ); ?>
+            </div>
+            <div id="clear"></div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
