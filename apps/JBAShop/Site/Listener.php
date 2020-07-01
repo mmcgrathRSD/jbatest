@@ -200,16 +200,16 @@ class Listener extends \Prefab
                 'daily',
                 @$product['metadata']['last_modified']['time']
             );
-
-            //add all product category urls.
-            foreach($modelInstance->generateAncestorCategoryUrls($salesChannel['slug']) as $ancestralCategoryUrl){
-                $sitemap->addItem(
-                    $ancestralCategoryUrl,
-                    $priority,
-                    'daily',
-                    @$product['metadata']['last_modified']['time']
-                );
-            }
+            //TODO: uncomment after CRAIG gives the ok to add these back.
+            // //add all product category urls.
+            // foreach($modelInstance->generateAncestorCategoryUrls($salesChannel['slug']) as $ancestralCategoryUrl){
+            //     $sitemap->addItem(
+            //         $ancestralCategoryUrl,
+            //         $priority,
+            //         'daily',
+            //         @$product['metadata']['last_modified']['time']
+            //     );
+            // }
 
             $sitemap->addItem(
                 $modelInstance->generateStandardURL().'/questions',
