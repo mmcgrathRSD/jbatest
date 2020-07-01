@@ -2508,4 +2508,35 @@ class Magento
     
         }
     }
+
+    public function newFixMatrixItemImages(){
+        $sql = "SELECT
+                    cpsa.product_id,
+                    amconf.use_image_from_product 
+                FROM
+                    catalog_product_super_attribute cpsa
+                    LEFT JOIN amasty_amconf_product_attribute amconf ON amconf.product_super_attribute_id = cpsa.product_super_attribute_id 
+                WHERE
+                    amconf.use_image_from_product = 1";
+        
+        $select = $this->db->prepare($sql);
+        $select->execute();
+        $rows = $select->fetchAll(\PDO::FETCH_ASSOC);
+        
+
+        foreach($rows as $row){
+            $productModel = (new \Shop\Models\Products)
+                ->setCondition('magento.id', $row['product_id'])
+                ->setCondition('product_type', 'matrix')
+                ->getItem();
+
+            if(empty($productModel)){
+                continue;
+            }
+
+            $productModel->set('use_product_photo_as_swatch', true);
+
+            $productModel->store();
+        }
+    }
 }
