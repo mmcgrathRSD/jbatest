@@ -300,6 +300,7 @@ class Listener extends \Prefab
             ]
         ], [
             'projection' => [
+                'path' => 1,
                 'slug' => 1,
                 'metadata.last_modified.time' => 1,
                 'metadata.created.time' => 1
@@ -310,7 +311,7 @@ class Listener extends \Prefab
             $climate->blue(time() - $time . ' adding category ' . $category['slug']);
             $product_category_counts++;
             $sitemap->addItem(
-                '/scp/'.$category['slug'],
+                '/scp/'.$category['path'],
                 \Dsc\Sitemap::priority($lastMod, $created),
                 'daily',
                 $category['metadata']['last_modified']['time']
