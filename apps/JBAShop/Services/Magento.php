@@ -2485,7 +2485,7 @@ class Magento
         $matrixProducts = (new \Shop\Models\Products)->collection()->find(
             [
                 'publication.status' => 'published',
-                'product_type' => 'matrix'            
+                'product_type' => 'matrix'
             ],
             [
                 'noCursorTimeout' => true,
@@ -2496,6 +2496,11 @@ class Magento
         foreach($matrixProducts as $product){
             $productModel = (new \Shop\Models\Products)->bind($product);
             
+            $productModel->attributes = (array) $productModel->attributes;
+            usort($productModel->attributes, function($a, $b) {
+                return ($a['ordering'] < $b['ordering']) ? -1 : 1;
+            });
+
             $lastAttribute = end($productModel->get('attributes'));
             $swatchCount = count(array_column((array) $lastAttribute['options'], 'swatch'));
             $optionCount = count($lastAttribute['options']);

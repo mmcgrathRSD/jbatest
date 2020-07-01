@@ -33,7 +33,14 @@
                                         <img 
                                             id="amconf-image-<?php echo $option['id']; ?>" 
                                             data="<?php echo $option_key; ?>"
-                                            src="<?php echo \cloudinary_url($option['swatch'], array("height"=> 31, "width"=> 31, "crop"=>"limit", "sign_url"=>true, 'secure' => true)); ?>" 
+                                            src="<?php echo \cloudinary_url($option['swatch'], array(
+                                                "height"=> 31,
+                                                "width"=> 31,
+                                                "crop"=>"limit",
+                                                "sign_url"=>true,
+                                                'secure' => true,
+                                                'type' => strpos($option['swatch'], 'product_images') === 0 ? 'private' : 'upload'
+                                            )); ?>" 
                                             class="amconf-image amconf-image-<?php echo $option_key; ?>" 
                                             alt="<?php echo $option['value']; ?>" 
                                             title="<?php echo $option['value']; ?>" 
