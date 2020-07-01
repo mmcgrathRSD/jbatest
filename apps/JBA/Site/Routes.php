@@ -31,15 +31,15 @@ class Routes extends \Dsc\Routes\Group{
 		/** 
 		 * This is to recieve notifications from cloudinary
 		*/
-		$this->add('/notifyme', 'GET', [
-			'controller' => 'UploadNotification',
-			'action' => 'index'
-		]);
+		// $this->add('/notifyme', 'GET', [
+		// 	'controller' => 'UploadNotification',
+		// 	'action' => 'index'
+		// ]);
 
-		$this->add('/notifyme', 'POST', [
-			'controller' => 'UploadNotification',
-			'action' => 'recieve'
-		]);
+		// $this->add('/notifyme', 'POST', [
+		// 	'controller' => 'UploadNotification',
+		// 	'action' => 'recieve'
+		// ]);
 		
 		$this->add('/reviews', 'GET', array(
 		    'controller' => 'ShopperApproved',
