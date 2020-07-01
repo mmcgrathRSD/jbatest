@@ -105,14 +105,13 @@ class GoogleProductsFeed
 				}
 
 				$stock = ($product->inventory() > 0 || $product->getDropshipItem()) ? 'in stock' : 'out of stock';//if the inventory is in stock or if it's a dropship only item
-				$gidentifier_exists = 'yes';
 
 				if(empty(trim($gtin)) || !$this->isValidBarcode($gtin)) {
 					//If there is not an identifier don't include the value in the array
-					$gidentifier_exists = null;
 					$gtin = null;
 				}
 
+				$gidentifier_exists = (!empty($gtin) || !empty($mpn) || !empty($product->get('brand'))) ? 'yes' : 'no';
 				//if has flat_shipping fee add shipping data;
 				if($product->get('shipping.is_large_freight_item')){
 					$additionalItemInfo = array_merge(['g:shipping' => [
@@ -124,7 +123,7 @@ class GoogleProductsFeed
 				$item = array_merge(array_filter([
 					'title'                     => $title,
 					'link'                      => $link,
-					'description'               => preg_replace('/(\s)+/', ' ', strip_tags( $product->get('description'))),
+					'description'               => substr(preg_replace('/(\s)+/', ' ', strip_tags( $product->get('description'))), 0, 5000),
 					'g:id'                      => $modelNumber,
 					'g:identifier_exists'       => $gidentifier_exists,
 					'g:gtin'                    => $gtin,
