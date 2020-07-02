@@ -45,6 +45,7 @@ class GoogleProductsFeed
 		$productCollection = \Shop\Models\Products::collection();
 		$productsWriter = $this->startXML($name);
 		$query = [
+			'policies.group_only' => ['$ne' => 1],
 			'product_type' => [
 				'$nin' => [
 						'matrix',
