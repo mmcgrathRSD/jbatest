@@ -270,7 +270,7 @@ if (!empty($item)) {
       $aggregate = [
          [
             '$match' => [
-               'sales_channels.slug' => 'subispeed',
+               'sales_channels.slug' => \Base::instance()->get('sales_channel'),
                "_id" => new \MongoDB\BSON\ObjectID((string) $item->id),
             ]
          ],
@@ -293,7 +293,7 @@ if (!empty($item)) {
                'maxDepth' => 10,
                'depthField' => 'depth',
                'restrictSearchWithMatch' => [
-                  'sales_channels.slug' => 'subispeed'
+                  'sales_channels.slug' => \Base::instance()->get('sales_channel')
                ]
             ]
          ],
