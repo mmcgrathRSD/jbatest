@@ -29,7 +29,7 @@
                         if ($key === 0):
                             foreach ($item->getPossibleAttributeOptionsBySelection($attribute['id']) as $option_key => $option): ?>
                                 <?php if(!empty($option['swatch'])) : ?>
-                                    <div class="amconf-image-container" id="" style="float: left; width: 31px; cursor: pointer;">
+                                    <div class="amconf-image-container" id="" style="float: left; width: 31px; cursor: pointer;">                                    
                                         <img 
                                             id="amconf-image-<?php echo $option['id']; ?>" 
                                             data="<?php echo $option_key; ?>"
@@ -121,7 +121,7 @@
                             next_item.append('<option data="' + key + '"value="' + option.id + '"' + variant + '>' + option.value + '</option>');
 
                             if('swatch' in option) {
-                                next_item.prev('.amconf-images-container').append('<div class="amconf-image-container" id="" style="float: left; width: 31px; cursor: pointer;">' + cl.imageTag(option.swatch, { secure: true, sign_url: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.swatch'); ?>', class: "amconf-image amconf-image-" + key, alt: option.value, title: option.value, 'data-option': option.id, data: key, id: 'amconf-image-' + option.id, style: "margin-bottom: 7px;" }).toHtml() + '</div>');
+                                next_item.prev('.amconf-images-container').append('<div class="amconf-image-container" id="" style="float: left; width: 31px; cursor: pointer;">' + cl.imageTag(option.swatch, { secure: true, sign_url: true, type: option.swatch.indexOf('product_images') == 0 ? 'private' : 'upload', transformation: '<?php echo \Base::instance()->get('cloudinary.swatch'); ?>', class: "amconf-image amconf-image-" + key, alt: option.value, title: option.value, 'data-option': option.id, data: key, id: 'amconf-image-' + option.id, style: "margin-bottom: 7px;" }).toHtml() + '</div>');
                             }
                         });
                     
@@ -142,9 +142,7 @@
                         if('image' in data.result && data.result.image) {
                             //TODO: once image modal is fixed, auto switch to selected variant
 
-                            $('.product-image > a, #data-image-modal-main').html(cl.imageTag(data.result.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml());
-
-                            
+                            $('.product-image > a, #data-image-modal-main').html(cl.imageTag(data.result.image, {secure: true, sign_url: true, type: data.result.image.indexOf('product_images') == 0 ? 'private' : 'upload', transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml());                            
                         }
 
                         if('price' in data.result) {
