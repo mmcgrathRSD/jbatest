@@ -1320,13 +1320,7 @@ class Magento
                             'title' => $productOption['option_title']
                         ];
                     }
-                }
-
-                //remove any options that dont have any values
-                $options = array_filter(array_values($options), function($option){
-                    return array_key_exists('values', $option);
-                });
-                
+                }                
             
                 //Build/Update the dyanmic kit and save it to mongo
                 $groupParent
@@ -1650,7 +1644,7 @@ class Magento
                     $options[$productOption['product_id']]['id'] = new \MongoDB\BSON\ObjectID();
                     $options[$productOption['product_id']]['title'] = $productOption['title'];
                     $options[$productOption['product_id']]['allow_none'] = $productOption['required'] ? false : true;
-                    $options[$productOption['product_id']]['quantity'] = (int) $productOption['value_required_quantity'];
+                    $options[$productOption['product_id']]['quantity'] = (int) $productOption['selection_qty'];
                     $options[$productOption['product_id']]['discount_percentage'] = 0;
                         
                     //Build the dynamic kit option values
@@ -1662,31 +1656,39 @@ class Magento
                         'title' => $productOption['title']
                     ];
 
+
                     //Remove the value from the option it exists in right now
-                    array_walk($existingOptions, function(&$option, $optionKey) use($productOption){
-                        array_walk($option['values'], function(&$value, $valueKey) use($productOption, $option, $optionKey){
+                    array_walk($existingOptions, function(&$option, &$optionKey) use($productOption, &$existingOptions){                        
+                        array_walk($option['values'], function(&$value, &$valueKey) use(&$optionKey, $productOption, &$existingOptions){
                             //The current option value in exiting product matches the one we just pulled out
+                            $test1 = $existingOptions;
                             if($value['magento_id'] === $productOption['product_id']){
-                                unset($option['values'][$valueKey]);
+                               unset($existingOptions[$optionKey]['values'][$valueKey]);
                             }
                         });
                     });
-                    
-                    $progress->advance(1, $groupParent->get('tracking.model_number'));
-                }
 
-                //Merge the old options with the new options to save
-                $newOptions = array_merge($existingOptions, $options);
-                
+                    
+                }
+                //Merge the new options with the existing options, now that we have split the values.
+                $options = array_merge($existingOptions, $options);    
+
+                //remove any options that dont have any values
+                $options = array_filter(array_values($options), function($option){
+                    return ( count($option['values']) > 0);
+                });
+
                 //Set the new options on the original dynamic group parent product
-                //$groupParent->set('kit_options', $options);
+                $groupParent->set('kit_options', array_values($options));
 
                 //Save the new options
-                // try{
-                //     $groupParent->save();
-                // }catch(Exception $e){
-                //     $this->CLImate->red($e->getMessage());
-                // }
+                try{
+                    $groupParent->save();
+                }catch(Exception $e){
+                    $this->CLImate->red($e->getMessage());
+                }
+
+                $progress->advance(1, $groupParent->get('tracking.model_number'));
             }
         }
     }
