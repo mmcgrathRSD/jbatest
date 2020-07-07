@@ -1623,16 +1623,19 @@ class Magento
             foreach($rows as $magentoID => $productGroup){
                 //The dynamic group parent is now created in the "productInfo" sync. 
                 $groupParent = (new \Shop\Models\Products)->setCondition('magento.id', $magentoID)->getItem();
+                
+                //If we dont have a parent in mongo already, something is wrong
                 if(!$groupParent){
                     $failures[] = ['No Parent Found For ', $magentoID];
                     continue;
                 }
 
+                //Temp vars for reach product group
                 $options = [];
                 $existingOptions = $groupParent['kit_options'];
 
                 foreach($productGroup as $productOption){
-                    //Lookup the model number, changed to not fail the whole group if a child doesnt exist in NS.
+                    //Lookup the model number, for each grou subitem
                     $childProductNetsuite = (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOption['product_id']));
 
                     //If the child id doesnt exist in NS, skip it
@@ -1657,11 +1660,11 @@ class Magento
                     ];
 
 
-                    //Remove the value from the option it exists in right now
+                    //If were creating a new option/value, remove it from the current state
                     array_walk($existingOptions, function(&$option, &$optionKey) use($productOption, &$existingOptions){
+                        //Looping through options
                         array_walk($option['values'], function(&$value, &$valueKey) use(&$optionKey, $productOption, &$existingOptions){
-                            //The current option value in exiting product matches the one we just pulled out
-                            $test1 = $existingOptions;
+                            //The outer loops contain the current group sub item id, remove the "value" from existing product
                             if($value['magento_id'] === $productOption['product_id']){
                                unset($existingOptions[$optionKey]['values'][$valueKey]);
                             }
@@ -1673,12 +1676,12 @@ class Magento
                 //Merge the new options with the existing options, now that we have split the values.
                 $options = array_merge($existingOptions, $options);    
 
-                //remove any options that dont have any values
+                //Its possible we have removed all values from an option, get rid of those
                 $options = array_filter(array_values($options), function($option){
                     return ( count($option['values']) > 0);
                 });
 
-                //Set the new options on the original dynamic group parent product
+                //Reset array indexes, and update the kit options
                 $groupParent->set('kit_options', array_values($options));
 
                 //Save the new options
