@@ -1623,7 +1623,7 @@ class Magento
             foreach($rows as $magentoID => $productGroup){
                 //The dynamic group parent is now created in the "productInfo" sync. 
                 $groupParent = (new \Shop\Models\Products)->setCondition('magento.id', $magentoID)->getItem();
-                if(!$productGroup){
+                if(!$groupParent){
                     $failures[] = ['No Parent Found For ', $magentoID];
                     continue;
                 }
