@@ -1658,7 +1658,7 @@ class Magento
 
 
                     //Remove the value from the option it exists in right now
-                    array_walk($existingOptions, function(&$option, &$optionKey) use($productOption, &$existingOptions){                        
+                    array_walk($existingOptions, function(&$option, &$optionKey) use($productOption, &$existingOptions){
                         array_walk($option['values'], function(&$value, &$valueKey) use(&$optionKey, $productOption, &$existingOptions){
                             //The current option value in exiting product matches the one we just pulled out
                             $test1 = $existingOptions;
