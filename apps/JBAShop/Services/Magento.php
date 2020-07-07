@@ -1627,16 +1627,16 @@ class Magento
             $progress = $this->CLImate->progress()->total(count($rows));
 
             foreach($rows as $magentoID => $productGroup){
-                $options = [];
-
                 //The dynamic group parent is now created in the "productInfo" sync. 
                 $groupParent = (new \Shop\Models\Products)->setCondition('magento.id', $magentoID)->getItem();
-
                 if(!$productGroup){
                     $failures[] = ['No Parent Found For ', $magentoID];
                     continue;
                 }
-                
+
+                $options = [];
+                $existingOptions = $groupParent['kit_options'];
+
                 foreach($productGroup as $productOption){
                     //Lookup the model number, changed to not fail the whole group if a child doesnt exist in NS.
                     $childProductNetsuite = (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOption['product_id']));
@@ -1662,10 +1662,31 @@ class Magento
                         'title' => $productOption['title']
                     ];
 
-                    $temp = $options;
-
+                    //Remove the value from the option it exists in right now
+                    array_walk($existingOptions, function(&$option, $optionKey) use($productOption){
+                        array_walk($option['values'], function(&$value, $valueKey) use($productOption, $option, $optionKey){
+                            //The current option value in exiting product matches the one we just pulled out
+                            if($value['magento_id'] === $productOption['product_id']){
+                                unset($option['values'][$valueKey]);
+                            }
+                        });
+                    });
+                    
                     $progress->advance(1, $groupParent->get('tracking.model_number'));
                 }
+
+                //Merge the old options with the new options to save
+                $newOptions = array_merge($existingOptions, $options);
+                
+                //Set the new options on the original dynamic group parent product
+                //$groupParent->set('kit_options', $options);
+
+                //Save the new options
+                // try{
+                //     $groupParent->save();
+                // }catch(Exception $e){
+                //     $this->CLImate->red($e->getMessage());
+                // }
             }
         }
     }
