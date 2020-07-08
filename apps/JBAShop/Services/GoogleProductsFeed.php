@@ -16,6 +16,7 @@ class GoogleProductsFeed
 	];
 	protected $path;
 	protected $fileName;
+	protected $mate;
 
 	public function __construct($path)
 	{
