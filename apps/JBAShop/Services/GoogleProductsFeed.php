@@ -68,7 +68,8 @@ class GoogleProductsFeed
 			'product_type' => [
 				'$in' => [
 					'group',
-					'standard'
+					'standard',
+					''
 				]
 			],
 			'$or' => [
@@ -98,7 +99,7 @@ class GoogleProductsFeed
 					$specs =  array_map('strtolower', $product->specs); //lowercase all attributes stored in specs.
 					$additionalItemInfo = array_filter([
 						'g:gender' => $specs['Gender'] ?? 'unisex', //set gender, if no spec is set we default to unisex.
-						'g:color' => $specs['Color'], //if this isn't set then that's on data team I guess.
+						'g:color' => $specs['Color'] ?? null, //if this isn't set then that's on data team I guess.
 						'g:age_group' => $specs['Age Group'] ?? 'adult', //set to adult if no age group set.
 						'g:size' => in_array($specs['Size'], ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl']) ? $specs['Size'] : null, //once again if this isn't set it's on the data team.
 					]); // remove any empty values from array.
@@ -226,7 +227,7 @@ class GoogleProductsFeed
 						$specs =  array_map('strtolower', $product->specs); //lowercase all attributes stored in specs.
 						$additionalItemInfo = array_filter([
 							'g:gender' => $specs['Gender'] ?? 'unisex', //set gender, if no spec is set we default to unisex.
-							'g:color' => $specs['Color'], //if this isn't set then that's on data team I guess.
+							'g:color' => $specs['Color'] ?? null, //if this isn't set then that's on data team I guess.
 							'g:age_group' => $specs['Age Group'] ?? 'adult', //set to adult if no age group set.
 							'g:size' => in_array($specs['Size'], ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl']) ? $specs['Size'] : null, //once again if this isn't set it's on the data team.
 						]); // remove any empty values from array.
@@ -367,7 +368,7 @@ class GoogleProductsFeed
 							$specs =  array_map('strtolower', $product->specs); //lowercase all attributes stored in specs.
 							$additionalItemInfo = array_filter([
 								'g:gender' => $specs['Gender'] ?? 'unisex', //set gender, if no spec is set we default to unisex.
-								'g:color' => $specs['Color'], //if this isn't set then that's on data team I guess.
+								'g:color' => $specs['Color'] ?? null, //if this isn't set then that's on data team I guess.
 								'g:age_group' => $specs['Age Group'] ?? 'adult', //set to adult if no age group set.
 								'g:size' => in_array($specs['Size'], ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl']) ? $specs['Size'] : null, //once again if this isn't set it's on the data team.
 							]); // remove any empty values from array.
