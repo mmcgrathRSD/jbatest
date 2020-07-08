@@ -80,8 +80,7 @@ class GoogleProductsFeed
 		$products = $productCollection->find($query, [
 			'sort' => ['tracking.model_number' => 1],
 			'batchSize' => 50,
-			'noCursorTimeout' => true,
-			'limit' => 1,
+			'noCursorTimeout' => true
 		]);
 
 		$this->mate->yellow("Standard products.");
@@ -194,8 +193,7 @@ class GoogleProductsFeed
 		$productsCursor = $productCollection->find($query, [
 			'sort' => ['tracking.model_number' => 1],
 			'batchSize' => 50,
-			'noCursorTimeout' => true,
-			'limit' => 1,
+			'noCursorTimeout' => true
 		]);
 		$progress = $this->mate->progress()->total($productCollection->count($query));
 		$this->mate->cyan("Matrix products.");
@@ -335,8 +333,7 @@ class GoogleProductsFeed
 		$productsCursor = $productCollection->find($query, [
 			'sort' => ['tracking.model_number' => 1],
 			'batchSize' => 50,
-			'noCursorTimeout' => true,
-			'limit' => 1,
+			'noCursorTimeout' => true
 		]);
 		$progress = $this->mate->progress()->total($productCollection->count($query));
 		$this->mate->magenta("Dynamic group products.");
