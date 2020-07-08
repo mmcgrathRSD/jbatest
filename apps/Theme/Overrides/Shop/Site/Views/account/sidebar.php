@@ -56,7 +56,7 @@
                         </li>
                     <?php endforeach; ?>
                 </ol>
-                <script type="text/javascript">decorateList('wishlist-sidebar');</script>
+                
                 <div class="actions">
                     <a href="/shop/wishlist/">Go to Wishlist</a>
                 </div>

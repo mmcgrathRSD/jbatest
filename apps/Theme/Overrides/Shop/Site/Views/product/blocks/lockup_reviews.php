@@ -35,51 +35,57 @@ $count = !empty(\Dsc\ArrayHelper::get((array) $item, 'review_rating_counts.sales
         <h3><?php echo $count; ?> customer review<?php echo $count != 1 ? 's' : ''; ?></h3>
         <button type="button" title="Submit Review" class="button jba_button">Submit Review</button>
     </div>
-    <div class="average-rating">
-        <div class="f-left">
-            <strong>Average rating</strong>
-            <div class="rating-box rating-large">
-            <div class="rating" style="width: <?php echo $overall; ?>%"></div>
+    <div class="row">
+        <div class="average-rating col-md-5 col-sm-12">
+            <div class="f-left">
+                <strong>Average rating</strong>
+                <div class="rating-box rating-large">
+                <div class="rating" style="width: <?php echo $overall; ?>%"></div>
+                </div>
+                <span class="reviews-count">(based on <?php echo $count; ?> review<?php echo $count != 1 ? 's' : ''; ?>)</span>
             </div>
-            <span class="reviews-count">(based on <?php echo $count; ?> review<?php echo $count != 1 ? 's' : ''; ?>)</span>
+            <div class="f-left">
+                <table class="ratings ratings-table">
+                <colgroup>
+                    <col width="1">
+                    <col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="rating-box">
+                            <div class="rating" style="width: <?php echo $ease; ?>%"></div>
+                            </div>
+                        </td>
+                        <th><span>Ease of Installation</span></th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="rating-box">
+                            <div class="rating" style="width: <?php echo $fit; ?>%"></div>
+                            </div>
+                        </td>
+                        <th><span>Fit / Quality</span></th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="rating-box">
+                            <div class="rating" style="width: <?php echo $overall; ?>%"></div>
+                            </div>
+                        </td>
+                        <th><span>Overall Satisfaction</span></th>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+            <div class="clear"></div>
+            
         </div>
-        <div class="f-left">
-            <table class="ratings ratings-table">
-            <colgroup>
-                <col width="1">
-                <col>
-            </colgroup>
-            <tbody>
-                <tr>
-                    <td>
-                        <div class="rating-box">
-                        <div class="rating" style="width: <?php echo $ease; ?>%"></div>
-                        </div>
-                    </td>
-                    <th><span>Ease of Installation</span></th>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="rating-box">
-                        <div class="rating" style="width: <?php echo $fit; ?>%"></div>
-                        </div>
-                    </td>
-                    <th><span>Fit / Quality</span></th>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="rating-box">
-                        <div class="rating" style="width: <?php echo $overall; ?>%"></div>
-                        </div>
-                    </td>
-                    <th><span>Overall Satisfaction</span></th>
-                </tr>
-            </tbody>
-            </table>
+        <div class="col-md-6 col-sm-12 user_media">
+            <?php echo $this->renderView ( 'Shop/Site/Views::product/usercontent/new_media.php' ); ?>
         </div>
-        <div class="clear"></div>
     </div>
-    <ol class="reviews-list">
+    <ol class="reviews-list" style="clear: both">
         <?php foreach($reviews as $review) : ?>
             <li>
             <h3 class="review-title"><?php echo $review['title']; ?></h3>
