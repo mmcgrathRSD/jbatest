@@ -213,18 +213,6 @@ class Listener extends \Prefab
             //     );
             // }
 
-            $sitemap->addItem(
-                $modelInstance->generateStandardURL().'/questions',
-                $priority,
-                'daily',
-                @$product['metadata']['last_modified']['time']
-            );
-            $sitemap->addItem(
-                $modelInstance->generateStandardURL().'/reviews',
-                $priority,
-                'daily',
-                @$product['metadata']['last_modified']['time']
-            );
         }
 
         /*
