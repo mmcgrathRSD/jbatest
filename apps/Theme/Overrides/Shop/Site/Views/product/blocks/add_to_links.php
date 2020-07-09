@@ -112,6 +112,7 @@
                 option_ids: options_selected
                 }, function(data) {
                 if(!data.error) {
+                        $('.wishListButton').remove();
                         next_item.prop('disabled', null);
                         next_item.prev('.amconf-images-container').html('');
                         //next_item.html('<option selected disabled>Choose an Option...</option>');
@@ -141,6 +142,8 @@
 
                 $.get( "/shop/product/" + model + "/info", function(data) {
                     if(!data.error) {
+                        $('.wishListButton').remove();
+                        $('.product-shop > .add-to-box').after('<div class="wishListButton text-center add_to_wishlist" data-variant="' + model + '"><button class="addToWishlist btn btn-default  btn-block text-center " data-variant="' + model + '"><i class="glyphicon glyphicon-heart"></i> Add to Wishlist</button></div>');
                         if('image' in data.result && data.result.image) {
                             //TODO: once image modal is fixed, auto switch to selected variant
 

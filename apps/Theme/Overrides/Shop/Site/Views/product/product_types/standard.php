@@ -18,7 +18,7 @@
                      <div class="clear"></div>
                      <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/std.php')?>
                      <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/add_to_links.php')?>
-                     <?php if($item->{'product_type'} != 'dynamic_group' && !\Dsc\ArrayHelper::get($item->policies, 'ships_email')) : ?>
+                     <?php if(!in_array($item->{'product_type'},  ['matrix','dynamic_group']) && !\Dsc\ArrayHelper::get($item->policies, 'ships_email')) : ?>
                         <div class="wishListButton text-center add_to_wishlist" data-variant="<?php echo $item->get('tracking.model_number'); ?>">
                            <i class="glyphicon glyphicon-refresh spinning"></i>
                         </div>
