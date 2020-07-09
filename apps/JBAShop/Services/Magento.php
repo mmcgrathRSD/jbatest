@@ -1637,7 +1637,7 @@ class Magento
                 foreach($productGroup as $productOption){
                     //Lookup the model number, for each grou subitem
                     $childProductNetsuite = (\Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($productOption['product_id']));
-
+                    
                     //If the child id doesnt exist in NS, skip it
                     if(!$childProductNetsuite){
                         continue;
@@ -1658,14 +1658,12 @@ class Magento
                         'option_id' => $productOption['product_id'],
                         'title' => $productOption['title']
                     ];
-
-
                     //If were creating a new option/value, remove it from the current state
-                    array_walk($existingOptions, function(&$option, &$optionKey) use($productOption, &$existingOptions){
+                    array_walk($existingOptions, function(&$option, &$optionKey) use($childProductNetsuite, &$existingOptions){
                         //Looping through options
-                        array_walk($option['values'], function(&$value, &$valueKey) use(&$optionKey, $productOption, &$existingOptions){
+                        array_walk($option['values'], function(&$value, &$valueKey) use(&$optionKey, $childProductNetsuite, &$existingOptions){
                             //The outer loops contain the current group sub item id, remove the "value" from existing product
-                            if($value['magento_id'] === $productOption['product_id']){
+                            if($value['model_number'] === $childProductNetsuite['itemId']){
                                unset($existingOptions[$optionKey]['values'][$valueKey]);
                             }
                         });
