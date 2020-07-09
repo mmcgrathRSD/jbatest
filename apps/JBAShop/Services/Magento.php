@@ -1346,7 +1346,8 @@ class Magento
 
     public function splitDynamicGroupOptions(){
         $sql = "
-        SELECT *
+        SELECT
+                *
             FROM
                 (SELECT
                     bundle.parent_id,
@@ -1369,6 +1370,7 @@ class Magento
                     bundle.parent_id = cpd.entity_id
                     AND cpd.attribute_id = 76
                 WHERE
+                    bundle.required =0 and
                     sel.product_id not in ('11053',
                     '12717',
                     '11052',
