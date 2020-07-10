@@ -98,7 +98,7 @@ $clear_all_exclusions = '';
 			}
 			<?php endif; ?>
 
-            var index = 'products-date-newest-desc';
+            var index = 'products';
 
             if(!instance_id) {
                 instance_id = '';
@@ -586,11 +586,11 @@ $clear_all_exclusions = '';
                 instantsearch.widgets.sortBySelector({
                     container: '#search_filter_sort' + instance_id,
                     indices: [
-                        {name: 'products', label: 'Most Popular'},
+                        {name: 'products', label: 'Newest Products'},
+                        {name: 'products-date-newest-asc', label: 'Oldest Products'},
                         {name: 'products-price-asc', label: 'Price Lowest'},
                         {name: 'products-price-desc', label: 'Price Highest'},
-                        {name: 'products-date-newest-desc', label: 'Newest Products'},
-                        {name: 'products-date-newest-asc', label: 'Oldest Products'},
+                        {name: 'products-date-newest-desc', label: 'Most Popular'},
                         {name: 'products-reviews', label: 'Reviews'}
                     ],
 					template: '',

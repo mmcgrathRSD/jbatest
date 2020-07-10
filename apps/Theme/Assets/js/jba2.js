@@ -17089,18 +17089,33 @@ jQuery(function($){
 	Athlete.carouselUtils = {
 		initCallback: function(carousel){
 			carousel.carouselID = '#' + $(carousel.list).attr('id');
-			//console.log(carousel.carouselID, 'initCallback');
 			carousel.carouselNav = carousel.carouselID + '_nav';
-			carousel.gridBreakpoint = getGridBreakpoint();
+      carousel.gridBreakpoint = getGridBreakpoint();
 
-			$('a.next', carousel.carouselNav).bind('click', function() {
+			$('a.next', carousel.carouselNav).bind('click', function(e) {
+        e.preventDefault();
 				carousel.next();
 				return false;
 			});
-			$('a.prev', carousel.carouselNav).bind('click', function() {
+			$('a.prev', carousel.carouselNav).bind('click', function(e) {
+        e.preventDefault();
 				carousel.prev();
+        
 				return false;
-			});
+      });
+      
+      if(carousel.carouselID == '#thumbs_slider2') {
+        $('.user-next').click(function(e) {
+          e.preventDefault();
+          carousel.next();
+        });
+
+        $('.user-prev').click(function(e) {
+          e.preventDefault();
+          carousel.prev();
+        });
+
+      }
 
 			$(carousel.carouselID).parent().jSwipe({
 				swipeLeft: function() { carousel.next(); },
@@ -17177,8 +17192,23 @@ jQuery(function($){
 		buttonNextHTML: null,
 		buttonPrevHTML: null,
 		buttonNextCallback: Athlete.carouselUtils.buttonNextCallback,
-		buttonPrevCallback: Athlete.carouselUtils.buttonPrevCallback
-	});
+    buttonPrevCallback: Athlete.carouselUtils.buttonPrevCallback,
+    itemFallbackDimension:110
+  });
+  
+  $('.jcarousel-slider2').jcarousel({
+    auto: Athlete.sliders.product.auto,
+		scroll: Athlete.sliders.product.scroll,
+		wrap: Athlete.sliders.product.wrap,
+    buttonNextHTML: '',
+    buttonPrevHTML: '',
+    itemFallbackDimension:110,
+    initCallback: Athlete.carouselUtils.initCallback,
+		reloadCallback: Athlete.carouselUtils.reloadCallback,
+		buttonNextCallback: Athlete.carouselUtils.buttonNextCallback,
+    buttonPrevCallback: Athlete.carouselUtils.buttonPrevCallback
+});
+
 	if ( Athlete.sliders.product.auto ) {
 		$('.jcarousel-slider').hover(function() {
 			$(this).data("jcarousel").stopAuto();

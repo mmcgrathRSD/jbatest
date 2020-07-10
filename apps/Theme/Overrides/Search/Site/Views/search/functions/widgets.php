@@ -74,14 +74,14 @@ if (!empty($item)) {
                   <div class="sort-by-wrap toolbar-switch icon-white">
                      <div class="toolbar-title">
                         <label>Sort By</label>
-                        <span class="current" data-opposite="products-date-newest-asc" data-current="products-date-newest-desc">Newest Products</span>
+                        <span class="current" data-opposite="products-date-newest-asc" data-current="products">Newest Products</span>
                         <div id="search_filter_sort<?php echo $instance_id; ?>"></div>
                      </div>
                      <div class="toolbar-dropdown">
                         <ul>
-                           <li class="selected" data="products-date-newest-desc"><a href="#" class="sort-option" data-opposite="products-date-newest-asc" data-current="products-date-newest-desc">Newest Products</a></li>
-                           <li data="products-date-newest-asc"><a href="#" class="sort-option" data-opposite="products-date-newest-desc">Oldest Products</a></li>
-                           <li data="products"><a href="#" class="sort-option" data-opposite="products">Most Popular</a></li>
+                           <li class="selected" data="products"><a href="#" class="sort-option" data-opposite="products-date-newest-asc" data-current="products">Newest Products</a></li>
+                           <li data="products-date-newest-asc"><a href="#" class="sort-option" data-opposite="products">Oldest Products</a></li>
+                           <li data="products-date-newest-desc"><a href="#" class="sort-option" data-opposite="products-date-newest-desc">Most Popular</a></li>
                            <li data="products-price-asc"><a href="#" class="sort-option" data-opposite="products-price-desc">Price Lowest</a></li>
                            <li data="products-price-desc"><a href="#" class="sort-option" data-opposite="products-price-asc">Price Highest</a></li>
                            <li data="products-reviews"><a href="#" class="sort-option" data-opposite="products">Reviews</a></li>
@@ -127,9 +127,9 @@ if (!empty($item)) {
                         </div>
                         <div class="toolbar-dropdown">
                            <ul>
-                              <li class="selected" data="products-date-newest-desc"><a href="#" class="sort-option" data-opposite="products-date-newest-asc" data-current="products-date-newest-desc">Newest Products</a></li>
-                              <li data="products-date-newest-asc"><a href="#" class="sort-option" data-opposite="products-date-newest-desc">Oldest Products</a></li>
-                              <li data="products"><a href="#" class="sort-option" data-opposite="products">Most Popular</a></li>
+                              <li class="selected" data="products"><a href="#" class="sort-option" data-opposite="products-date-newest-asc" data-current="products">Newest Products</a></li>
+                              <li data="products-date-newest-asc"><a href="#" class="sort-option" data-opposite="products">Oldest Products</a></li>
+                              <li data="products-date-newest-desc"><a href="#" class="sort-option" data-opposite="products-date-newest-desc"">Most Popular</a></li>
                               <li data="products-price-asc"><a href="#" class="sort-option" data-opposite="products-price-desc">Price Lowest</a></li>
                               <li data="products-price-desc"><a href="#" class="sort-option" data-opposite="products-price-asc">Price Highest</a></li>
                               <li data="products-reviews"><a href="#" class="sort-option" data-opposite="products">Reviews</a></li>
@@ -262,7 +262,9 @@ if (!empty($item)) {
          </div>
       <?php endif;
       ?>
+      <?php if (!$master_search) : ?>
       <tmpl type="modules" name="account-page-sidebar" />
+      <?php endif; ?>
    </div>
    <?php
    $headers = \Base::instance()->get('HEADERS');
@@ -270,7 +272,7 @@ if (!empty($item)) {
       $aggregate = [
          [
             '$match' => [
-               'sales_channels.slug' => 'subispeed',
+               'sales_channels.slug' => \Base::instance()->get('sales_channel'),
                "_id" => new \MongoDB\BSON\ObjectID((string) $item->id),
             ]
          ],
@@ -293,7 +295,7 @@ if (!empty($item)) {
                'maxDepth' => 10,
                'depthField' => 'depth',
                'restrictSearchWithMatch' => [
-                  'sales_channels.slug' => 'subispeed'
+                  'sales_channels.slug' => \Base::instance()->get('sales_channel')
                ]
             ]
          ],

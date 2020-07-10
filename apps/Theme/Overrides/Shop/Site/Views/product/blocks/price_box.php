@@ -26,22 +26,18 @@ $price = $item->price();
             <p class="sku">SKU: <span><?php echo $item->tracking['oem_model_number']; ?></span></p>
             <p class="availability ">
                 <span>
-                    <span class="tt">
-                    
-                    <span class="top"></span>
-                    <span class="bottom"></span>
-                    </span></span> <span class="amstockstatus amsts_501">
-                    <?php
-                    if (!empty($item->variantsAvailable()) && count($item->variantsAvailable()) > 1) {
-                        echo '&nbsp;';
-                    } else {
-                        echo $this->renderView('Shop/Site/Views::helpers/stock.php', [
-                            'hive' => [
-                                'stockProduct' => $item
-                            ]
-                        ]);
-                    }
-                    ?>
+                    <span class="amstockstatus amsts_501">
+                        <?php 
+                        if (!empty($item->variantsAvailable()) && count($item->variantsAvailable()) > 1 || $item->{'product_type'} == 'matrix') {
+                            echo '&nbsp;';
+                        } else {
+                            echo $this->renderView('Shop/Site/Views::helpers/stock.php', [
+                                'hive' => [
+                                    'stockProduct' => $item
+                                ]
+                            ]);
+                        }
+                        ?>
                     </span>
                 </span>
             </p>

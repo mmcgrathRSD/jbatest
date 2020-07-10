@@ -750,8 +750,16 @@ $( document ).ready(function() {
     });
 
   $('body').on('submit', '.addToCartForm', function (e){
-        e.preventDefault();
+        e.preventDefault(); 
+
         var form = $(this);
+
+        if(form.hasClass('matrix_form_not_ready')) {
+            alert('Please ensure that all configurable options have been selected.');
+
+            return false;
+        }
+
         form.find('.ymmLoader').show();
         form.find('.add_to_cart_text').hide();
         var product_name = form.find('button').attr('product_name');
