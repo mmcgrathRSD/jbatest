@@ -143,7 +143,11 @@
                 $.get( "/shop/product/" + model + "/info", function(data) {
                     if(!data.error) {
                         $('.wishListButton').remove();
-                        $('.product-shop > .add-to-box').after('<div class="wishListButton text-center add_to_wishlist" data-variant="' + model + '"><button class="addToWishlist btn btn-default  btn-block text-center " data-variant="' + model + '"><i class="glyphicon glyphicon-heart"></i> Add to Wishlist</button></div>');
+                        if('is_wishlist_item' in data.result && data.result.is_wishlist_item !== null){
+                            $('.product-shop > .add-to-box').after('<div class="wishListButton text-center add_to_wishlist" data-variant="' + model + '"><button class="removeFromWishlist btn btn-default btn-block text-center " data-variant="' + model + '"  data-hash="' + data.result.is_wishlist_item + '" class="btn btn-default btn-lg btn-block"><i class="glyphicon glyphicon-delete"></i> Remove from Wishlist</button></div>');
+                        }else{
+                            $('.product-shop > .add-to-box').after('<div class="wishListButton text-center add_to_wishlist" data-variant="' + model + '"><button class="addToWishlist btn btn-default  btn-block text-center " data-variant="' + model + '"><i class="glyphicon glyphicon-heart"></i> Add to Wishlist</button></div>');
+                        }
                         if('image' in data.result && data.result.image) {
                             //TODO: once image modal is fixed, auto switch to selected variant
 
