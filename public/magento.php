@@ -95,6 +95,10 @@ $app->route(['GET /fix-google-image/@id'], function($f3, $params) use($CLImate, 
 		(new JBAShop\Services\Magento)->fixGoogleImage($product);
 	}
 });
+$app->route(['GET /strip-tags-google-images'], function($f3, $params) use($CLImate, $app) {
+	(new JBAShop\Services\Magento)->stripGoogleImageTags();
+});
+
 
 
 $app->route('GET /sync-category-images', function() use($CLImate) {

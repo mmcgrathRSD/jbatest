@@ -890,6 +890,43 @@ class Magento
         $test = $googleImage;
     }
 
+    public function stripGoogleImageTags(){
+        $apiData = [];
+
+        $cloudinaryOptions = [
+            'type' => 'upload', 
+            'prefix' => 'google_images/', 
+            'tags' => true,
+            'context' => true,
+            'max_results' => 500,
+        ];
+        
+        do {
+            $cloudinaryApi = (new \Cloudinary\Api)->resources($cloudinaryOptions);
+            $apiData = array_merge($cloudinaryApi['resources'], $apiData);
+        
+
+            if($cloudinaryApi['next_cursor']){
+                $cloudinaryOptions['next_cursor'] = $cloudinaryApi['next_cursor'];
+            }
+
+            $this->CLImate->green(count($apiData));
+            $this->CLImate->green($cloudinaryApi['next_cursor']);
+        } while($cloudinaryApi['next_cursor']);
+
+        $this->CLImate->green('TOTAL IMAGES TO SYNC: ' . count($apiData));
+        
+        foreach($apiData as $googleImage){
+            //Remove the tags from the resource
+            try{
+                (new \Cloudinary\Api)->update($googleImage['public_id'], ['tags' => " "]);
+                $this->CLImate->green('product tags removed from ' . $googleImage['public_id']);
+            }catch(Exception $e){
+                $this->CLImate->red('Unable to modify ' . $googleImage['public_id'] . "\r\n" . $e->getMessage());
+            }
+        }
+    }
+
     public function syncCategoryImages()
     {
         $sql = 
