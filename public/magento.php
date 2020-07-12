@@ -69,6 +69,34 @@ $app->route(['GET /sync-google-images'], function($f3, $params) use($CLImate, $a
 	(new JBAShop\Services\Magento)->syncCloudinaryToMongo('upload', 'google_images');
 });
 
+/**
+ * Fix Google Images
+ * The first route will go through and fix all google images that were incorrectly "Tagged"
+ * The second sync will fix an individual google image, pass in the magento id or model number
+ */
+$app->route(['GET /fix-google-images'], function($f3, $params) use($CLImate, $app) {
+	(new JBAShop\Services\Magento)->fixGoogleImages();
+});
+$app->route(['GET /fix-google-image/@id'], function($f3, $params) use($CLImate, $app) {
+	$productId = $params['id'];
+	
+	//Try to lookup by magento id
+	$product = (new \Shop\Models\Products)->setCondition('magento.id', (int) $productId)->getItem();
+
+	//Not found by magento id, try model number
+	if(!$product){
+		$product = (new \Shop\Models\Products)->setCondition('tracking.model_number', $productId)->getItem();
+	}
+
+	//No product found for either, just return
+	if(!$product){
+		return $CLImate->red('No Product Found!, Check Model Number or Magento Id');
+	}else{
+		(new JBAShop\Services\Magento)->fixGoogleImage($product);
+	}
+});
+
+
 $app->route('GET /sync-category-images', function() use($CLImate) {
 	$CLImate->red('Have you cleared the category_images folder in Cloudinary?');
 	(new JBAShop\Services\Magento)->syncCategoryImages();
