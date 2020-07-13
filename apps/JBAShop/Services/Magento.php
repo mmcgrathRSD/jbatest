@@ -828,6 +828,105 @@ class Magento
         $this->CLImate->green('All Doneski!');
     }
 
+    //This function takes all the cloudinary images from "google_images" and syncs them to mongo
+    public function fixGoogleImages(){
+        $apiData = [];
+
+        $cloudinaryOptions = [
+            'type' => 'upload', 
+            'prefix' => 'google_images/', 
+            'tags' => true,
+            'context' => true,
+            'max_results' => 500,
+        ];
+        
+        do {
+            $cloudinaryApi = (new \Cloudinary\Api)->resources($cloudinaryOptions);
+            $apiData = array_merge($cloudinaryApi['resources'], $apiData);
+        
+
+            if($cloudinaryApi['next_cursor']){
+                $cloudinaryOptions['next_cursor'] = $cloudinaryApi['next_cursor'];
+            }
+
+            $this->CLImate->green(count($apiData));
+            $this->CLImate->green($cloudinaryApi['next_cursor']);
+        } while($cloudinaryApi['next_cursor']);
+
+        $this->CLImate->green('TOTAL IMAGES TO SYNC: ' . count($apiData));
+        
+        foreach($apiData as $googleImage){
+            $product = (new \Shop\Models\Products)->setCondition('magento.id', (int) $googleImage['context']['custom']['magento_id'])->getItem();
+        
+            //Check to see if the image tag has model number (not model number flat)
+            if(substr_count($googleImage['tags'][0], '-') > 0){
+                try{
+                    $api = (new \Cloudinary\Api)->update($googleImage['public_id'], [
+                        'tags' => $product['tracking']['model_number_flat'],
+                    ]);
+                }catch(Exception $e){
+                    $this->CLImate->red('Unable to update Cloudinary Resource'. '\n\r' . $e->getMessage());
+                }
+            }
+        }
+
+        $this->CLImate->green('All Doneski!');
+    }
+
+    public function fixGoogleImage(\Shop\Models\Products $product){
+        //Find the exiting google image
+        $test = $product;
+        $test2 = $product['magento']['id'];
+
+        try{
+            $googleImage = (new \Cloudinary\Api)->resources_by_context('magento_id', $product['magento']['id'], [
+                'tags' => true,
+                'context' => true,
+            ]);
+        }catch(Exception $e){
+            $this->CLImate->red($e->getMessage());
+        }
+
+        $test = $googleImage;
+    }
+
+    public function stripGoogleImageTags(){
+        $apiData = [];
+
+        $cloudinaryOptions = [
+            'type' => 'upload', 
+            'prefix' => 'google_images/', 
+            'tags' => true,
+            'context' => true,
+            'max_results' => 500,
+        ];
+        
+        do {
+            $cloudinaryApi = (new \Cloudinary\Api)->resources($cloudinaryOptions);
+            $apiData = array_merge($cloudinaryApi['resources'], $apiData);
+        
+
+            if($cloudinaryApi['next_cursor']){
+                $cloudinaryOptions['next_cursor'] = $cloudinaryApi['next_cursor'];
+            }
+
+            $this->CLImate->green(count($apiData));
+            $this->CLImate->green($cloudinaryApi['next_cursor']);
+        } while($cloudinaryApi['next_cursor']);
+
+        $this->CLImate->green('TOTAL IMAGES TO SYNC: ' . count($apiData));
+        
+        foreach($apiData as $googleImage){
+            //Remove the tags from the resource
+            try{
+                (new \Cloudinary\Api)->update($googleImage['public_id'], ['tags' => " "]);
+                $this->CLImate->green('product tags removed from ' . $googleImage['public_id']);
+            }catch(Exception $e){
+                $this->CLImate->red('Unable to modify ' . $googleImage['public_id'] . "\r\n" . $e->getMessage());
+            }
+        }
+    }
+
     public function syncCategoryImages()
     {
         $sql = 
