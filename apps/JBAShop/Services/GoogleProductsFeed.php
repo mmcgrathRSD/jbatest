@@ -49,11 +49,11 @@ class GoogleProductsFeed
 		$this->mate->blue("Generating {$channel->get('slug')} google product feed.");
 		$productsWriter = $this->startXML($name);
 		//generate non matrix and matrix_subitems.
-		// $this->groupAndStandardProductFeed($channel, $productsWriter);
+		$this->groupAndStandardProductFeed($channel, $productsWriter);
 		//now do the same thing-ish for matrix items.
 		$this->matrixProductFeed($channel, $productsWriter);
-		//lastly do the same for dynamic group items.
-		// $this->dynamicGroupProductFeed($channel, $productsWriter);
+		// lastly do the same for dynamic group items.
+		$this->dynamicGroupProductFeed($channel, $productsWriter);
 
 		$this->endXML($productsWriter);
 
@@ -183,7 +183,6 @@ class GoogleProductsFeed
 		/** @var \Shop\Models\Products $product */
 		$productCollection = \Shop\Models\Products::collection();
 		$query = [
-			'slug' => '13brzfr-parent-sticker-fab-front-and-rear-3d-carbon-fiber-emblem-overlays',
 			'policies.group_only' => ['$ne' => 1],
 			'product_type' => 'matrix',
 			'$or' => [
