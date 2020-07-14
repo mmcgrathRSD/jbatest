@@ -80,7 +80,7 @@ class YearMakeModels extends \Shop\Models\YearMakeModels
 
 		if(empty($this->title)) {
 			$title = $this->vehicle_year .' '. $this->vehicle_make . ' ' . $this->vehicle_model .' '.  $this->vehicle_sub_model . ' ' . $this->vehicle_engine_size ;
-			$this->title = $title;
+			$this->title = trim($title);
 
 			$this->slug = $this->generateSlug();
 		}
@@ -148,11 +148,46 @@ class YearMakeModels extends \Shop\Models\YearMakeModels
     }
 
 
-	protected function beforeSave()
-	{
+    protected function beforeSave()
+    {
+		if(empty($this->title)){
+			\Dsc\System::addMessage('ahaha', 'error');
+		}else{
+			$salesChannelIds = $this->sales_channel_ids;
+			$salesChannels = [];
+			if(!empty($salesChannelIds)){
+				array_walk($salesChannelIds, function(&$item){
+					$item = new \MongoDB\BSON\ObjectID($item);
+				});
+				$salesChannelsCursor = (new \Shop\Models\SalesChannels())->collection()->find([
+					'_id' => ['$in' => $salesChannelIds]
+				], [
+					'projection' => [
+						'_id' => true,
+						'title' => true,
+						'slug' => true,
+					],
+				]);
 
+				foreach($salesChannelsCursor as $salesChannelDoc){
+					$salesChannels[] = $salesChannelDoc;
+				}
 
+			}
+			$this->set('publication.sales_channels', $salesChannels);
+			unset($this->sales_channel_ids);
 
+			return parent::beforeSave();
+		}
+
+    }
+
+	public function getHierarchyTitlePathArray(){
+		return [];
+	}
+
+	public function getHierarchy(){
+		return [];
 	}
 
 	/*
