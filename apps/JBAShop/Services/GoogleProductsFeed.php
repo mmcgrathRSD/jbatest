@@ -52,7 +52,7 @@ class GoogleProductsFeed
 		$this->groupAndStandardProductFeed($channel, $productsWriter);
 		//now do the same thing-ish for matrix items.
 		$this->matrixProductFeed($channel, $productsWriter);
-		//lastly do the same for dynamic group items.
+		// lastly do the same for dynamic group items.
 		$this->dynamicGroupProductFeed($channel, $productsWriter);
 
 		$this->endXML($productsWriter);
@@ -273,10 +273,12 @@ class GoogleProductsFeed
 					}
 
 					//if no child has an img use the matrix parent image.
-					if (empty($imgUrl)) {
-						$imgUrl = !empty($matrix->get('google_image')) ? $matrix->get('google_image') : $matrix->get('featured_image.slug');
+					if (empty($imgUrl) && !empty($matrix->get('google_image'))) {
+						$imgUrl =  $matrix->get('google_image');
+						$imgType = 'upload';
+					}else{
+						$imgUrl =  $matrix->get('featured_image.slug');
 					}
-
 					//merge all non null values
 					$item = array_merge(array_filter([
 						'title'                     => $title,
@@ -414,8 +416,11 @@ class GoogleProductsFeed
 						}
 
 						//if no child has an img use the matrix parent image.
-						if (empty($imgUrl)) {
-							$imgUrl = !empty($dynamicGroup->get('google_image')) ? $dynamicGroup->get('google_image') : $dynamicGroup->get('featured_image.slug');
+						if (empty($imgUrl) && !empty($dynamicGroup->get('google_image'))) {
+							$imgUrl =  $dynamicGroup->get('google_image');
+							$imgType = 'upload';
+						}else{
+							$imgUrl =  $dynamicGroup->get('featured_image.slug');
 						}
 
 						//merge all non null values
