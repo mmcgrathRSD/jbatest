@@ -53,6 +53,10 @@ $app->route('GET /sync-dynamic-group-products', function() {
 	(new JBAShop\Services\Magento)->syncDynamicGroupProducts();
 });
 
+$app->route('GET /split-dyanmic-groups', function() {
+	(new JBAShop\Services\Magento)->splitDynamicGroupOptions();
+});
+
 $app->route(['GET /sync-product-images', 'GET /sync-product-images/@magentoid'], function($f3, $params) use($CLImate) {
 	$CLImate->red('Have you cleared the product_images folder in Cloudinary?');
 	$id = $params['magentoid'] ?? null;
