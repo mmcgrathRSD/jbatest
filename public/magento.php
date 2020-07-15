@@ -158,6 +158,10 @@ $app->route('GET /fix-matrix-images-new', function($f3) use($CLImate) {
 
 /**************************/
 
+$app->route('GET /sync-wishlists', function($f3) use($CLImate) {
+	(new JBAShop\Services\Magento)->syncWishlists();
+ });
+
 
 // bootstap each mini-app  these are in apps folder, as well as in vender/dioscouri
 \Dsc\Apps::instance()->bootstrap();
