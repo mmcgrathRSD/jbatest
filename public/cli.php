@@ -113,6 +113,32 @@ $app->route('GET /sync-algolia', function() {
     (new \Search\Models\Algolia\Products())->algoliaStandardSync();
 });
 
+$app->route('GET /listrak-datafeeds', function(){
+    $salesChannels = (new \Shop\Models\SalesChannels)->getItems();
+    $app = \Base::instance();
+    foreach($salesChannels as $channel){
+        (new \Shop\Services\Listtrac\DataFeeds('public/', $channel->get('domain'), $app->get('listrak.host'), $channel->get('listrak.username'), $channel->get('listrak.password')))->GenerateFeeds();
+    }
+});
+
+$app->route('GET /sync-or-delete-algolia', function(){
+    $climate = new \League\CLImate\CLImate();
+    $collection = (new \Shop\Models\Products)->collection();
+
+    $cursor = $collection->find([
+        'publication.status' => 'published'
+    ], [
+        'sort' => ['metadata.last_modified.time' => 1],
+        'projection' => ['_id' => 1]
+    ]);
+
+    foreach($cursor as $doc){
+        $climate->blue((string)$doc['_id']);
+        \Search\Models\Algolia\Products::syncOrDelete($doc['_id']);
+    }
+    $climate->green('DONE');
+});
+
 $app->route('GET /process-algolia-items', function() {
     (new \Search\Models\AlgoliaSyncItem())->algoliaStandardSync();
 });
