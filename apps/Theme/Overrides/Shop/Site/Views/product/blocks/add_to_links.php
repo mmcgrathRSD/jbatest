@@ -140,23 +140,22 @@
                 var model = $('.super-attribute-select option:selected:enabled').last().attr('data-model');
                 $('.variant_id').val(model);
 
-                $.get( "/shop/product/" + model + "/info", function(data) {
+                $.get('/shop/product/info', {model: model}, function(data) {
                     if(!data.error) {
                         $('.wishListButton').remove();
-                        if('is_wishlist_item' in data.result && data.result.is_wishlist_item !== null){
+                        if ('is_wishlist_item' in data.result && data.result.is_wishlist_item !== null) {
                             $('.product-shop > .add-to-box').after('<div class="wishListButton text-center add_to_wishlist" data-variant="' + model + '"><button class="removeFromWishlist btn btn-default btn-block text-center " data-variant="' + model + '"  data-hash="' + data.result.is_wishlist_item + '" class="btn btn-default btn-lg btn-block"><i class="glyphicon glyphicon-delete"></i> Remove from Wishlist</button></div>');
-                        }else{
+                        } else {
                             $('.product-shop > .add-to-box').after('<div class="wishListButton text-center add_to_wishlist" data-variant="' + model + '"><button class="addToWishlist btn btn-default  btn-block text-center " data-variant="' + model + '"><i class="glyphicon glyphicon-heart"></i> Add to Wishlist</button></div>');
                         }
+
                         if('image' in data.result && data.result.image) {
                             //TODO: once image modal is fixed, auto switch to selected variant
 
                             $('.product-image > a, #data-image-modal-main').html(cl.imageTag(data.result.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml());
-
-                            
                         }
 
-                        if('price' in data.result) {
+                        if ('price' in data.result) {
                             $('.price_actual ').html(currency_format.format(data.result.price));
                         }
 
