@@ -2909,4 +2909,92 @@ class Magento
             $productModel->save();
         }
     }
+
+    public function syncWishlists()
+    {
+        $sql = 
+            "SELECT
+                wi.wishlist_id,
+                c.email,
+                IF (wi.store_id = 1, 'subispeed', 'ftspeed') AS site,
+                wi.product_id
+            FROM wishlist_item wi
+            INNER JOIN wishlist w
+                ON w.wishlist_id = wi.wishlist_id
+            INNER JOIN customer_entity c
+                ON c.entity_id = w.customer_id
+            WHERE w.updated_at > '2019-01-01'
+            AND wi.store_id IN (1, 4, 5)
+            ORDER BY
+                wi.wishlist_id,
+                wi.added_at"
+        ;
+
+        $select = $this->db->prepare($sql);
+        $select->execute();
+
+        $magentoWishlists = $select->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_GROUP);
+
+        $wishlistCount = count($magentoWishlists);
+        $this->CLImate->green("Syncing {$wishlistCount} wishlists...");
+        $progress = $this->CLImate->progress()->total($wishlistCount);
+
+        foreach ($magentoWishlists as $magentoWishlist) {
+            $email = $magentoWishlist[0]['email'];
+            $progress->advance(1, $email);
+
+            $salesChannel = $magentoWishlist[0]['site'];
+
+            $user = (new \Users\Models\Users)
+                ->setCondition('email', $email)
+                ->getItem();
+
+            if (empty($user)) {
+                continue;
+            }
+
+            // $this->CLImate->green("Working on {$salesChannel} wishlist for {$email}...");
+
+            // find existing wishlist
+            $wishlist = (new \Shop\Models\Wishlists)
+                ->setCondition('user_id', $user->id)
+                ->setCondition('sales_channel', $salesChannel)
+                ->getItem();
+
+            // create wishlist if it doesn't exist
+            if (empty($wishlist)) {
+                // $this->CLImate->blue("Wishlist not found. Creating...");
+                $wishlist = new \Shop\Models\Wishlists;
+                $wishlist->user_id = $user->id;
+                $wishlist->sales_channel = $salesChannel;
+            } else {
+                // $this->CLImate->blue("Wishlist found. Updating...");
+            }
+
+            foreach ($magentoWishlist as $item) {
+                // get NS model number
+                $netsuiteItem = \Netsuite\Models\ExternalItemMapping::getNetsuiteItemByProductId($item['product_id']);
+                if (empty($netsuiteItem->itemId)) {
+                    continue;
+                }
+
+                $netsuiteModel = $netsuiteItem->itemId;
+
+                $product = (new \Shop\Models\Products)
+                    ->setCondition('tracking.model_number', $netsuiteModel)
+                    ->getItem();
+
+                if (!empty($product->id)) {
+                    $wishlist->addItem($product, [], false);
+                }
+            }
+
+            if (count($wishlist->items)) {
+                $wishlist->save();
+                // $this->CLImate->green("Success!");
+            } else {
+                // $this->CLImate->red("No items found. Wishlist not created.");
+            }
+        }
+    }
 }
