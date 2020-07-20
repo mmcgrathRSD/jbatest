@@ -72,7 +72,20 @@
    </div>
 <?php endif; ?>
 
-
+<?php
+//only use footer tracking on all page expect confirmation that has order set
+if(empty($order)) :?>
+<script type="text/javascript">
+<?php if(!empty($SiteVersion)): ?>
+ga('set', 'dimension1', '<?php echo $SiteVersion; ?>');
+<?php endif; ?>
+<?php if($ymm = $this->session->get('activeVehicle')): ?>
+ga('set', 'dimension2', '<?php echo $ymm['slug']?>');
+<?php else : ?>
+<?php endif; ?>
+ga('send', 'pageview');
+</script>
+<?php endif; ?>
 
 <?php if ($this->app->get('DEBUG')) { ?>
 <div class="footer-bottom col-lg-12 col-md-12 col-sm-12 col-xs-12" style="
