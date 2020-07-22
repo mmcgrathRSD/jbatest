@@ -61,7 +61,7 @@
             <tr class="first odd">
                 <th class="label">Installation Instructions</th>
                 <td class="data last">
-                    <?php if(!empty($item->get('install_instructions'))) : ?>
+                    <?php if(!empty($item->get('policies.warranty_period'))) : ?>
                         <a href="<?php echo $item->get('install_instructions') ;?>" target="_blank">Link</a>
                     <?php else : ?>
                         None
