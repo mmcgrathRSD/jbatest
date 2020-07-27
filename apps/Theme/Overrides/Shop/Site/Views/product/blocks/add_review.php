@@ -18,23 +18,23 @@ $identity = $this->auth->getIdentity();
                 <th>Ease of Installation</th>
                                         <td class="value">
                 <span class="rating-radio" data-id="EaseofInstallation_1" data-index="1"></span>
-                <input type="radio" name="rating_criteria[ease_of_installation]" id="EaseofInstallation_1" value="16" class="radio">
+                <input type="radio" name="rating_criteria[ease_of_installation]" id="EaseofInstallation_1" value="1" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="EaseofInstallation_2" data-index="2"></span>
-                <input type="radio" name="rating_criteria[ease_of_installation]" id="EaseofInstallation_2" value="17" class="radio">
+                <input type="radio" name="rating_criteria[ease_of_installation]" id="EaseofInstallation_2" value="2" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="EaseofInstallation_3" data-index="3"></span>
-                <input type="radio" name="rating_criteria[ease_of_installation]" id="EaseofInstallation_3" value="18" class="radio">
+                <input type="radio" name="rating_criteria[ease_of_installation]" id="EaseofInstallation_3" value="3" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="EaseofInstallation_4" data-index="4"></span>
-                <input type="radio" name="rating_criteria[ease_of_installation]" id="EaseofInstallation_4" value="19" class="radio">
+                <input type="radio" name="rating_criteria[ease_of_installation]" id="EaseofInstallation_4" value="4" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="EaseofInstallation_5" data-index="5"></span>
-                <input type="radio" name="rating_criteria[ease_of_installation]" id="EaseofInstallation_5" value="20" class="radio">
+                <input type="radio" name="rating_criteria[ease_of_installation]" id="EaseofInstallation_5" value="5" class="radio">
                 </td>
                                         <td class="selected-value" data-index="0">0 out of 5</td>
             </tr>
@@ -42,23 +42,23 @@ $identity = $this->auth->getIdentity();
                 <th>Fit / Quality</th>
                                         <td class="value">
                 <span class="rating-radio" data-id="FitQuality_1" data-index="1"></span>
-                <input type="radio" name="rating_criteria[fit_and_quality]" id="FitQuality_1" value="21" class="radio">
+                <input type="radio" name="rating_criteria[fit_and_quality]" id="FitQuality_1" value="1" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="FitQuality_2" data-index="2"></span>
-                <input type="radio" name="rating_criteria[fit_and_quality]" id="FitQuality_2" value="22" class="radio">
+                <input type="radio" name="rating_criteria[fit_and_quality]" id="FitQuality_2" value="2" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="FitQuality_3" data-index="3"></span>
-                <input type="radio" name="rating_criteria[fit_and_quality]" id="FitQuality_3" value="23" class="radio">
+                <input type="radio" name="rating_criteria[fit_and_quality]" id="FitQuality_3" value="3" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="FitQuality_4" data-index="4"></span>
-                <input type="radio" name="rating_criteria[fit_and_quality]" id="FitQuality_4" value="24" class="radio">
+                <input type="radio" name="rating_criteria[fit_and_quality]" id="FitQuality_4" value="4" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="FitQuality_5" data-index="5"></span>
-                <input type="radio" name="rating_criteria[fit_and_quality]" id="FitQuality_5" value="25" class="radio">
+                <input type="radio" name="rating_criteria[fit_and_quality]" id="FitQuality_5" value="5" class="radio">
                 </td>
                                         <td class="selected-value" data-index="0">0 out of 5</td>
             </tr>
@@ -66,23 +66,23 @@ $identity = $this->auth->getIdentity();
                 <th>Overall Satisfaction</th>
                                         <td class="value">
                 <span class="rating-radio" data-id="OverallSatisfaction_1" data-index="1"></span>
-                <input type="radio" name="rating_criteria[overall_satisfaction]" id="OverallSatisfaction_1" value="11" class="radio">
+                <input type="radio" name="rating_criteria[overall_satisfaction]" id="OverallSatisfaction_1" value="1" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="OverallSatisfaction_2" data-index="2"></span>
-                <input type="radio" name="rating_criteria[overall_satisfaction]" id="OverallSatisfaction_2" value="12" class="radio">
+                <input type="radio" name="rating_criteria[overall_satisfaction]" id="OverallSatisfaction_2" value="2" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="OverallSatisfaction_3" data-index="3"></span>
-                <input type="radio" name="rating_criteria[overall_satisfaction]" id="OverallSatisfaction_3" value="13" class="radio">
+                <input type="radio" name="rating_criteria[overall_satisfaction]" id="OverallSatisfaction_3" value="3" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="OverallSatisfaction_4" data-index="4"></span>
-                <input type="radio" name="rating_criteria[overall_satisfaction]" id="OverallSatisfaction_4" value="14" class="radio">
+                <input type="radio" name="rating_criteria[overall_satisfaction]" id="OverallSatisfaction_4" value="4" class="radio">
                 </td>
                                         <td class="value">
                 <span class="rating-radio" data-id="OverallSatisfaction_5" data-index="5"></span>
-                <input type="radio" name="rating_criteria[overall_satisfaction]" id="OverallSatisfaction_5" value="15" class="radio">
+                <input type="radio" name="rating_criteria[overall_satisfaction]" id="OverallSatisfaction_5" value="5" class="radio">
                 </td>
                                         <td class="selected-value" data-index="0">0 out of 5</td>
             </tr>
