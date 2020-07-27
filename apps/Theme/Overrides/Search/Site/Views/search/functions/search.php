@@ -603,7 +603,7 @@ $clear_all_exclusions = '';
             search.addWidget(
                 instantsearch.widgets.starRating({
                     container: '#search_filter_rating' + instance_id,
-                    attributeName: 'Rating',
+                    attributeName: 'Rating.' . <?php echo \Base::instance()->get('sales_channel'); ?>,
                     autoHideContainer: true
                 })
             );
