@@ -111,6 +111,7 @@ class ThemeBootstrap extends \Dsc\Bootstrap
         }
 
 		$files = array(
+            'js/listrak.js',
 			'js/vendor/ie_assign_polyfill.js',
 			//'js/vendor/instantsearch.min.js',
 			'js/vendor/slick.min.js',
