@@ -156,10 +156,10 @@ class Wishlists extends \Shop\Models\Wishlists
      * @param \Shop\Models\Products $product
      * @param array $post
      */
-    public function addItem( $variant_id,\Shop\Models\Products $product, array $post )
+    public function addItem(\Shop\Models\Products $product, array $post, $save = true)
     {
 
-    	$wishlistitem = \JBAShop\Models\Carts::createItem($variant_id, $product,  $post);
+    	$wishlistitem = \JBAShop\Models\Carts::createItem($product,  $post);
 
     	// Is the item already in the wishlist?
     	// if so, inc quantity
