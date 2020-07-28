@@ -189,12 +189,6 @@ class Listener extends \Prefab
             $created = @$product['metadata']['created']['time'];
             $lastMod = @$product['metadata']['last_modified']['time'];
             $priority = \Dsc\Sitemap::priority($lastMod, $created);
-            $sitemap->addItem(
-                $modelInstance->generateStandardURL(),
-                $priority,
-                'daily',
-                @$product['metadata']['last_modified']['time']
-            );
             //add canonical url
             $sitemap->addItem(
                 $modelInstance->generateCanonicalURL(false),
