@@ -30,7 +30,7 @@
         "phpmailer/phpmailer": "<=v5.9.9",
         "mongodb/mongodb": "1.4.3",
         "premierperformance/admin": "dev-master",
-        "premierperformance/assets": "dev-jba2020_2",
+        "premierperformance/assets": "dev-jba-staging",
         "premierperformance/data": "dev-master",
         "premierperformance/library": "dev-jba2020",
         "premierperformance/mailer": "dev-jba2020",
