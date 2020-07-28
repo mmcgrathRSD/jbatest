@@ -6,8 +6,8 @@ class Admin extends \Prefab
     public function onDisplayAdminModuleEdit( $event ) 
     {
         $module = $event->getArgument('module');
-   	
-        if ($module != "shop.homepageslider::\JBAShop\Modules\ListrakHorizontalJBA\Module") {
+        
+        if ($module != "shop.listrakhorizontaljba::\JBAShop\Modules\ListrakHorizontalJBA\Module") {
             return;
         }
 
