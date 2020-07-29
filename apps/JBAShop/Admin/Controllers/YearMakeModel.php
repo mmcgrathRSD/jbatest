@@ -44,20 +44,37 @@ class YearMakeModel extends \Admin\Controllers\BaseAuth
     
     protected function displayCreate() 
     {
-        $view = \Dsc\System::instance()->get('theme');
-        $view->event = $view->trigger( 'onDisplayYMMCreate', array('tabs' => array(), 'content' => array()) );
+        $f3 = \Base::instance();
+
+        $model = $this->getModel();
+        $all = $model->emptyState()->getList();
+        \Base::instance()->set('all', $all );
+        
+        \Base::instance()->set('selected', null );
+        
         $this->app->set('meta.title', 'Create Year Make Model | Shop');
         
-        echo $view->render('Shop/Admin/Views::yearmakemodels/form.php');
+        $view = \Dsc\System::instance()->get('theme');
+        echo $view->render('Shop/Admin/Views::yearmakemodels/create.php');        
     }
     
     protected function displayEdit()
     {
-        $this->app->set('meta.title', 'Edit Year Make Model | Shop');
-        $view = \Dsc\System::instance()->get('theme');
-        $view->event = $view->trigger( 'onDisplayYMMCreate', array('tabs' => array(), 'content' => array()) );
+        $f3 = \Base::instance();
 
-        echo $view->render('Shop/Admin/Views::yearmakemodels/form.php');
+        $model = $this->getModel();
+       // $manufacturers = $model->emptyState()->getList();
+       // \Base::instance()->set('manufacturers', $manufacturers );
+        
+        $flash = \Dsc\Flash::instance();
+        $selected = $flash->old('parent');
+        \Base::instance()->set('selected', $selected );
+        
+        $this->app->set('meta.title', 'Edit Year Make Model | Shop');
+        
+        $view = \Dsc\System::instance()->get('theme');
+      //  $view->event = $view->trigger( 'onDisplayShopManufacturersEdit', array( 'item' => $this->getItem(), 'tabs' => array(), 'content' => array() ) );
+        echo $view->render('Shop/Admin/Views::yearmakemodels/edit.php');
     }
     
     /**

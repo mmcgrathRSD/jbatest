@@ -76,6 +76,18 @@ class YearMakeModels extends \Shop\Models\YearMakeModels
 
 	}
 
+	protected function beforeValidate() {
+
+		if(empty($this->title)) {
+			$title = $this->vehicle_year .' '. $this->vehicle_make . ' ' . $this->vehicle_model .' '.  $this->vehicle_sub_model . ' ' . $this->vehicle_engine_size ;
+			$this->title = $title;
+
+			$this->slug = $this->generateSlug();
+		}
+
+
+	}
+
 	/**
 	 * Helper method for creating select list options
 	 *
@@ -136,14 +148,11 @@ class YearMakeModels extends \Shop\Models\YearMakeModels
     }
 
 
+	protected function beforeSave()
+	{
 
 
-	public function getHierarchyTitlePathArray(){
-		return [];
-	}
 
-	public function getHierarchy(){
-		return [];
 	}
 
 	/*
