@@ -327,7 +327,8 @@ if (!empty($item)) {
                'categories.id' => ['$in' => $categoryIds],
                'publication.sales_channels.slug' => \Base::instance()->get('sales_channel'),
                'publication.status' => 'published',
-               'product_type' => ['$nin' => ['service', 'matrix_subitem']]
+               'product_type' => ['$nin' => ['service', 'matrix_subitem']],
+               'policies.group_only' => ['$ne' => 1]
             ]
          ],
          [
