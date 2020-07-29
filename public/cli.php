@@ -113,6 +113,15 @@ $app->route('GET /sync-algolia', function() {
     (new \Search\Models\Algolia\Products())->algoliaStandardSync();
 });
 
+$app->route('GET /listrak-datafeeds', function(){
+    $salesChannels = (new \Shop\Models\SalesChannels)->getItems();
+    $app = \Base::instance();
+    foreach($salesChannels as $channel){
+        $app->set('sales_channel', $channel->get('slug'));
+        (new \Shop\Services\Listtrac\DataFeeds('public/', $channel->get('domain'), $app->get('listrak.host'), $channel->get('listrak.username'), $channel->get('listrak.password')))->GenerateFeeds();
+    }
+});
+
 $app->route('GET /process-algolia-items', function() {
     (new \Search\Models\AlgoliaSyncItem())->algoliaStandardSync();
 });

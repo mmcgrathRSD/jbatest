@@ -39,7 +39,7 @@
         "premierperformance/pages": "dev-jba2020",
         "premierperformance/redirect": "dev-master",
         "premierperformance/search": "dev-jba2020_2",
-        "premierperformance/shop": "dev-jba2020",
+        "premierperformance/shop": "dev-jba-staging",
         "premierperformance/customerservice": "dev-master",
         "premierperformance/toolbox": "dev-jba2020",
         "premierperformance/users": "dev-jba2020",
