@@ -33,7 +33,7 @@ $clear_all_exclusions = '';
             filters += ' AND ymm_hashs: ' + hash + ' OR universal_item: true';
         }
 
-        filters += ' AND NOT image = 0 AND (default_price > 0 OR low_as: true) AND NOT product_type: Subitem';
+        filters += ' AND NOT image = 0 AND default_price > 0 AND NOT product_type: Subitem';
 
         <?php if(!empty($dns_auth) && \Base::instance()->get('SITE_TYPE') == 'wholesale') : ?>
         var dns_auth = <?php echo json_encode($dns_auth); ?>;
