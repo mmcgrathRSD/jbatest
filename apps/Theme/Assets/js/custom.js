@@ -778,7 +778,7 @@ $( document ).ready(function() {
                 jQuery.fancybox.hideActivity();
                 //display fancybox modal
                 jQuery.fancybox({
-                    'content'           : '<div class="ajax-message"><p>' + product_name + ' was added to your shopping cart.<br><br> <button class="button" onclick="setLocation(\'/shop/cart/\')"><span><span>View Cart</span></span></button><button class="button" onclick="setLocation(\'/shop/checkout/\')"><span><span>Checkout</span></span></button></p></div>',
+                    'content'           : '<div class="ajax-message fancybox-add-to-cart"><p>' + product_name + ' was added to your shopping cart.<br><br> <button class="button" onclick="setLocation(\'/shop/cart/\')"><span><span>View Cart</span></span></button><button class="button" onclick="setLocation(\'/shop/checkout/\')"><span><span>Checkout</span></span></button><button class="button inverted" onclick="jQuery.fancybox.close()"><span><span>Continue Shopping</span></span></button></p></div>',
                     'autoDimensions'	: true,
                     'padding'		    : 30,
                     'transitionIn'		: 'none',

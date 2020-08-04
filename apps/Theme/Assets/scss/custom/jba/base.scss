@@ -51,3 +51,13 @@ body {
     padding-left: 10px;
     padding-right: 10px;
 }
+
+.fancybox-add-to-cart button {
+    padding: 0!important;
+    margin-left: 10px;
+    margin-right: 10px;
+
+    &.inverted {
+        margin-top: 15px;
+    }
+}
