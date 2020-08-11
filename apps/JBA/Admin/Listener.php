@@ -139,7 +139,7 @@ class Listener extends \Prefab
                 $spl = new \SplFileObject($fileName);
 
                 if ($connection = ftp_connect('ftp.listrakbi.com')) {//connect to ftp
-                    if (ftp_login($connection, $salesChannel->get('listrak.username'), $salesChannel->get('listrak.password'))) {//login to ftp
+                    if (ftp_login($connection, $app->get("listrak.{$salesChannel->get('slug')}_username"), $app->get("listrak.{$salesChannel->get('slug')}_password"))) {//login to ftp
                         if (ftp_pasv($connection, true)) {//set passive mode true.
                             if (ftp_put($connection, $spl->getBasename(), $fileName, FTP_BINARY)) {//upload file to ftp server
                                 \Dsc\System::instance()->addMessage('Item queued Listrak update.', 'success');//inform the user

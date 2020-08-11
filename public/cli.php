@@ -100,6 +100,13 @@ $app->route('GET /blind-test',
        $order->sendOrderShippedEmail();
     }
 );
+$app->route('GET /testy-te', function(){
+    $salesChannels = (new \Shop\Models\SalesChannels())->getItems();
+    foreach($salesChannels as $channel){
+        $newPassword = \Base::instance()->get("listrak.{$channel->get('slug')}_password");
+        var_dump($newPassword);
+    }
+});
 
 $app->route('GET /kit-test', function() {
     $product = (new \Shop\Models\Products)
@@ -119,7 +126,7 @@ $app->route('GET /listrak-datafeeds', function(){
     foreach($salesChannels as $channel){
         $app->set('sales_channel', $channel->get('slug'));
         $app->set('listrak.suggested_product_publication_channel', $channel->get('slug'));
-        (new \Shop\Services\Listtrac\DataFeeds('public/', $channel->get('domain'), $app->get('listrak.host'), $channel->get('listrak.username'), $channel->get('listrak.password')))->GenerateFeeds();
+        (new \Shop\Services\Listtrac\DataFeeds('public/', $channel->get('domain'), $app->get('listrak.host'), $app->get("listrak.{$channel->get('slug')}_username"), $app->get("listrak.{$channel->get('slug')}_password")))->GenerateFeeds();
     }
 });
 
