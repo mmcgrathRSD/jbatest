@@ -124,7 +124,7 @@ class Listener extends \Prefab
                 //Update product data in Listrak.
                 $item = $product->getListrakItem();//get the listrak data array for this product.
                 $now = \Carbon\Carbon::now()->timestamp;//get now.
-
+                $salesChannel = (new \Shop\Models\SalesChannels())->setCondition('slug', $app->get('sales_channel'))->getItem();
                 if (!file_exists($path)) {
                     if(!mkdir($path)){
                         throw new \Exception('Error creating directory for Listrak update.');
@@ -139,7 +139,7 @@ class Listener extends \Prefab
                 $spl = new \SplFileObject($fileName);
 
                 if ($connection = ftp_connect('ftp.listrakbi.com')) {//connect to ftp
-                    if (ftp_login($connection, 'FAUser_RallySportDir', 'XyM5hhvc6mxF')) {//login to ftp
+                    if (ftp_login($connection, $salesChannel->get('listrak.username'), $salesChannel->get('listrak.password'))) {//login to ftp
                         if (ftp_pasv($connection, true)) {//set passive mode true.
                             if (ftp_put($connection, $spl->getBasename(), $fileName, FTP_BINARY)) {//upload file to ftp server
                                 \Dsc\System::instance()->addMessage('Item queued Listrak update.', 'success');//inform the user
