@@ -208,7 +208,7 @@ $app->route('GET /invalid-kits', function() {
 
                     $invalidKits[] = $product['tracking']['model_number'];
 
-                    break 2;
+                    break;
                 }
             }
         }
@@ -217,9 +217,7 @@ $app->route('GET /invalid-kits', function() {
     if (!empty($invalidKits)) {
         /** @var \Mailer\Factory $mailer */
         $mailer = \Dsc\System::instance()->get('mailer');
-        $mailer->send('christopher.west@rallysportdirect.com', count($invalidKits) . 'NETSUITE -  Invalid Kit(s)', implode("<br>", $invalidKits));
-        $mailer->send('chris.french@rallysportdirect.com', count($invalidKits) . 'NETSUITE -  Invalid Kit(s)', implode("<br>", $invalidKits));
-
+        $mailer->send('itadmin@jbautosports.com', count($invalidKits) . 'NETSUITE -  Invalid Kit(s)', implode("<br>", $invalidKits));
     }
 });
 
