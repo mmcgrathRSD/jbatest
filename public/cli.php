@@ -100,13 +100,6 @@ $app->route('GET /blind-test',
        $order->sendOrderShippedEmail();
     }
 );
-$app->route('GET /testy-te', function(){
-    $salesChannels = (new \Shop\Models\SalesChannels())->getItems();
-    foreach($salesChannels as $channel){
-        $newPassword = \Base::instance()->get("listrak.{$channel->get('slug')}_password");
-        var_dump($newPassword);
-    }
-});
 
 $app->route('GET /kit-test', function() {
     $product = (new \Shop\Models\Products)
