@@ -158,9 +158,7 @@ $app->route('GET /remove-invalid-addresses', function() {
         }
     }
 });
-$app->route('GET /testy-te', function(){
-   var_dump(\Base::instance()->get('TEMP'));
-});
+
 $app->route('GET /testfailedemail', function() {
 
     $docs = \Mailer\Models\Emails::collection()->find(["sender_response" => 'failing']);
