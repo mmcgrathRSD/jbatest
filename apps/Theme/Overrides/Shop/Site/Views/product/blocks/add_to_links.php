@@ -128,7 +128,7 @@
                     
                 }
             });
-                
+                 
             } else {
                 //cart is ready to go 
                 $('.product-image').each(function() {
@@ -140,7 +140,10 @@
                 var model = $('.super-attribute-select option:selected:enabled').last().attr('data-model');
                 $('.variant_id').val(model);
 
-                $.get('/shop/product/info', {model: model}, function(data) {
+                $.get('/shop/product/info', {
+                    model: model,
+                    parent_model: '<?php echo $item->get('tracking.model_number'); ?>'
+                }, function(data) {
                     if(!data.error) {
                         $('.wishListButton').remove();
                         if ('is_wishlist_item' in data.result && data.result.is_wishlist_item !== null) {
@@ -149,10 +152,28 @@
                             $('.product-shop > .add-to-box').after('<div class="wishListButton text-center add_to_wishlist" data-variant="' + model + '"><button class="addToWishlist btn btn-default  btn-block text-center " data-variant="' + model + '"><i class="glyphicon glyphicon-heart"></i> Add to Wishlist</button></div>');
                         }
 
-                        if('image' in data.result && data.result.image) {
+                        if('images' in data.result && data.result.images) {
                             //TODO: once image modal is fixed, auto switch to selected variant
+console.log(data.result.images);
+                            $('.product-image > a, #data-image-modal-main').html(cl.imageTag(data.result.images[0], {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml());
 
-                            $('.product-image > a, #data-image-modal-main').html(cl.imageTag(data.result.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml());
+                            $.each( data.result.images, function( key, image ){
+
+                                $('#thumbs_slider').append(`<li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal" jcarouselindex="1" style="float: left; list-style: none;">
+                                <a href="#data-image-modal-` + (key + 1) + `" class="lighbox-zoom-gallery" rel="lighbox-zoom-gallery" title="">
+                                <span style="width: 92px; height: 92px;"></span>
+                                ` + cl.imageTag(image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml() + `
+                                </a>
+                                <div style="display:none"><div id="data-image-modal-` + (key + 1) + `">` + cl.imageTag(image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml() + `</div></div>
+                                </li>`);
+
+                                jQuery('a[rel="lighbox-zoom-gallery"]').fancybox({
+                                    titleShow:false,
+                                    hideOnContentClick:true
+                                });
+                            });
+
+                            
                         }
 
                         if ('price' in data.result) {

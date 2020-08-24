@@ -10,7 +10,7 @@
     </a>
     <div style="display:none"><div id="data-image-modal-main"><img src="<?php echo $item->featuredImage(); ?>" alt="<?php echo $item->title; ?>" title="<?php echo $item->title; ?>"></div></div>
     </div>
-    <?php if (count($images) > 1) : ?>
+    <?php if (count($images) > 0) : ?>
     <div class="more-views">
     <div class="more-views-nav" id="thumbs_slider_nav">
         <ul>
