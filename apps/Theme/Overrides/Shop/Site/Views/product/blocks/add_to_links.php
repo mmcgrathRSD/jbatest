@@ -152,7 +152,6 @@
                             $('.product-shop > .add-to-box').after('<div class="wishListButton text-center add_to_wishlist" data-variant="' + model + '"><button class="addToWishlist btn btn-default  btn-block text-center " data-variant="' + model + '"><i class="glyphicon glyphicon-heart"></i> Add to Wishlist</button></div>');
                         }
 
-                        console.log(Array.isArray(data.result.images) && data.result.images.length);
                         if('images' in data.result && (Array.isArray(data.result.images) && data.result.images.length)) {
                             //TODO: once image modal is fixed, auto switch to selected variant
                             $('.product-image > a, #data-image-modal-main').html(cl.imageTag(data.result.images[0], {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml());
