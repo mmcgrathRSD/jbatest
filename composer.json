@@ -56,7 +56,8 @@
         "maknz/slack": "^1.7",
         "filp/whoops": "^2.3",
         "guzzlehttp/oauth-subscriber": "^0.3.0",
-        "zendesk/zendesk_api_client_php": "^2.2"
+        "zendesk/zendesk_api_client_php": "^2.2",
+        "monolog/monolog": "^2.1"
     },
     "autoload": {
         "files": ["RocketShipIt/RocketShipIt/RocketShipIt.php"],
