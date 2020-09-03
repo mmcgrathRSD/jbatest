@@ -1,6 +1,7 @@
 <?php 
-$previous_price = $item->getPreviousPrice();
-$previous_price_formatted = \Shop\Models\Currency::format($item->getPreviousPrice());
+$use_previous_price = filter_var($item->get('flag.percent'), FILTER_VALIDATE_BOOLEAN);
+$previous_price = $use_previous_price ? $item->getPreviousPrice() : $item->getPriceByChannel('list');
+$previous_price_formatted = $use_previous_price ? \Shop\Models\Currency::format($item->getPreviousPrice()) : \Shop\Models\Currency::format($item->getPriceByChannel('list'));
 $price = $item->price();
 ?>
 <div class="price-box-wrap">
@@ -8,7 +9,7 @@ $price = $item->price();
         <div class="price-box">
             <span class="regular-price">
                 <span class="price <?php if($item->{'product_type'} == 'dynamic_group') : ?>dyn_kit_price<?php endif; ?>"><?php echo $this->renderLayout('Shop/Site/Views::product/blocks/lockup/price.php')?></span>                                    </span>
-            <?php if(!empty($previous_price) && $previous_price < $price && filter_var($item->get('flag.enabled'), FILTER_VALIDATE_BOOLEAN)) : ?>
+            <?php if(!empty($previous_price) && $previous_price > $price && filter_var($item->get('flag.enabled'), FILTER_VALIDATE_BOOLEAN)) : ?>
                 <p class="old-price">
                     <span class="price-label"></span>
                     <span class="price" id="old-price-23848"><?php echo $previous_price_formatted; ?></span>
