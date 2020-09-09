@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="keywords" content="<?php echo $this->app->get('meta.keywords'); ?>" />
-<meta name="description" content="<?php echo preg_replace("/[\s]{2,}/", ' ', $this->app->get('meta.description')); ?><?php if(!empty($shop['freeshipping'])) : ?> | Free shipping over <?php echo \Shop\Models\Currency::format( $shop['freeshipping'] ); ?>!<?php endif; ?>" />
+<meta name="description" content="<?php echo preg_replace("/[\s]{2,}/", ' ', $this->app->get('meta.description')); ?>"/>
 <?php
     $canonical = $this->app->get('canonical');
     if(!empty($canonical)) :?>

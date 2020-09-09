@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en" class="no-js default <?php echo \Base::instance()->get('sales_channel'); echo @$html_class; if($checkoutmode != 0) { echo ' page_checkout'; } ?> <?php if($this->session->get('activeVehicle')) { echo 'ymm_set'; } else { echo 'ymm_not_set'; } ?> <?php echo $page; ?>" >
+<html lang="en" class="no-js default <?php echo \Base::instance()->get('sales_channel'); echo @$html_class; if($checkoutmode != 0) { echo ' page_checkout'; } ?> <?php if($this->session->get('activeVehicle')) { echo 'ymm_set'; } else { echo 'ymm_not_set'; } ?> <?php echo $page; ?> <?php if(!empty($item->{'product_type'})) { echo 'product_type_' . $item->{'product_type'}; } ?>" >
 	<?php echo $this->renderView('Theme/Views::common/head.php'); ?>
 
 	<body role="document">
