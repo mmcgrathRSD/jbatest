@@ -16,28 +16,20 @@
                         'secure' => true
                     ]);
                     echo <<<HTML
-                    <li class="slide{$key} jcarousel-item jcarousel-item-horizontal jcarousel-item-{$key} jcarousel-item-{$key}-horizontal" jcarouselindex="{$key}">
+                    <li>
                         <a href="{$slide['link']['href']}">
-                            <span class="text-container top-left" style="display: inline;">
-                                <div class="animation-wrapper animation-text" data-width="100%">
-                                    <span class="text" style="">{$slide['line1']}</span>
-                                </div>
-                                <br style="display: none;">
-                                <div class="animation-wrapper animation-text" data-width="100%">
-                                    <span class="text" style="">{$slide['line2']}</span>
-                                </div>
-                                <br style="display: none;">
-                                <div class="animation-wrapper animation-text" data-width="100%">
-                                    <span class="text" style="">{$slide['line3']}</span>
-                                </div>
-                                <br style="display: none;">
-                                <div class="animation-wrapper animation-link" data-width="100%">
-                                    <em class="link" style="">{$slide['link']['text']}</em>
-                                </div>
+                            <span class="text-container top-left">
+                                <span class="text">{$slide['line1']}</span>
+                                <br/>
+                                <span class="text">{$slide['line2']}</span>
+                                <br/>
+                                <span class="text">{$slide['line3']}</span>
+                                <br/>
+                                <em class="link">{$slide['link']['text']}</em> 
                             </span>
                             <img src="{$imgUrl}" alt="{$slide['image.alt']}" width="{$slide['image.width']}" height="{$slide['image.height']}">
-                        </a>
-                    </li>
+                         </a>
+                     </li>
                     HTML;
                 }
             ?>
