@@ -208,7 +208,7 @@ $app->route('GET /invalid-kits', function() {
 
                     $invalidKits[] = $product['tracking']['model_number'];
 
-                    break;
+                    break 2;
                 }
             }
         }
