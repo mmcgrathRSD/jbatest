@@ -161,7 +161,7 @@ class Listener extends \Prefab
          */
         $products = (new \Shop\Models\Products)->collection()->find([
             'policies.group_only' => ['$ne' => 1],
-            'product_type' => ['$nin' => ['service', 'other_charge']],
+            'product_type' => ['$nin' => ['service', 'other_charge', 'matrix_subitem']],
             'publication.status' => 'published',
             'publication.sales_channels.slug' => $salesChannel->get('slug')
         ], [
