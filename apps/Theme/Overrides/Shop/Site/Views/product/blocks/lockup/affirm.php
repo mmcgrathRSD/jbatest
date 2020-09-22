@@ -1,4 +1,4 @@
-<?php if ($item->affirmAvailable() || true) : ?>
+<?php if ($item->affirmAvailable()) : ?>
 <script>
 var magPrice = <?php echo $price = $item->price($item->get('variants.0.id')); ?>;
 affirm.ui.ready( function() { updateAffirmAsLowAs( magPrice*100 ) } ); // change to your template value for product or cart price
