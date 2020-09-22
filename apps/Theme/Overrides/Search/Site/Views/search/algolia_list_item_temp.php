@@ -73,6 +73,9 @@ $moneyHtml = '<span class=notranslate><sup>'.$currency.'</sup>'.$priceTag.'</spa
                 </dl>
             </div>
             {{/swatches}}
+            {{#options_available}}
+                <div><label class="options_available required">* Options Available</label></div>
+            {{/options_available}}
         </div>
         <div class="name">
         </div>

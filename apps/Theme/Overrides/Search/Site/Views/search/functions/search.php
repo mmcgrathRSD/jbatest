@@ -177,7 +177,8 @@ $clear_all_exclusions = '';
                                 hit.image_2 = cl.imageTag(hit.image_2, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 0; display: block", class: "additional_img"}).toHtml()
                             }
 
-                            if('swatches' in hit) {
+                            //generating cloudinary urls
+                            if('swatches' in hit && !(hit.swatches instanceof Array)) {
                                 let new_swatches = [];
 
                                 $.each(hit.swatches, function(key, swatch) {
@@ -201,7 +202,13 @@ $clear_all_exclusions = '';
 
                                     hit.swatches = new_swatches;
                                 });
-                            };
+                            } else {
+                                delete hit.swatches;
+                                
+                                if(hit.product_type == 'Matrix') {
+                                    hit.options_available = true;
+                                }
+                            }
 
                             if('previous_default_price' in hit && hit.previous_default_price && hit.previous_default_price > hit.default_price) {
                                 hit.previous_default_price = currency_format.format(hit.previous_default_price);
