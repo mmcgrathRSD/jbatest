@@ -98,6 +98,15 @@ class ThemeBootstrap extends \Dsc\Bootstrap
         $files = array(
 			'css/search.css',
             'css/instantsearch.min.css',
+            // 'scss/custom/jba/from_site_backup/jqueryfancybox.css',
+            'scss/custom/jba/from_site_backup/styles.css',
+            'scss/custom/jba/from_site_backup/widgets.css',
+            'scss/custom/jba/from_site_backup/slideshow.css',
+            'scss/custom/jba/from_site_backup/settings.css',
+            'scss/custom/jba/from_site_backup/megamenu.css',
+            'scss/custom/jba/from_site_backup/local.css',
+            'scss/custom/jba/from_site_backup/animation.css',
+            'scss/custom/jba/from_site_backup/grid.css',
             'scss/scss_master.css'
         );
 
