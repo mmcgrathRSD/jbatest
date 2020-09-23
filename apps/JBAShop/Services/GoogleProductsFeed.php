@@ -259,7 +259,7 @@ class GoogleProductsFeed
 					//if has flat_shipping fee add shipping data;
 					if ($product->get('shipping.is_large_freight_item')) {
 						$additionalItemInfo = array_merge(['g:shipping' => [
-							'g:price' => number_format((float) $product->getHandlingFee(), 2, '.',  ''), //google doesn't want the ,'s
+							'g:price' => number_format($price  > \Base::instance()->get('google_product_feeds.min_ship_amount') ? (float) $product->getHandlingFee() : \Base::instance()->get('google_product_feeds.min_ship_rate'), 2, '.',  ''), //google doesn't want the ,'s
 						]], $additionalItemInfo);
 					}
 
