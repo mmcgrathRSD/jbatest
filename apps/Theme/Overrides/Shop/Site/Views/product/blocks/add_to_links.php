@@ -189,7 +189,6 @@
 
                         if ('price' in data.result) {
                             $('.price_actual ').html(currency_format.format(data.result.price));
-                            updateAffirmAsLowAs(data.result.price * 100);
                         }
 
                         if ('stock' in data.result) {
