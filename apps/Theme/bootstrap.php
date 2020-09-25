@@ -81,6 +81,14 @@ class ThemeBootstrap extends \Dsc\Bootstrap
             $res = symlink($theme_assets, $public_theme);
         }
 
+        // linking icons from jba theme
+        if (!is_dir($this->app->get('PATH_ROOT') . 'public/theme/images'))
+        {
+            $jba_theme = $this->app->get('PATH_ROOT') . 'public/theme/images';
+            $jba_assets = realpath( $this->app->get('PATH_ROOT') . 'public/images' );
+            $res = symlink($jba_assets, $jba_theme);
+        }
+
         \Dsc\System::instance()->get('theme')->setTheme('Theme', $this->app->get('PATH_ROOT') . 'apps/Theme/');
         \Dsc\System::instance()->get('theme')->registerViewPath($this->app->get('PATH_ROOT') . 'apps/Theme/Views/', 'Theme/Views');
 
