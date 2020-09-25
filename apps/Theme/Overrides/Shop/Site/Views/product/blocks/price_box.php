@@ -18,6 +18,7 @@ $price = $item->price();
         </div>
         
         <div class="clear"></div>
+        <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/lockup/affirm.php')?>
         <?php if (!empty($shop['freeshipping']) && $item->price() > $shop['freeshipping'] && !\Dsc\ArrayHelper::get($item->policies, 'ships_email')) : ?>
             <h5 style="color:#5bb900;">Ships for free in the 48 states</h5>
         <?php endif; ?>
