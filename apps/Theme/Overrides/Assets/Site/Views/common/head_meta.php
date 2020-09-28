@@ -1,18 +1,40 @@
+<?php
+if(!empty($metaDataOverride['topheadercopy'])) {
+    $description = $metaDataOverride['description'];
+} else {
+    $description = $this->app->get('meta.description');
+    
+    if(!empty($shop['freeshipping'])) {
+        $description .= " | Free shipping over " . \Shop\Models\Currency::format( $shop['freeshipping'] ) . "!";
+    }
+}
+
+if(!empty($metaDataOverride['title'])) {
+    $title = $metaDataOverride['title'];
+} else {
+    $title = $this->app->get('meta.title');
+    
+    if(!empty($shop['freeshipping'])) {
+        $title .= "|" . $this->app->get('meta.retailer');
+    }
+}
+
+$canonical = !empty($metaDataOverride['canonical']) ? $metaDataOverride['canonical'] : $canonical;
+$keywords = !empty($metaDataOverride['keywords']) ? $metaDataOverride['keywords'] : $this->app->get('meta.keywords');
+?>
 <base href="<?php echo $SCHEME . "://" . $HOST . $BASE . "/"; ?>" />
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="keywords" content="<?php echo $this->app->get('meta.keywords'); ?>" />
-<meta name="description" content="<?php echo preg_replace("/[\s]{2,}/", ' ', $this->app->get('meta.description')); ?>"/>
-<?php
-    $canonical = $this->app->get('canonical');
-    if(!empty($canonical)) :?>
+<meta name="keywords" content="<?php echo $keywords; ?>" />
+<meta name="description" content="<?php echo $description; ?>" />
+<?php if(!empty($canonical)) :?>
 <link rel="canonical" href="<?php echo $canonical;?>" />
 <?php endif; ?>
 <?php if(!empty($noindex)) :?>
 <meta name="robots" content="noindex">
 <?php endif; ?>
 <link rel="icon" type="image/png" href="/favicon.ico">
-<title><?php echo $this->app->get('meta.title'); ?> | <?php echo $this->app->get('meta.retailer'); ?></title>
+<title><?php echo $title  ?></title>
 <?php  $openGraph = $this->app->get('og');?>
 <?php foreach ($openGraph as $key => $value) : ?>
 <?php if(!empty($key) && !empty($value) && is_string($value)) : ?>
