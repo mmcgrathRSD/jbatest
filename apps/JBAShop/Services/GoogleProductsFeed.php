@@ -263,22 +263,29 @@ class GoogleProductsFeed
 						]], $additionalItemInfo);
 					}
 
-					$imgType = 'private';
 					//check the product for any image we can use for feeds
 					if (!empty($product->get('google_image'))) {
 						$imgUrl = $product->get('google_image');
 						$imgType = 'upload';
 					} else {
 						$imgUrl = $product->get('featured_image.slug');
+						$imgType = 'private';
 					}
 
 					//if no child has an img use the matrix parent image.
 					if (empty($imgUrl) && !empty($matrix->get('google_image'))) {
 						$imgUrl =  $matrix->get('google_image');
 						$imgType = 'upload';
-					}else{
+					} else if(empty($imgUrl)) {
 						$imgUrl =  $matrix->get('featured_image.slug');
+						$imgType = 'private';
 					}
+
+					if(empty($imgUrl)) {
+						$this->mate->red("No Image: {$modelNumber}");
+						continue;
+					}
+
 					//merge all non null values
 					$item = array_merge(array_filter([
 						'title'                     => $title,
