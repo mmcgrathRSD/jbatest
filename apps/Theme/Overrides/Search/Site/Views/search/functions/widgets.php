@@ -40,7 +40,8 @@ if (!empty($item)) {
          </div>
          <div class="page-title category-title">
             <?php if (!$this->app->get('master_search')) : ?>
-               <h1><?php echo $item->title; ?> Parts</h1>
+               <h1><?php echo !empty($item->h1) ? $item->h1 : $item->title . ' Parts'; ?></h1>
+		         <?php echo !empty($item->h2) ? '<h2 class="manual_h2"><small>' . $item->h2 . '</small></h2>' : ''; ?>
             <?php else : ?>
                <span class="search_title">Search</span>
             <?php endif; ?>
