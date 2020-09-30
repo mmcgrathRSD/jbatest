@@ -65,3 +65,15 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="msapplication-TileColor" content="#000000">
 <meta name="theme-color" content="#000000">
+<script type="application/ld+json">
+{
+   "@context": "http://schema.org",
+   "@type": "WebSite",
+   "url": "<?php echo \Base::instance()->get('meta.site_url'); ?>",
+   "potentialAction": {
+     "@type": "SearchAction",
+     "target": "<?php echo \Base::instance()->get('meta.site_url'); ?>/search?q={search_term_string}",
+     "query-input": "required name=search_term_string"
+   }
+}
+</script>
