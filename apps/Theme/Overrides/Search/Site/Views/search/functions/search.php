@@ -500,7 +500,15 @@ $clear_all_exclusions = '';
                                 if(algolia_hierarchy == hit.value) {
                                     $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
                                         if(!data.error) {
-                                            $('div[data-instance-id="search' + instance_id + '"] .category-title h1').html(hit.label + ' Parts');
+                                            if(data.result.h1) {
+                                                h1 = data.result.h1;
+                                            } else {
+                                                h1 = data.result.title + ' Parts';
+                                            }
+
+                                            $('div[data-instance-id="search' + instance_id + '"] .category-title h1').html(h1);
+
+                                            $('div[data-instance-id="search' + instance_id + '"] .category-title h2.manual_h2').html(data.result.h2);
 
                                             $('div[data-instance-id="search' + instance_id + '"] .ais-hits a').each(function(hit, key) {
                                                 str = String($(this).attr('href')).split("/");
@@ -543,6 +551,7 @@ $clear_all_exclusions = '';
 
                                         } else {
                                             $('div[data-instance-id="search' + instance_id + '"] .category-title h1').html(hit.label + ' Parts');
+                                            $('div[data-instance-id="search' + instance_id + '"] .category-title h2.manual_h2').html('');
 
                                             $('div[data-instance-id="search' + instance_id + '"] .breadcrumbs ul').html('<li style="display: inline-block;" typeof="v:Breadcrumb"> <a href="/" title="Home" rel="v:url" property="v:title">Home</a>&nbsp;</li>');
 
