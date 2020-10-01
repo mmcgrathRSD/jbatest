@@ -10,7 +10,7 @@ class YearMakeModel extends \Shop\Site\Controllers\YearMakeModel
 	}
 	
 	public function getItem(){
-		$this->app->error( '410', 'Invalid Product' );
+		$this->app->error( '410', 'Invalid YMM' );
 		return;
 	}
     
