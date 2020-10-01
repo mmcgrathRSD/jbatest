@@ -105,3 +105,22 @@ ga('send', 'pageview');
    </div>
 </div>
 <?php } ?>
+<script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "Organization",
+      "name" : "<?php echo \Base::instance()->get('meta.retailer'); ?>",
+      "telephone" : "<?php echo \Base::instance()->get('meta.phone'); ?>",
+      "email" : "<?php echo \Base::instance()->get('meta.email'); ?>",
+      "address": {
+         "@type": "PostalAddress",
+         "addressCountry" : "<?php echo \Base::instance()->get('meta.country'); ?>",
+         "addressLocality" : "<?php echo \Base::instance()->get('meta.city'); ?>",
+         "postalCode" : "<?php echo \Base::instance()->get('meta.zip'); ?>",
+         "streetAddress" : "<?php echo \Base::instance()->get('meta.full_street'); ?>"
+      },
+      "url" : "<?php echo \Base::instance()->get('meta.site_url'); ?>",
+      "sameAs": ["<?php echo \Base::instance()->get('social.facebook_link'); ?>","<?php echo \Base::instance()->get('social.twitter_link'); ?>","<?php echo \Base::instance()->get('social.instagram_link'); ?>"],
+      "logo": "<?php echo \Base::instance()->get('meta.logo'); ?>"
+    }
+</script>

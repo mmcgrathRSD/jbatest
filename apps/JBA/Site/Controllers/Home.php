@@ -30,6 +30,21 @@ class Home extends \Dsc\Controller
         $this->app->set('page', 'home');
         $this->app->set('isHome', true);
         $this->app->set('canonical', \Base::instance()->get('SCHEME') . "://" . \Base::instance()->get('HOST'));
+
+        $salesChannel = \Shop\Models\SalesChannels::getSalesChannel();
+        
+        //Setting sales channel data for home page in case it is needed
+        $this->app->set('salesChannel', $salesChannel );
+        
+        //Setting home page medata data overrides from admin config if available
+        $this->app->set('metaDataOverride', [
+            "h1" => !empty($salesChannel['seo']['homepage']['h1']) ? $salesChannel['seo']['homepage']['h1'] : null,
+            "title" => !empty($salesChannel['seo']['homepage']['title']) ? $salesChannel['seo']['homepage']['title'] : null,
+            "canonical" => !empty($salesChannel['seo']['homepage']['canonical']) ? $salesChannel['seo']['homepage']['canonical'] : null,
+            "description" => !empty($salesChannel['seo']['homepage']['description']) ? $salesChannel['seo']['homepage']['description'] : null,
+            "topheadercopy" => !empty($salesChannel['seo']['homepage']['topheadercopy']) ? $salesChannel['seo']['homepage']['topheadercopy'] : null,
+            "keywords" => !empty($salesChannel['seo']['homepage']['keywords']) ? $salesChannel['seo']['homepage']['keywords'] : null
+        ]);
         
         if (!filter_var(\Base::instance()->get('disable_order_tracking', true), FILTER_VALIDATE_BOOLEAN) && empty($dataLayer))
 		{

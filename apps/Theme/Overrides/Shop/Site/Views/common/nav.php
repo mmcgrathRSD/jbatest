@@ -5,9 +5,9 @@ $sales_channel = \Base::instance()->get('sales_channel');
    <div class="header header-2 site-width">
       <div class="table-container">
          <div class="table-cell v-align-cell logo-container">
-            <a href="/" title="SubiSpeed - 2015 WRX / STI Parts and Accessories" class="logo">
+            <a href="/" title="<?php echo \Base::instance()->get('meta.title'); ?>" class="logo">
             <strong><?php echo \Base::instance()->get('meta.title'); ?></strong>
-            <img class="retina logo-image" width="240" height="42" src="https://www.subispeed.com/media/olegnax/athlete/subispeed_logo.png" alt="SubiSpeed - Your source for Subaru WRX / STI parts!">
+            <img class="retina logo-image" width="240" height="42" src="<?php echo \Base::instance()->get('meta.logo'); ?>" alt="<?php echo \Base::instance()->get('meta.description'); ?>">
             <div class="logo-image-div"></div>
             </a>
          </div>

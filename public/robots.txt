@@ -10,6 +10,7 @@ Disallow: /sign-in
 Disallow: /login/*
 Disallow: /user/forgot-password
 Disallow: /register
+Disallow: /fits/*
 
 Disallow: /part/32029-wedssport-sa-55m-18-x-9-0-36-5-114-3-bbm-32029,
 Disallow: /part/24-249485-bilstein-rear-b6-performance-shock-absorber-subaru-wrx-2018-2015-wrx-sti-2017-2015,
