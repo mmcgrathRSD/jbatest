@@ -8,7 +8,11 @@ class YearMakeModel extends \Shop\Site\Controllers\YearMakeModel
 		$model = new \JBAShop\Models\YearMakeModels;
 		return $model;
 	}
-	  
+	
+	public function getItem(){
+		$this->app->error( '410', 'Invalid Product' );
+		return;
+	}
     
     
 }
