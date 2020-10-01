@@ -14,7 +14,9 @@
                   <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/image_modal.php')?>
                   <div class="product-shop ">
                   <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/meta_links.php')?>
+                  <span itemprop="offers" itemscope="" itemtype="http://schema.org/offers">
                   <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/price_box.php')?>
+                  </span>
                      <div class="clear"></div>
                      <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/std.php')?>
                      <?php echo $this->renderLayout('Shop/Site/Views::product/blocks/add_to_links.php')?>

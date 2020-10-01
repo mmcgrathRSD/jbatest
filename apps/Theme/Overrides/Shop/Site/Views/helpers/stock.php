@@ -196,3 +196,28 @@ endif;
 
 $this->app->set('stock', null); //WEST: I just almost don't even care that this is a hack AUSTIN: OK sounds good!
 ?>
+<?php if($ga_label == 'InStock') : ?>
+<div itemprop="shippingDetails" itemscope="" itemtype="http://schema.org/OfferShippingDetails">
+    <div itemprop="shippingDestination" itemscope="" itemtype="http://schema.org/DefinedRegion">
+        <div  itemprop="addressCountry" content="US"></div>
+    </div>
+    <div itemprop="deliveryTime" itemscope="" itemtype="http://schema.org/ShippingDeliveryTime">
+        <div itemprop="handlingTime" itemscope="" itemtype="http://schema.org/QuantitativeValue">
+            <div  itemprop="minValue" content="0"></div>
+            <div  itemprop="maxValue" content="1"></div>
+        </div>
+        <div itemprop="transitTime" itemscope="" itemtype="http://schema.org/QuantitativeValue">
+            <div  itemprop="minValue" content="1"></div>
+            <div  itemprop="maxValue" content="5"></div>
+        </div>
+        <div  itemprop="cutOffTime" content="18:00:00"></div>
+        <div itemprop="businessDays" itemscope="" itemtype="http://schema.org/OpeningHoursSpecification">
+            <div  itemprop="dayOfWeek" content="https://schema.org/Monday"></div>
+            <div  itemprop="dayOfWeek" content="https://schema.org/Tuesday"></div>
+            <div  itemprop="dayOfWeek" content="https://schema.org/Wednesday"></div>
+            <div  itemprop="dayOfWeek" content="https://schema.org/Thursday"></div>
+            <div  itemprop="dayOfWeek" content="https://schema.org/Friday"></div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
