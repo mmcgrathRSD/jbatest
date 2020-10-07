@@ -168,13 +168,13 @@ $clear_all_exclusions = '';
                         $.each(allItems.hits, function(key, hit) {
                             
                             if(hit.image) {
-                                hit.image = cl.imageTag(hit.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.category'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml()
+                                hit.image = cl.imageTag(hit.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.category_limit_v1'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml();
                             } else {
-                                hit.image = cl.imageTag("<?php echo \Base::instance()->get('cloudinary.no_photo'); ?>", {secure: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.category'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml();
+                                hit.image = cl.imageTag("<?php echo \Base::instance()->get('cloudinary.no_photo'); ?>", {secure: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.category_limit_v1'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml();
                             }
 
                             if(hit.image_2) {
-                                hit.image_2 = cl.imageTag(hit.image_2, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.category'); ?>', alt: hit.title, title: hit.title, style: "opacity: 0; display: block", class: "additional_img"}).toHtml()
+                                hit.image_2 = cl.imageTag(hit.image_2, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.category_limit_v1'); ?>', alt: hit.title, title: hit.title, style: "opacity: 0; display: block", class: "additional_img"}).toHtml();
                             }
 
                             //generating cloudinary urls
