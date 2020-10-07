@@ -44,14 +44,14 @@
                         <label for="type" class="required"><em>*</em>Type</label>
                         <select class="required-entry" name="z_drop-down" required>
                             <option value="">Please select question type</option>
-                            <option value="Tracking">Where can I track my order? Has my order shipped?</option>
-                            <option value="Inventory">Do you have this product in stock? How long would it take to receive?</option>
-                            <option value="Damaged">My parts were damaged during shipment!</option>
-                            <option value="Warranty">My parts aren't working correctly or have stopped working!</option>
-                            <option value="Technical">I have pre-sale questions about certain products.</option>
-                            <option value="Install">I'm not sure how to install the part I just purchased from you...</option>
-                            <option value="RMA">I'd like to cancel my order or I'd like to return items from my order.</option>
-                            <option value="Other">I've got questions that don't pertain to products on your website.</option>
+                            <option value="JBA_Tracking">Where can I track my order? Has my order shipped?</option>
+                            <option value="JBA_Inventory">Do you have this product in stock? How long would it take to receive?</option>
+                            <option value="JBA_Damaged">My parts were damaged during shipment!</option>
+                            <option value="JBA_Warranty">My parts aren't working correctly or have stopped working!</option>
+                            <option value="JBA_Technical">I have pre-sale questions about certain products.</option>
+                            <option value="JBA_Install">I'm not sure how to install the part I just purchased from you...</option>
+                            <option value="JBA_RMA">I'd like to cancel my order or I'd like to return items from my order.</option>
+                            <option value="JBA_Other">I've got questions that don't pertain to products on your website.</option>
                         </select>
                     </li>
                     <li class="wide">

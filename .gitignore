@@ -3,6 +3,7 @@
 .htpasswd
 .history
 composer.lock
+/apps/Theme/Assets/images
 /vendor
 /logs
 /cache

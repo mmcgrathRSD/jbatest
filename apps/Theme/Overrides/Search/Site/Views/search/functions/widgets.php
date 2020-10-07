@@ -40,7 +40,8 @@ if (!empty($item)) {
          </div>
          <div class="page-title category-title">
             <?php if (!$this->app->get('master_search')) : ?>
-               <h1><?php echo $item->title; ?> Parts</h1>
+               <h1><?php echo !empty($item->h1) ? $item->h1 : $item->title . ' Parts'; ?></h1>
+		         <?php echo !empty($item->h2) ? '<h2 class="manual_h2"><small>' . $item->h2 . '</small></h2>' : ''; ?>
             <?php else : ?>
                <span class="search_title">Search</span>
             <?php endif; ?>
@@ -187,7 +188,7 @@ if (!empty($item)) {
       <!-- <div class="block block-list" itemscope="" itemtype="http://schema.org/Product">
       </div> -->
       <!-- start of category rating -->
-      <div class="block block-list" itemscope="" id="category-rating" itemtype="http://schema.org/Product">
+      <div class="block block-list" itemscope="" id="category-rating">
          <div class="block-title" id="category-rating-title">
             <strong>
                <span itemprop="name"><?php echo $item->title; ?></span>
@@ -196,14 +197,14 @@ if (!empty($item)) {
          <div class="block-content">
             <div id="m-snippets" class="category-sniippets">
                <span class="ratings rating-label" style="float:left;"></span>
-               <div class="ratings" itemscope="" itemtype="http://schema.org/AggregateRating" itemprop="aggregateRating">
+               <div class="ratings" >
                   <div id="category-rating-stars" class="rating-box" style="float: left; margin-right: 5px;">
                      <div class="rating" style="width: <?php echo (floatval($item->rating['average']) / 5) * 100; ?>%"></div>
                   </div>
                   <div class="r-lnk" id="category-rating-values">
-                     <span itemprop="ratingValue"><?php echo floatval($item->rating['average']); ?></span>
+                     <span><?php echo floatval($item->rating['average']); ?></span>
                      <span> / </span>
-                     <span itemprop="reviewCount"><?php echo $item->rating['total']; ?></span>
+                     <span><?php echo $item->rating['total']; ?></span>
                      Review(s)
                   </div>
                </div>

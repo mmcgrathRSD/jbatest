@@ -128,7 +128,7 @@
                     
                 }
             });
-                
+                 
             } else {
                 //cart is ready to go 
                 $('.product-image').each(function() {
@@ -140,7 +140,10 @@
                 var model = $('.super-attribute-select option:selected:enabled').last().attr('data-model');
                 $('.variant_id').val(model);
 
-                $.get('/shop/product/info', {model: model}, function(data) {
+                $.get('/shop/product/info', {
+                    model: model,
+                    parent_model: '<?php echo $item->get('tracking.model_number'); ?>'
+                }, function(data) {
                     if(!data.error) {
                         $('.wishListButton').remove();
                         if ('is_wishlist_item' in data.result && data.result.is_wishlist_item !== null) {
@@ -149,14 +152,44 @@
                             $('.product-shop > .add-to-box').after('<div class="wishListButton text-center add_to_wishlist" data-variant="' + model + '"><button class="addToWishlist btn btn-default  btn-block text-center " data-variant="' + model + '"><i class="glyphicon glyphicon-heart"></i> Add to Wishlist</button></div>');
                         }
 
-                        if('image' in data.result && data.result.image) {
+                        if('images' in data.result && (Array.isArray(data.result.images) && data.result.images.length)) {
                             //TODO: once image modal is fixed, auto switch to selected variant
+                            $('.product-image > a, #data-image-modal-main').html(cl.imageTag(data.result.images[0], {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml());
 
-                            $('.product-image > a, #data-image-modal-main').html(cl.imageTag(data.result.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml());
+                            var carousel = jQuery('.jcarousel-slider').data('jcarousel');
+                            var carousel_count = 0;
+
+                            $.each( data.result.images, function( key, image ){
+                                carousel_count++;
+
+                                carousel.add(carousel_count, '<li class="jcarousel-item" style="float: left; list-style: none;"><a href="#data-image-modal-' + (key + 1) + '" class="lighbox-zoom-gallery" rel="lighbox-zoom-gallery" title=""><span style="width: 92px; height: 92px;"></span>' + cl.imageTag(image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml() + '</a><div style="display:none"><div id="data-image-modal-' + (key + 1) + '">' + cl.imageTag(image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: '', title: '', class: "additional_img"}).toHtml() + '</div></div></li>');
+
+                                jQuery('a[rel="lighbox-zoom-gallery"]').fancybox({
+                                    titleShow:false,
+                                    hideOnContentClick:true
+                                });
+                            });
+
+                            carousel.options.size = carousel_count;
+                            carousel.reload();
+
+
+                            setTimeout(function() {
+                                $thumbContainer = $('.content-container .product-view .more-views .jcarousel-container a');
+                                $('span', $thumbContainer)
+                                    .width( $thumbContainer.width()-18 )
+                                    .height( $thumbContainer.height()-18 );
+
+                                $(window).trigger('resize');
+                            }, 1);
+                            
+
+                            
                         }
 
                         if ('price' in data.result) {
                             $('.price_actual ').html(currency_format.format(data.result.price));
+                            updateAffirmAsLowAs(data.result.price * 100);
                         }
 
                         if ('stock' in data.result) {
