@@ -266,7 +266,7 @@ $app->route('GET /variants-check', function(){
                 $components =  array_diff($enabled, $verifiedEnabled);//get all the items that are not in the verified enabled.
                 $componentsHtml = implode('<br>', array_map(function($item){ return "<span style='color: red; padding-left: 15px;'>$item</span>";}, $components));//make the html for the bad components
                 // build html partials
-                $productsSemiDisabled .= "$parentId <br> $componentsHtml";
+                $productsSemiDisabled .= "<br> $parentId <br> $componentsHtml";
                 //set varaints to enabled 0
                 foreach($product->get('variants') as $key => $variant){
                     if(in_array($variant['model_number'], $components)){
@@ -283,15 +283,16 @@ $app->route('GET /variants-check', function(){
         unset($product);
         unset($enabled);
         unset($varifiedEnabled);
-        //If we have either fully disabled or partial disabled send email.
-        if(!empty($productsSemiDisabled) || !empty($productsCompletelyDisabled)){
-            $mailer = \Dsc\System::instance()->get('mailer');
-            $productsCompletelyDisabled = !empty($productsCompletelyDisabled) ? implode("<br>&emsp;", $productsCompletelyDisabled) : "None";
-            $productsSemiDisabled = !empty($productsSemiDisabled) ? $productsSemiDisabled : 'None';
-            //glue all the html together.
-            $html = "Matrix Items Un-published: <br>$productsCompletelyDisabled<br><br>Sub Items Disabled: <br>$productsSemiDisabled<br>";
-            $mailer->send(\Base::instance()->get('mailer.reporting_emails'), "Matrix Error: Item(s) disabled or un-published", $html);
-        }
+    }
+    //If we have either fully disabled or partial disabled send email.
+    if(!empty($productsSemiDisabled) || !empty($productsCompletelyDisabled)){
+        $climate->blue('sending email');
+        $mailer = \Dsc\System::instance()->get('mailer');
+        $productsCompletelyDisabled = !empty($productsCompletelyDisabled) ? implode("<br>&emsp;", $productsCompletelyDisabled) : "None";
+        $productsSemiDisabled = !empty($productsSemiDisabled) ? $productsSemiDisabled : 'None';
+        //glue all the html together.
+        $html = "Matrix Items Un-published: <br>$productsCompletelyDisabled<br><br>Sub Items Disabled: <br>$productsSemiDisabled<br>";
+        $mailer->send(\Base::instance()->get('mailer.reporting_emails'), "Matrix Error: Item(s) disabled or un-published", $html);
     }
 });
 
