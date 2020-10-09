@@ -291,7 +291,7 @@ $app->route('GET /variants-check', function(){
         $productsCompletelyDisabled = !empty($productsCompletelyDisabled) ? implode("<br>&emsp;", $productsCompletelyDisabled) : "None";
         $productsSemiDisabled = !empty($productsSemiDisabled) ? $productsSemiDisabled : 'None';
         //glue all the html together.
-        $html = "Matrix Items Un-published: <br>$productsCompletelyDisabled<br><br>Sub Items Disabled: <br>$productsSemiDisabled<br>";
+        $html = "ACTION NEEDED: Please verify any Matrix items that have been un-published as well as any Matrix Item Options Part Numbers that have been disabled.<br><br>Matrix Items Un-published: <br>$productsCompletelyDisabled<br><br>Sub Items Disabled: <br>$productsSemiDisabled<br>";
         $mailer->send(\Base::instance()->get('mailer.reporting_emails'), "Matrix Error: Item(s) disabled or un-published", $html);
     }
 });
