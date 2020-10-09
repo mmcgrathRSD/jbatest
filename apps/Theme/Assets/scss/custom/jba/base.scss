@@ -52,6 +52,21 @@ body {
     padding-right: 10px;
 }
 
+
+.quick-view-container.hover .product-image img:nth-child(2) {
+    opacity: 0!important;
+}
+
+.products-grid .product-image img {
+    height: auto;
+    width: auto;
+}
+
+.products-grid .product-image img.additional_img {
+    left: 50%; 
+    transform: translateX(-50%);
+}
+
 .previous_price {
     display: none; 
 }
@@ -61,3 +76,4 @@ body {
         display: none;
     }
 }
+
