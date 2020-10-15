@@ -8,7 +8,7 @@
 
 <?php if (!empty($ymmMapping)) : ?>
     <hr>
-    <h3>This Part Fits</h3>
+    <h3><?php echo "{$item->get('title')}"; ?> <?php echo !empty($item->get('tracking.oem_model_number')) ? " / " .$item->get('tracking.oem_model_number') : ''; ?> Fits</h3>
 
     <?php foreach($ymmMapping as $make => $makes) :
             foreach($makes as $model => $models) : ?>
