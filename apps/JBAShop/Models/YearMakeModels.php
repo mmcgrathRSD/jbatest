@@ -18,6 +18,13 @@ class YearMakeModels extends \Shop\Models\YearMakeModels
 	var $vehicle_sub_model = null;
 	var $vehicle_engine_size = null;
 
+	public function getHierarchyTitlePathArray(){
+		return [];
+	}
+
+	public function getHierarchy(){
+		return [];
+	}
 
 	protected function fetchConditions()
 	{

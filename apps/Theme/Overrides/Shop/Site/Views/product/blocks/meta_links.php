@@ -26,9 +26,11 @@ $overall_rating = !empty(\Dsc\ArrayHelper::get((array) $item, 'review_rating_cou
 <h2 class="product_suffix block marginTopNone"> - <?php echo $item->h2; ?></h2>
 <?php endif; ?>
 </div>
-<div class="ratings" itemprop="aggregateRating" itemscope="" itemtype="http://schema.org/AggregateRating">
-<?php if($count > 0) : ?><meta itemprop="ratingValue" content="<?php echo $overall_rating / 20; ?>" /><?php endif; ?>
+<div class="ratings" <?php if($count > 0) : ?>itemprop="aggregateRating" itemscope="" itemtype="http://schema.org/AggregateRating"<?php endif; ?>>
+<?php if($count > 0) : ?>
+<meta itemprop="ratingValue" content="<?php echo $overall_rating / 20; ?>" />
 <meta itemprop="reviewCount" content="<?php echo $count; ?>" />
+<?php endif; ?>
 <div class="rating-box">
     <div class="rating" style="width: <?php echo $overall_rating; ?>%;" NOTE></div>
 </div>
