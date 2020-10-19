@@ -267,9 +267,6 @@ class GoogleProductsFeed
 					if (!empty($product->get('google_image'))) {
 						$imgUrl = $product->get('google_image');
 						$imgType = 'upload';
-					} else {
-						$imgUrl = $product->get('featured_image.slug');
-						$imgType = 'private';
 					}
 
 					//if no child has an img use the matrix parent image.
