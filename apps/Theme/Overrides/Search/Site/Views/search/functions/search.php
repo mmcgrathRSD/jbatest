@@ -232,11 +232,9 @@ $clear_all_exclusions = '';
                 instantsearch.widgets.searchBox({
                     container: '#search-box' + instance_id,
                     placeholder: search_placeholder,
-					templates: {
-                        submit: 'asdf'
-                    },
 					reset: false,
-					magnifier: true,
+                    magnifier: true,
+                    autofocus: false
                 })
             );
 
