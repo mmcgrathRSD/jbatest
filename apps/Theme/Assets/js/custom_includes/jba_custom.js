@@ -34,3 +34,15 @@ if ($formBalance.size()) {
         });
     });
 }
+
+$('.carbModal').click(function(e) {
+    e.preventDefault();
+
+    $('.carbModalBody').show('slow');
+});
+
+$('.closeCarbModal').click(function(e) {
+    e.preventDefault();
+
+    $('.carbModalBody').hide('slow');
+});
