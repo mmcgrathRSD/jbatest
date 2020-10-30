@@ -20,7 +20,7 @@ $overall_rating = !empty(\Dsc\ArrayHelper::get((array) $item, 'review_rating_cou
 <div class="product-name " itemprop="name">
 <h1><?php echo $item->title; ?></h1>
 <?php if(!empty($item->title_suffix)) : ?>
-<h2 class="product_suffix block marginTopNone"> - <?php echo $item->title_suffix; ?></h2>
+<h2 class="product_suffix block marginTopNone"><?php echo $item->title_suffix; ?></h2>
 <?php endif; ?>
 <?php if(!empty($item->h2)) : ?>
 <h2 class="product_suffix block marginTopNone"> - <?php echo $item->h2; ?></h2>
