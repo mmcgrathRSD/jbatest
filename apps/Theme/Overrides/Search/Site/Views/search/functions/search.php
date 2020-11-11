@@ -95,8 +95,13 @@ $clear_all_exclusions = '';
 			<?php if($type == 'shop.yearmakemodels') : ?>
 			if(instance_id) {
 				ymm_instance = false;
-			}
-			<?php endif; ?>
+            }
+            type = 'yearmakemodels';
+            <?php endif; ?>
+            
+            <?php if($type == 'shop.manufacturers') : ?>
+            type = 'manufacturers';
+            <?php endif; ?>
 
             var index = 'products';
 
@@ -492,7 +497,7 @@ $clear_all_exclusions = '';
                     transformData: {
                         item: function (hit) {
 
-                            if(instance_id) {
+                            if(instance_id && type != 'manufacturers') {
                                 let algolia_hierarchy = search.helper.state.hierarchicalFacetsRefinements["hierarchicalCategories<?php echo filter_var(\Base::instance()->get('.algolia.categories_by_channel'), FILTER_VALIDATE_BOOLEAN) ? '.' . \Base::instance()->get('sales_channel') . '.' : '.'; ?>lvl0"][0];
 
                                 if(algolia_hierarchy == hit.value) {

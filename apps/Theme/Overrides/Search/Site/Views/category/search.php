@@ -1,6 +1,6 @@
 <?php
 $clear_all_exclusions = '';
-$hierarchical_refinement = end($item->getHierarchy());
+
 if($type = $item->type()) {
     if ($type == 'shop.manufacturers') {
         $facet = 'Brand';
@@ -15,6 +15,7 @@ if($type = $item->type()) {
         $refinement = 'false';
         $clear_all_exclusions = 'Brand';
     } elseif ($type == 'shop.categories') {
+        $hierarchical_refinement = end($item->getHierarchy());
     	$clear_all_exclusions = 'Category';
     }
 }

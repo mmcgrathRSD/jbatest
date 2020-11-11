@@ -4,8 +4,11 @@ if (!$master_search) {
 
    $crumbs = $item->getHierarchyTitlePathArray();
 
-   $last_crumb = array_key_last($crumbs);
-   array_pop($crumbs);
+   if(!empty($crumbs)) {
+      $last_crumb = array_key_last($crumbs);
+      array_pop($crumbs);
+   }
+   
 }
 
 if (!empty($item)) {
@@ -230,7 +233,7 @@ if (!empty($item)) {
             </ol>
          </div>
       </div>
-      <div class="block block-layered-nav block-layered-color">
+      <div class="block block-layered-nav block-layered-color <?php if($type == 'shop.manufacturers') : ?>hidden<?php endif; ?>">
          <div class="block-title">
             <strong><span>
                   Brand </span></strong>
