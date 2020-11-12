@@ -1,4 +1,33 @@
 <?php
+/**
+ * +++++++//+//////////::::///::::/:://:::://::::/:::::::::///:/://::::/::::::::::::::::::::///+////+++
+ * o++++++++//////////:/::////////////::://:::://////::::://:::/://////////::/::///////////////++/+++++
+ * ++++/////+///////////://////////////////::/://::--....```......-:///////:/:::/://////////////+/+++++
+ * o++/////////////////////////////////////:--.``.....................-//::://////:://////+/////////+++
+ * ////////////////://:://:--....`...--:--::::://+++ooo+////////////sso+///:::--:::://://///:::////////
+ * //////////////://-.`..```.://::--/+ssssssssso+/:-..-:++ossossssssshso+/:-.-....-://:::::::::::://///
+ * /////////:-..--.``   `:oso/-/oshddhhhyyyhddmNNmmmmdhs+:..-+syyyyssoo/:::----..-.`.-::::::::::///////
+ * //////:.````````````-//--ohmdhyyhhddddy+hhdmmmmmmmmmmmmho-..-oysoooo++++///:::---..`.---..`./o+/////
+ * //:::/:-````........``-:hdmmdddhyssssssyshmmmhhddddddddddh+..`-ohyssooo++++///::-..`````:odmmh/::://
+ * :::::-/-................---.--://+ooosssymmdhssyyyyyhyyhhyho..``-ohyssooo++//:-.`````````-+o/-:::::/
+ * :::::....:shhyo:.:+----..................--://++oossyyyhssss:.````-shssoo/-.```````````..---:+::::::
+ * ////:..-+NNmmmmmh//h:--................--........````.-://+/..``````-//-.````.........:::--+y/:::::/
+ * /////:--mNmdmNddmmo:h:-----.............-...............```.`....`````....--/:---------::------::::/
+ * ////:.-:NNmmdmmmdmm++h:----------.......-..................`..``.```````.:/ssyyosyy:-------:-.`-::::
+ * //+++++/dmmmdhdmmmmh-s/--------------------.-...........-.........`````/sssyyyyss+:------.....-::///
+ * +++++osyyhmdmmmmmmNm:-------------------:--------.....-------.............-----:-:/--.-.....--/+////
+ * +++++ossyyhmmmmNmNNNys+/-.......--------:------------:sdmmmdyo:-----....--------::-.....---:ohh//+//
+ * +++++ooossssyhdmmmmmmmmmmmdyso/:-.....---:----------:mNmdmdmdmms---.............-------::odNms+/++++
+ * oooosssssssyyyyyyyyyyyyhhdddddmmmmdyso+:-....-----::sNmmmmmhhydmh:---------::/ooo:/+ss/+/smhs+++++++
+ * ++ooooooosssssssssssssssssyyyyhhhdddmmmmmmdhso+/----smNmNmmdmdmmNh:::::::::+osyhdmNNNh+syysosoo++o+o
+ * oooooooooooooosoooooooooooooossossyyyyhhhddddmmmmmdhhmNmmNhydmmmNN+::::::/dNNNNNNNNNmdddhhyyysooosoo
+ * soo++oooosooosoooooooooo++ooooooooooossssssyyhhhdddmmmmNmmNMNmmNNNdsyyhddNNNNNNmmmmmmdddhhyyyssoosoo
+ * soooooossooosoooooosssoooooosooooooosssoossssysyyyyhhhhdNNNmNNNMMNNNNNNNNNNNNmmmmmddddhhhyysssoooooo
+ * oooooosoo+osooooooosoooo+oosoooooooosoooossssssssyyyyyyyyhddmmmmmmmmmmmmmmmmmmdddhhhhhyyyssssooooooo
+ * yyyyyyysssyssssssyyyssssssysssssssssssssssssysssssssssyyyyyyyhyhyyhhhhhhhhhhhhhhyyyyyysssssssoooosss
+
+ * We will miss you dearly Christopher West.
+ */
 header('Access-Control-Allow-Origin: *');
 
 ini_set('memory_limit', '512M');
