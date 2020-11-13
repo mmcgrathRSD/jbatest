@@ -242,6 +242,7 @@
     -moz-transition: none;
     -o-transition: none;
     transition: none;
+    display: table-row;
 }
 
 @media (max-width: 989px) {
