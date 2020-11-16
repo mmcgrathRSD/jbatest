@@ -1,0 +1,831 @@
+/**
+ * File for custom CSS. You can use it to override the default styling of the theme.
+ *
+ * 1. Copy the file "default.override.css" and rename it to "override.css".
+ * 2. Enable it in the admin panel.
+ *
+ */
+img._affirm {
+    /* max-width:100%; */
+    height: auto;
+    width: 20%;
+}
+
+.amconf-image:after {
+    content: attr(alt);
+    font-size: 12px;
+    color: rgb(41, 20, 20);
+    display: block;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: 100%;
+    line-height:20px;
+    background-color: #ffffff;
+    border-width:thin;
+    border-color:#000000;
+    border-style:solid;
+
+}
+
+.amconf-image-selected:after {
+    background-color: #bbb;
+
+
+}
+
+.subcategories li {
+    float:left;
+    display:block;
+    text-align:center;
+    margin:4px 10px
+}
+
+.subcategories li span {
+    display:block;
+    margin:4px 10px
+}
+
+.subcategories2 li {
+    float:left;
+    display:block;
+    font-weight:300;
+    margin:4px 10px
+}
+
+.subcategories2 li span {
+    float:left;
+    width:175px;
+    display:block;
+    margin:4px 10px
+}
+
+.subcategories3 li {
+    float:left;
+    display:block;
+    margin:1px;
+	width:175px
+}
+
+.subcategories3 li span {
+    float:left;
+    width:175px;
+    display:block;
+    margin:4px 10px
+}
+
+.subcategories_top li {
+    float:left;
+    display:block;
+    margin-left: -6px;
+}
+
+.subcategories_top ul {
+  padding-left: 0px;
+}
+
+.subcategories_top li span {
+    float:left;
+    width:175px;
+    display:block;
+    margin: 2px 5px
+}
+
+#clear {
+    clear:both
+}
+
+.subcategory {
+    font-family:"Open Sans",Arial,sans-serif;
+    font-size:22px;
+    font-weight:600;
+    line-height:1.15
+}
+
+.menuright {
+    float:right;
+    position:relative;
+    width:200px;
+    padding-left:15px
+}
+
+.no-touch .text-container .text:after {
+    background-color:#fff
+}
+
+/*Youtube video container*/
+.video-container {
+    position:relative;
+    padding-bottom:56.25%;
+    padding-top:30px;
+    height:0;
+    overflow:hidden;
+    margin-bottom:30px
+}
+
+.video-container iframe,.video-container object,.video-container embed {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    max-width:800px
+}
+
+back-link a {
+    color:#FFF
+}
+
+.page-popup {
+    background-color:#fff
+}
+
+button.button + a {
+    color:#FFF
+}
+
+.availability.out-of-stock span {
+    color:#000
+}
+
+.products-grid li.item.hover .product-hover .animate-me .price {
+    color:#aaa
+}
+
+.no-js .logo-container {
+    padding-right:10px;
+    padding-left:10px
+}
+
+div.table-cell.v-align-cell.logo-container {
+    background:transparent\9;
+    background:rgba(0,0,0,0.0);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000,endColorstr=#66000000);
+    zoom:1
+}
+
+.block-progress dt a {
+    color:#fff
+}
+
+.opc .allow.active .step-title .number,.opc .allow.active:hover .step-title .number {
+    color:#fff
+}
+
+.container {
+    width:100%;
+    background:#FFF
+}
+
+.leftColumn {
+    width:49%;
+    float:left
+}
+
+.rightColumn {
+    width:49%;
+    float:right
+}
+
+.columnleft {
+    width:31%;
+    float:left;
+	border-size:2px;
+	border-style:solid;
+	border-color:white
+}
+
+.columncenter {
+    width:31%;
+    float:left;
+	border-size:2px;
+	border-style:solid;
+	border-color:white
+}
+
+.columnright {
+    width:31%;
+    float:left;
+	border-size:2px;
+	border-style:solid;
+	border-color:white
+}
+
+@media(max-width:480px) {
+.leftColumn {
+    width:270px!important;
+    float:none;
+    display:block!important;
+    margin-bottom:10px!important
+}
+
+.rightColumn {
+    width:270px!important;
+    float:none;
+    display:block!important;
+    margin-bottom:10px!important
+}
+}
+
+p.required,.validation-advice {
+    font-size:18px
+}
+
+.form-list label.required {
+    font-size:12px
+}
+
+label.required {
+    font-size:16px;
+    font-weight:800
+}
+
+.product-options label.required {
+    font-weight:800;
+    font-size:14px;
+    text-transform:uppercase
+}
+
+.box-amcustomerimg-form h2,.box-amcustomerimg-slider h2 {
+    display:inline-block;
+    margin:0;
+    padding:0;
+    font-weight:700;
+    font-size:24px;
+    line-height:24px;
+    text-transform:uppercase;
+    color:#000;
+    font-family:"Open Sans",Arial,sans-serif;
+    letter-spacing:-1px
+}
+
+#forgot-password {
+    color:#000;
+    text-transform:uppercase
+}
+
+#forgot-password:hover {
+    color:#FFF
+}
+
+.youtube-video {
+    position:absolute;
+    bottom:-5px;
+    right:0;
+    z-index:2
+}
+
+/*.dedicated-review-box .average-rating .ratings-table {
+visibility: hidden;
+}*/
+.my-account .data-table .ratings,.dashboard .box-reviews .ratings,.products-grid .ratings,.products-list .ratings .rating-box {
+    background-color:#000;
+    opacity:1
+}
+
+table {
+    border-collapse:collapse;
+    width:100%
+}
+
+td {
+    border:1px solid #eee;
+    padding:10px
+}
+
+@media screen and (max-width: 480px) {
+table {
+    display:block
+}
+
+td {
+    /*display:block;*/
+    padding:5px 0;
+    border:none
+}
+
+td img {
+    display:block;
+    margin:0;
+    width:100%;
+    max-width:none
+}
+}
+
+img {
+    max-width:100%;
+    height:auto;
+    width:auto;
+}
+
+/* for high resolution display */
+
+@media only screen and (min--moz-device-pixel-ratio: 2),
+
+only screen and (-o-min-device-pixel-ratio: 2/1),
+
+only screen and (-webkit-min-device-pixel-ratio: 2),
+
+only screen and (min-device-pixel-ratio: 2) {
+
+.regular_img,additional_img {
+
+    width:217px;
+
+}
+
+}
+
+
+
+
+
+
+.block .actions a {
+    color:#FFF
+}
+
+.block .actions a:hover {
+    color:#000;
+    background:$secondary
+}
+
+.block-wishlist .link-cart:hover {
+    color:#000;
+    background:$secondary
+}
+
+.header-nav-txt {
+    display:none
+}
+
+.block .actions a.btn-clear {
+    color:#000
+}
+
+.header .header-cart {
+    bottom:0;
+    left:auto
+}
+
+.header .header-info-container {
+    width:340px
+}
+
+.header-nav-wide .nav-container {
+    margin:-20px 0px 0px
+}
+
+#nav {
+    z-index:1000;
+    float:left
+}
+
+.nav-top-title div.icon {
+    float:left;
+    margin:0;
+    position:relative;
+    width:26px;
+    z-index:0
+}
+
+#nav li.level0 a span {
+    border:medium none;
+    margin:0 40px 0 10px
+}
+
+.hellobar-cta-link {
+    background:#eee;
+    border-radius:0;
+    font-weight:700;
+    padding:5px 10px
+}
+
+.img-container {
+    margin-bottom:10px
+}
+
+/* START raab  - 09/22/2014 */
+/* Merged nav-top-title to a single definition */
+.nav-top-title {
+    background:none repeat scroll 0 0 #000;
+    color:#fff;
+    cursor:pointer;
+    float:right;
+    font-size:18px;
+    font-weight:700;
+    line-height:18px;
+    margin:50px 0 -35px;
+    max-width:75%;
+    padding:5px;
+    text-align:left;
+    z-index:1
+}
+
+/* Mobile Navigation Menu repositioning */
+@media only screen and (max-width: 767px) {
+#nav {
+    margin:20px 0 0 20px;
+    float:right
+}
+
+.nav-top-title {
+    margin:35px 50px 5px
+}
+
+.subcategories3 li {
+    float:left;
+    display:block;
+    margin:10px -10px 4px -15px;
+	width: 175px
+}
+
+.subcategories3 li img {
+    width:85%
+}
+
+.header .header-cart {
+    margin-bottom:32px;
+    margin-right:10px
+}
+
+.header .header-currency {
+    width:auto
+}
+
+#hellobar-container span {
+    display:none
+}
+
+.header .logo-container {
+    padding-top:3px;
+    padding-bottom:8px
+}
+
+/*fix free shipping banner*/
+
+.content-banner img {
+	min-width: 700px;
+	left: 100%;
+	margin-left: -200%;
+	position: relative;
+	display: initial;
+}
+
+.content-banner {
+	overflow: hidden;
+	text-align: center;
+	
+}
+
+/*fix free shipping banner*/
+
+.content-banner img {
+	min-width: 800px;
+	left: 100%;
+	margin-left: -200%;
+	position: relative;
+	display: initial;
+}
+
+.content-banner {
+	overflow: hidden;
+	text-align: center;
+}
+
+}
+
+/* Attempted Tablet Navigation Menu repositioning */
+@media only screen and (max-width: 989px) and (min-width: 768px) {
+#nav {
+    left:-20px;
+    margin-top:70px;
+    padding:10px
+}
+
+.header-2 {
+    margin-bottom:10px
+}
+
+.header .header-currency {
+    padding:0;
+    margin-left:-20px
+}
+
+.header .top-links {
+    right:40px
+}
+}
+
+@media only screen and (max-width: 479px) {
+#nav {
+    margin:0 0 0 -20px
+}
+
+.nav-top-title {
+    margin:35px 0 5px
+}
+
+#banners_slider_home_page .banners {
+    height:200px
+}
+
+.slide-title .text,.page-title h1,.product-slider-container-big .title-container h3,.product-view .product-category-title h3,.blog-title h1,.postTitle h1 {
+    letter-spacing:-1px
+}
+
+img.retina {
+	max-height: 50px;
+}
+
+/*fix free shipping banner*/
+
+.content-banner img {
+	min-width: 700px;
+	left: 100%;
+	margin-left: -200%;
+	position: relative;
+	display: initial;
+}
+
+.content-banner {
+	overflow: hidden;
+	text-align: center;
+} 
+
+}
+
+/*Fix for Gift Card Issue*/
+@media only screen and (max-width: 989px) {
+.main-container .product-view .product-shop {
+    overflow:visible
+}
+}
+
+/*Hide Newsletter Signup on Left Nav Bar*/
+.block-subscribe {
+    display:none
+}
+
+/*Double scrollbar fix*/
+body {
+    overflow-y:hidden
+}
+
+/*Accordian FAQ*/
+.ac-container {
+    width:auto;
+    margin:10px auto 30px;
+    text-align:left
+}
+
+.ac-container label {
+    font-family:'BebasNeueRegular','Arial Narrow',Arial,sans-serif;
+    padding:5px 20px;
+    position:relative;
+    z-index:20;
+    display:block;
+    height: auto;
+    cursor:pointer;
+    color:#777;
+    text-shadow:1px 1px 1px rgba(255,255,255,0.8);
+    line-height:33px;
+    font-size:19px;
+    background:#fff;
+    background:-moz-linear-gradient(top,#fff 1%,#eaeaea 100%);
+    background:-webkit-gradient(linear,left top,left bottom,color-stop(1%,#fff),color-stop(100%,#eaeaea));
+    background:-webkit-linear-gradient(top,#fff 1%,#eaeaea 100%);
+    background:-o-linear-gradient(top,#fff 1%,#eaeaea 100%);
+    background:-ms-linear-gradient(top,#fff 1%,#eaeaea 100%);
+    background:linear-gradient(top,#fff 1%,#eaeaea 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff',endColorstr='#eaeaea',GradientType=0);
+    box-shadow:0 0 0 1px rgba(155,155,155,0.3),1px 0 0 0 rgba(255,255,255,0.9) inset,0 2px 2px rgba(0,0,0,0.1)
+}
+
+.ac-container label:hover {
+    background:#fff
+}
+
+.ac-container input:checked + label,.ac-container input:checked + label:hover {
+    background:#2159D0;
+    color:#CFCFCF;
+    text-shadow:0 1px 1px rgba(255,255,255,0.6);
+    box-shadow:0 0 0 1px rgba(155,155,155,0.3),0 2px 2px rgba(0,0,0,0.1)
+}
+
+.ac-container label:hover:after,.ac-container input:checked + label:hover:after {
+    content:'';
+    position:absolute;
+    width:24px;
+    height:24px;
+    right:13px;
+    top:7px;
+    background:transparent url(../images/arrow_down.png) no-repeat center center
+}
+
+.ac-container input:checked + label:hover:after {
+/*background-image: url(../images/arrow_up.png);*/
+}
+
+.ac-container input {
+    display:none
+}
+
+.ac-container article {
+    background:rgba(255,255,255,0.5);
+    margin-top:-1px;
+    overflow:hidden;
+    height:0;
+    position:relative;
+    z-index:10;
+    -webkit-transition:height .5s ease-in-out,box-shadow .6s linear;
+    -moz-transition:height .5s ease-in-out,box-shadow .6s linear;
+    -o-transition:height .5s ease-in-out,box-shadow .6s linear;
+    -ms-transition:height .5s ease-in-out,box-shadow .6s linear;
+    transition:height .5s ease-in-out,box-shadow .6s linear
+}
+
+.ac-container article p {
+    color:#777;
+    line-height:23px;
+    font-size:14px;
+    padding:10px 10px 0;
+    text-shadow:1px 1px 1px rgba(255,255,255,0.8)
+}
+
+.ac-container input:checked ~ article {
+    -webkit-transition:height .5s ease-in-out,box-shadow .1s linear;
+    -moz-transition:height .5s ease-in-out,box-shadow .1s linear;
+    -o-transition:height .5s ease-in-out,box-shadow .1s linear;
+    -ms-transition:height .5s ease-in-out,box-shadow .1s linear;
+    transition:height .5s ease-in-out,box-shadow .1s linear;
+    box-shadow:0 0 0 1px rgba(155,155,155,0.3)
+}
+
+.ac-container input:checked ~ article.ac-small {
+    height:auto
+}
+
+.ac-container input:checked ~ article.ac-medium {
+    height:auto
+}
+
+.ac-container input:checked ~ article.ac-large {
+    height:auto
+}
+
+.ac-container ul {
+    margin: 0 0 0 20px;
+}
+
+.block_totals button.button {
+    background:none
+}
+
+.slideshow-container {
+    background-color:#FFF
+}
+
+/* Search Autocomplete CSS */
+.searchautocomplete {
+    top:5px
+}
+
+.searchautocomplete > label {
+    display:none;
+    color:#fff;
+    float:left;
+    font-weight:700;
+    margin-right:10px;
+    margin-top:8px
+}
+
+.searchautocomplete {
+    background:none repeat scroll 0 0 #000;
+    border-radius:0;
+    display:block;
+    height:34px;
+    padding:4px 10px;
+    position:absolute;
+    width:300px
+}
+
+.searchautocomplete .nav {
+    width:240px
+}
+
+.searchautocomplete .nav-submit-button .button {
+    border-radius:0;
+    border:none;
+    background-image:none;
+    background-color:#3c454e
+}
+
+.searchautocomplete .nav .nav-search-in:hover .category-fake {
+    background-color:#ccc;
+    background-image:none;
+    border-radius:0
+}
+
+/* Remove stock quantity from shopping cart */
+p.item-msg.notice {
+    display:none
+}
+
+/* Remove shipping selector from Paypal Checkout */
+
+.boxhidden {
+display: none;
+}
+
+/* Remove SubCategories *Header* Text */
+
+h2.subcategory {
+    display: none;
+}
+
+.category-title {
+    padding-bottom: 0;
+}
+
+/* Fix bundled items title overflow into price on options */
+
+.product-options dl.last .input-box {
+margin-bottom: 16px;
+position: relative;
+margin-left: 10px;
+padding-right: 50px;
+}
+
+/* END */
+
+/* Change link color to blue to differentiate from description text */
+div#product_tabs_description_tabbed_contents a {
+    color: #0e5dd3;
+    text-decoration: underline;
+}
+
+div#product_tabs_description_tabbed_contents a:hover {
+    color: #FFF;
+}
+
+p.paypal-logo a:hover {
+    background: none;
+}
+
+.ac-container label {
+    background: rgba(255, 255, 255, 0.498039);
+    font-size: 18px;
+}
+
+.ac-container input:checked + label,
+.ac-container input:checked + label:hover {
+    background: $primary;
+    color: #FFF;
+}
+
+.ac-container article p {
+    font-size: 12px;
+}
+
+.img-container {
+    width: 100%;
+}
+
+.img-container img {
+    margin: 1% 1%;
+}
+
+.img-container a:hover {
+    background: none;
+}
+
+/* Instructions Image Size Fix */
+
+.instructions img {
+   width: 100%;
+}
+
+/* Fix width of images in div container left / right in Firefox */
+
+.container img {
+    width: 100%;
+}
+
+
+/* Fix width of credit card images */
+
+.cc-icons img {
+    max-width: 53px;
+}
+
+/* Fix width shopping cart table at bottom */
+
+@media screen and (max-width: 767px) {
+table {
+    border-collapse:collapse;
+    width:auto
+}
+}
+

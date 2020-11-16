@@ -118,7 +118,7 @@ $app->route('GET /listrak-datafeeds', function(){
     $app = \Base::instance();
     foreach($salesChannels as $channel){
         $app->set('sales_channel', $channel->get('slug'));
-        (new \Shop\Services\Listtrac\DataFeeds('public/', $channel->get('domain'), $app->get('listrak.host'), $channel->get('listrak.username'), $channel->get('listrak.password')))->GenerateFeeds();
+        (new \Shop\Services\Listtrac\DataFeeds(\Base::instance()->get('TEMP'), $channel->get('domain'), $app->get('listrak.host'), $app->get("listrak.{$channel->get('slug')}_username"), $app->get("listrak.{$channel->get('slug')}_password")))->GenerateFeeds();
     }
 });
 
@@ -193,6 +193,7 @@ $app->route('GET /invalid-kits', function() {
     $invalidKits = [];
 
     foreach ($cursor as $product) {
+        $subItems = [];
         foreach ((array) $product['kit_options'] as $option) {
             foreach((array) $option['values'] as $value) {
                 $model = $value['model_number'];
@@ -207,19 +208,91 @@ $app->route('GET /invalid-kits', function() {
                     $kit->store();
 
                     $invalidKits[] = $product['tracking']['model_number'];
-
-                    break 2;
+                    $subItems[] = "<span style='color: red; padding-left: 15px;'>$model</span>";
+                    break;
                 }
             }
+
+        }
+
+        if(!empty($subItems)){
+            $subItems = implode("<br>", $subItems);
+            $invalidKits[\Dsc\ArrayHelper::get($product, 'tracking.model_number')][] = $subItems;
         }
     }
 
     if (!empty($invalidKits)) {
+        array_walk($invalidKits, function(&$item, $key){ $item = "$key Item Issues:<br>". implode("<br>", $item);});
         /** @var \Mailer\Factory $mailer */
         $mailer = \Dsc\System::instance()->get('mailer');
-        $mailer->send('christopher.west@rallysportdirect.com', count($invalidKits) . 'NETSUITE -  Invalid Kit(s)', implode("<br>", $invalidKits));
-        $mailer->send('chris.french@rallysportdirect.com', count($invalidKits) . 'NETSUITE -  Invalid Kit(s)', implode("<br>", $invalidKits));
+        $mailer->send(\Base::instance()->get('mailer.reporting_emails'), count($invalidKits) . ' Invalid Kit(s)', implode("<br><br>", $invalidKits));
+    }
+});
 
+$app->route('GET /variants-check', function(){
+    $climate = new \League\CLImate\CLImate;
+    $productsCursor = \Shop\Models\Products::collection()->find([
+        'product_type' => 'matrix',
+        'publication.status' => 'published'
+    ]);
+    $productsCompletelyDisabled = [];
+    $productsSemiDisabled = '';
+    $count = \Shop\Models\Products::collection()->count([
+        'product_type' => 'matrix',
+        'publication.status' => 'published'
+    ]);
+    $progress = $climate->progress()->total($count);
+    foreach($productsCursor as $key => $doc){
+        try{
+            $product = (new \Shop\Models\Products())->bind($doc);
+            //get all the enabled variants.
+            $enabled = \Dsc\ArrayHelper::getColumn($product->variantsAvailable(), 'model_number');
+            $verifiedEnabled = \Shop\Models\Products::collection()->distinct('tracking.model_number', [
+                'tracking.model_number' => [
+                    '$in' => $enabled
+                ],
+                'publication.status' => 'published'
+            ]);
+            //if there are 0 verified enabled OR the count of enabled is not the same as verified enabled set parent to unpublished
+            if(count($verifiedEnabled) === 0 || (count(array_diff($enabled, $verifiedEnabled)) === 0 && count($enabled) !== count($verifiedEnabled))){
+                //nothing is right OR there is an overlap
+                $product->set('publication.status', 'unpublished');
+                //add to array and email.
+                $productsCompletelyDisabled[] = $product->get('tracking.model_number');
+                $product->save();
+            }else if(count($enabled) !== count($verifiedEnabled)){
+            //ELSE if the count is not equal and we still have some valid enabled items update all the bad variants to enabled => 0
+                $parentId = $product->get('tracking.model_number');
+                $components =  array_diff($enabled, $verifiedEnabled);//get all the items that are not in the verified enabled.
+                $componentsHtml = implode('<br>', array_map(function($item){ return "<span style='color: red; padding-left: 15px;'>$item</span>";}, $components));//make the html for the bad components
+                // build html partials
+                $productsSemiDisabled .= "<br> $parentId <br> $componentsHtml";
+                //set varaints to enabled 0
+                foreach($product->get('variants') as $key => $variant){
+                    if(in_array($variant['model_number'], $components)){
+                        $product->set("variants.$key.enabled", 0);
+                    }
+                }
+
+                $product->save();
+            }
+        }catch(\Exception $e){
+            //do nothing
+        }
+        $progress->advance(1);
+        unset($product);
+        unset($enabled);
+        unset($varifiedEnabled);
+    }
+    //If we have either fully disabled or partial disabled send email.
+    if(!empty($productsSemiDisabled) || !empty($productsCompletelyDisabled)){
+        $climate->blue('sending email');
+        $mailer = \Dsc\System::instance()->get('mailer');
+        $productsCompletelyDisabled = !empty($productsCompletelyDisabled) ? implode("<br>&emsp;", $productsCompletelyDisabled) : "None";
+        $productsSemiDisabled = !empty($productsSemiDisabled) ? $productsSemiDisabled : 'None';
+        //glue all the html together.
+        $html = "Matrix Items Un-published: <br>$productsCompletelyDisabled<br><br>Sub Items Disabled: <br>$productsSemiDisabled<br>";
+        $mailer->send(\Base::instance()->get('mailer.reporting_emails'), "Matrix Error: Item(s) disabled or un-published", $html);
     }
 });
 

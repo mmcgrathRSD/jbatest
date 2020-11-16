@@ -112,4 +112,50 @@ class Listener extends \Prefab
             \Dsc\System::instance()->addMessage('Admin added its emails.');
         }
     }
+
+    public function afterSaveShopModelsProducts($event){
+        try{
+            $app = \Base::instance();
+            $product = $event->getArgument('model');//get the product from the event.
+            $hadRsdRetail = $product->checkPublicationChannel($app->get('sales_channel'), true);//check the previous model info for sales channel.
+            $noLongerHasRsdRetail = !$product->checkPublicationChannel($app->get('sales_channel'));//check current model info for sales channel.
+            if($app->get('listrak.push_product_updates') && $hadRsdRetail && $noLongerHasRsdRetail){//if the product had the sales channel and no longer has sales channel then we need to update listrak.
+                $path = $app->get('TEMP');//target the {{release}}/tmp directory.
+                //Update product data in Listrak.
+                $item = $product->getListrakItem();//get the listrak data array for this product.
+                $now = \Carbon\Carbon::now()->timestamp;//get now.
+                $salesChannel = (new \Shop\Models\SalesChannels())->setCondition('slug', $app->get('sales_channel'))->getItem();
+                if (!file_exists($path)) {
+                    if(!mkdir($path)){
+                        throw new \Exception('Error creating directory for Listrak update.');
+                    }
+                }
+
+                $fileName = "{$path}Products_{$now}{$product->get('tracking.model_number_flat')}.csv";//Set path the same path as datafeed.
+                $writer = new \Ddeboer\DataImport\Writer\CsvWriter(',', '"', null, true);//new writer
+                $writer->setStream(fopen($fileName, 'w'));
+                $writer->writeItem(array_keys($item));//Add headers for csv.
+                $writer->writeItem($item);//Add product data to file
+                $spl = new \SplFileObject($fileName);
+
+                if ($connection = ftp_connect('ftp.listrakbi.com')) {//connect to ftp
+                    if (ftp_login($connection, $app->get("listrak.{$salesChannel->get('slug')}_username"), $app->get("listrak.{$salesChannel->get('slug')}_password"))) {//login to ftp
+                        if (ftp_pasv($connection, true)) {//set passive mode true.
+                            if (ftp_put($connection, $spl->getBasename(), $fileName, FTP_BINARY)) {//upload file to ftp server
+                                \Dsc\System::instance()->addMessage('Item queued Listrak update.', 'success');//inform the user
+                            }else{
+                                \Dsc\System::instance()->addMessage('Listrak sync failed.', 'warning');//warn the user
+                            }
+                        }
+                    }
+
+                    ftp_close($connection);//close the connection
+                }
+
+                unlink($fileName);//remove file from local.
+            }
+        }catch(\Exception $e){
+            \Dsc\System::instance()->addMessage($e->getMessage(), 'warning');//inform the user
+        }
+    }
 }

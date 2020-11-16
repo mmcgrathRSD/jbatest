@@ -42,7 +42,7 @@ $moneyHtml = '<span class=notranslate><sup>'.$currency.'</sup>'.$priceTag.'</spa
                 <span class="price-label">{{/flag.enabled}}
                 {{^flag.enabled}}
                 <span class="regular-price">{{/flag.enabled}}
-                    <span class="price">{{default_price}}</span>
+                    <span class="price">{{#low_as}}<span>As low as</span> {{/low_as}}{{default_price}}</span>
                 </span>
                 {{#flag.enabled}}</p>{{/flag.enabled}}
                 {{#previous_default_price}}
@@ -73,6 +73,9 @@ $moneyHtml = '<span class=notranslate><sup>'.$currency.'</sup>'.$priceTag.'</spa
                 </dl>
             </div>
             {{/swatches}}
+            {{#options_available}}
+                <div><label class="options_available required">* Options Available</label></div>
+            {{/options_available}}
         </div>
         <div class="name">
         </div>

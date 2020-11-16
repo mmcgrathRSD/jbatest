@@ -25,9 +25,13 @@
                 <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal" jcarouselindex="1" style="float: left; list-style: none;">
                 <a href="#data-image-modal-<?php echo $key; ?>" class="lighbox-zoom-gallery" rel="lighbox-zoom-gallery" title="">
                 <span style="width: 92px; height: 92px;"></span>
-                <img alt="<?php echo $item->title; if(!empty($item->title_suffix)) { echo ' - ' . $item->title_suffix; } ?>" title="<?php echo $item->title; ?> (Part Number: <?php echo $item->get('tracking.oem_model_number'); ?>)" src="<?php echo $item->product_image($image);?>" data-srcx2="<?php echo $item->product_image($image)?>" width="110" height="110" alt="">
+                <img alt="<?php echo $item->title; if(!empty($item->title_suffix)) { echo ' - ' . $item->title_suffix; } ?>" title="<?php echo $item->title; ?> (Part Number: <?php echo $item->get('tracking.oem_model_number'); ?>)" src="<?php echo $item->product_image($image, [
+                    'transformation' => \Base::instance()->get('cloudinary.product_page_thumb')
+                ]);?>" data-srcx2="<?php echo $item->product_image($image)?>" width="110" height="110" alt="">
                 </a>
-                <div style="display:none"><div id="data-image-modal-<?php echo $key; ?>"><img src="<?php echo $item->product_image($image);?>" /></div></div>
+                <div style="display:none"><div id="data-image-modal-<?php echo $key; ?>"><img src="<?php echo $item->product_image($image, [
+                    'transformation' => \Base::instance()->get('cloudinary.product')
+                ]);?>" /></div></div>
                 </li>
             <?php endforeach; ?>
             </ul>

@@ -168,16 +168,17 @@ $clear_all_exclusions = '';
                         $.each(allItems.hits, function(key, hit) {
                             
                             if(hit.image) {
-                                hit.image = cl.imageTag(hit.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml()
+                                hit.image = cl.imageTag(hit.image, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.category_limit_v1'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml();
                             } else {
-                                hit.image = cl.imageTag("<?php echo \Base::instance()->get('cloudinary.no_photo'); ?>", {secure: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml();
+                                hit.image = cl.imageTag("<?php echo \Base::instance()->get('cloudinary.no_photo'); ?>", {secure: true, type: "upload", transformation: '<?php echo \Base::instance()->get('cloudinary.category_limit_v1'); ?>', alt: hit.title, title: hit.title, style: "opacity: 1;", class: "regular_image"}).toHtml();
                             }
 
                             if(hit.image_2) {
-                                hit.image_2 = cl.imageTag(hit.image_2, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.product'); ?>', alt: hit.title, title: hit.title, style: "opacity: 0; display: block", class: "additional_img"}).toHtml()
+                                hit.image_2 = cl.imageTag(hit.image_2, {secure: true, sign_url: true, type: "private", transformation: '<?php echo \Base::instance()->get('cloudinary.category_limit_v1'); ?>', alt: hit.title, title: hit.title, style: "opacity: 0; display: block", class: "additional_img"}).toHtml();
                             }
 
-                            if('swatches' in hit) {
+                            //generating cloudinary urls
+                            if('swatches' in hit && !(hit.swatches instanceof Array)) {
                                 let new_swatches = [];
 
                                 $.each(hit.swatches, function(key, swatch) {
@@ -201,7 +202,13 @@ $clear_all_exclusions = '';
 
                                     hit.swatches = new_swatches;
                                 });
-                            };
+                            } else {
+                                delete hit.swatches;
+                                
+                                if(hit.product_type == 'Matrix') {
+                                    hit.options_available = true;
+                                }
+                            }
 
                             if('previous_default_price' in hit && hit.previous_default_price && hit.previous_default_price > hit.default_price) {
                                 hit.previous_default_price = currency_format.format(hit.previous_default_price);
@@ -225,11 +232,9 @@ $clear_all_exclusions = '';
                 instantsearch.widgets.searchBox({
                     container: '#search-box' + instance_id,
                     placeholder: search_placeholder,
-					templates: {
-                        submit: 'asdf'
-                    },
 					reset: false,
-					magnifier: true,
+                    magnifier: true,
+                    autofocus: false
                 })
             );
 
@@ -493,7 +498,15 @@ $clear_all_exclusions = '';
                                 if(algolia_hierarchy == hit.value) {
                                     $.when($.post( "/category/description", { crumb: hit.value }, function(data) {
                                         if(!data.error) {
-                                            $('div[data-instance-id="search' + instance_id + '"] .category-title h1').html(hit.label + ' Parts');
+                                            if(data.result.h1) {
+                                                h1 = data.result.h1;
+                                            } else {
+                                                h1 = data.result.title + ' Parts';
+                                            }
+
+                                            $('div[data-instance-id="search' + instance_id + '"] .category-title h1').html(h1);
+
+                                            $('div[data-instance-id="search' + instance_id + '"] .category-title h2.manual_h2').html(data.result.h2);
 
                                             $('div[data-instance-id="search' + instance_id + '"] .ais-hits a').each(function(hit, key) {
                                                 str = String($(this).attr('href')).split("/");
@@ -536,6 +549,7 @@ $clear_all_exclusions = '';
 
                                         } else {
                                             $('div[data-instance-id="search' + instance_id + '"] .category-title h1').html(hit.label + ' Parts');
+                                            $('div[data-instance-id="search' + instance_id + '"] .category-title h2.manual_h2').html('');
 
                                             $('div[data-instance-id="search' + instance_id + '"] .breadcrumbs ul').html('<li style="display: inline-block;" typeof="v:Breadcrumb"> <a href="/" title="Home" rel="v:url" property="v:title">Home</a>&nbsp;</li>');
 

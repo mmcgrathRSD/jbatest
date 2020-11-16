@@ -39,27 +39,26 @@ class Error extends \Dsc\Singleton
 				}
 			}
 
-        	/*
-        	 * IF this is a bot and this page has 404'd we are going to submit it as 410 gone.  This is not something to have one shortly after launch but goog after
-        	 */
-        	if(\Audit::instance()->isbot()) {
-        	    $f3->error('410');
-        	}
-
+			
             if ($f3->get('APP_NAME') == 'site')
             {
-                $response = $event->getArgument('response');
+				$response = $event->getArgument('response');
+
+				/*
+				 * IF this is a bot and this page has 404'd we are going to submit it as 410 gone.  This is not something to have one shortly after launch but goog after
+				 */
+				if(\Audit::instance()->isbot() && $response->action !== 'redirect') {
+					$f3->error('410');
+				}
 
                 if(!empty($response->action)) {
                 	return;
                 }
 
-
                 $html = \Dsc\System::instance()->get('theme')->render('Theme\Views::404.php');
 
                 $response->action = 'html';
                 $response->html = $html;
-
 
                 $event->setArgument('response', $response);
             }

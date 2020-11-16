@@ -59,5 +59,38 @@ body {
 
     &.inverted {
         margin-top: 15px;
+}
+
+.quick-view-container.hover .product-image img:nth-child(2) {
+    opacity: 0!important;
+}
+
+.products-grid .product-image img {
+    height: auto;
+    width: auto;
+}
+
+.products-grid .product-image img.additional_img {
+    left: 50%; 
+    transform: translateX(-50%);
+}
+
+.previous_price {
+    display: none; 
+}
+
+@media only screen and (max-width: 767px) {
+    .product_type_dynamic_group .product-img-box {
+        display: none;
     }
+}
+
+.carbModalBody {
+	display: none;
+}
+
+.product_suffix {
+	padding-left: 0;
+	padding-top: 5px;
+	padding-bottom: 5px;
 }

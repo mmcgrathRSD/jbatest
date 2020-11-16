@@ -153,24 +153,15 @@ class Listener extends \Prefab
 	function siteMapRegisterRoutes($event) {
 	    $time = time();
 	    $climate = new \League\CLImate\CLImate;
-        $routes = $event->getArgument('routes');
         $sitemap = $event->getArgument('sitemap');
         $salesChannel = $event->getArgument('salesChannel');
-		$product_counts = 0;
-        $product_category_counts = 0;
-        $brand_counts = 0;
-        $brand_category_counts = 0;
-        $ymm_counts = 0;
-        $ymm_category_counts = 0;
-        $ymm_category_product_counts = 0;
-       
+
         /*
          * GET ALL THE STANDARD PRODUCT LINKS
          */
-         
         $products = (new \Shop\Models\Products)->collection()->find([
             'policies.group_only' => ['$ne' => 1],
-            'product_type' => ['$nin' => ['service', 'other_charge']],
+            'product_type' => ['$nin' => ['service', 'other_charge', 'matrix_subitem']],
             'publication.status' => 'published',
             'publication.sales_channels.slug' => $salesChannel->get('slug')
         ], [
@@ -178,13 +169,9 @@ class Listener extends \Prefab
                 'metadata.last_modified.time' => -1
             ]
         ]);
-        $productRoutes = [];
-        $questions = [];
-        $reviews = [];
-    
+
         foreach($products as $product) {  
             $climate->blue(time() - $time . ' adding product ' . $product['slug']);
-            $product_counts++;
             $modelInstance = (new \JBAShop\Models\Products)->bind($product);
             $created = @$product['metadata']['created']['time'];
             $lastMod = @$product['metadata']['last_modified']['time'];
@@ -210,73 +197,8 @@ class Listener extends \Prefab
         }
 
         /*
-        * FITS ROUTES /FITS/@SLUG, /FITS/@SLUG/@CAT/, /FITS/@SLUG/@CAT/@PRODUCT
-        */
-        // $ymmRoutes = [];
-        // // ymms
-        // $ymms = (new \Shop\Models\YearMakeModels)->collection()->find(
-        //     ['publication.status' => 'published'],
-        //     ['sort' => ['metadata.last_modified_time' => -1]]
-        // );
-        
-        // foreach($ymms as $vehicle) {
-        //     $climate->blue(time() - $time . ' adding vehicle ' . $vehicle['slug']);
-        //     $ymm_counts++;
-        //     $created = @$vehicle['metadata']['created']['time'];
-        //     $lastMod = @$vehicle['metadata']['last_modified']['time'];
-        //     $sitemap->addItem(
-        //         '/fits/'.$vehicle['slug'].'',
-        //         '1.0',
-        //         'daily',
-        //         @$vehicle['metadata']['last_modified']['time']
-        //     );
-        //     /* Lets build the vehicle pages by category */
-        //     $products_model = (new \Shop\Models\Products);
-        //     $products_model->setState('filter.publication_status',  'published');
-        //     $products_model->setState('filter.ymm.slug',  $vehicle['slug']);
-        //     $conditions = $products_model->conditions();
-        //     $catids = $products_model->collection()->distinct('categories.id', $conditions);
-        //     $categories = (new  \Shop\Models\Categories)->collection()->find([
-        //         '_id' => ['$in' => $catids],
-        //         '$or' => [
-        //             ['sales_channels.0' => ['$exists' => false]],
-        //             ['sales_channels.slug' => \Base::instance()->get('sales_channel')]
-        //         ]
-        //     ],
-        //     ['sort' => ['title' => 1]]);
-
-        //     foreach ($categories as $ymmCat) {
-        //         $ymm_category_counts++;
-        //         $created = @$ymmCat['metadata']['created']['time'];
-        //         $lastMod = @$ymmCat['metadata']['last_modified']['time'];
-        //         $sitemap->addItem(
-        //             '/fits/'.$vehicle['slug'].'/'.$ymmCat['slug'],
-        //             '1.0',
-        //             'daily',
-        //             @$ymmCat['metadata']['last_modified']['time']
-        //         );
-        //         $products_model = (new \Shop\Models\Products);
-        //         $products_model->setState('filter.publication_status',  'published');
-        //         $products_model->setState('filter.ymm.slug',  $vehicle['slug']);
-        //         $products_model->setState('filter.category.slug',  $ymmCat['slug']);
-        //         /*   $lists = $products_model->getItems();
-                
-        //         foreach($lists as $item) {
-        //             $ymm_category_product_counts++;
-        //             $ymmRoutes[] = [
-        //                 'loc' => '/fits/'.$vehicle['slug'].'/'.$ymmCat['slug'].'/'.$item->slug,
-        //                 'pri' => '1.0',
-        //                 'change' => 'daily',
-        //                 'mod' => @$item->get('metadata.last_modified.time')
-        //             ];
-        //         }*/
-        //     }
-        // }
-    
-        /*
         * CATEGORY PAGES
         */
-        $categoryRoutes = [];
         $categories = (new \JBAShop\Models\Categories)->collection()->find([
             '$or' => [
                 ['sales_channels.0' => ['$exists' => false]],
@@ -293,7 +215,6 @@ class Listener extends \Prefab
         ]);
         foreach($categories as $category) {
             $climate->blue(time() - $time . ' adding category ' . $category['slug']);
-            $product_category_counts++;
             $sitemap->addItem(
                 '/scp/'.$category['path'],
                 \Dsc\Sitemap::priority($lastMod, $created),
@@ -301,15 +222,8 @@ class Listener extends \Prefab
                 $category['metadata']['last_modified']['time']
             );
         }
-
-        $sitemap->addItem(
-            '/reviews',
-            '1.0',
-            'daily',
-            time()
-        );
 	}
-  
+
   public function onBeforeGetShipments($event){
 
         $event->setArgument('backorderAllItems', false);
