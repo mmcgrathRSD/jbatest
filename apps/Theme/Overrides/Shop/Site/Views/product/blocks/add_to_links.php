@@ -189,7 +189,10 @@
 
                         if ('price' in data.result) {
                             $('.price_actual ').html(currency_format.format(data.result.price));
+
+                            <?php if ($item->affirmAvailable()) : ?>
                             updateAffirmAsLowAs(data.result.price * 100);
+                            <?php endif; ?>
                         }
 
                         if ('stock' in data.result) {
