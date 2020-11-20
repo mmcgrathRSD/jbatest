@@ -16,7 +16,7 @@
 		_ltk.SCA.AddItemWithLinks('<?php echo \Dsc\ArrayHelper::get($item['product'], 'tracking.model_number_flat'); ?>', <?php echo \Dsc\ArrayHelper::get($item, 'quantity'); ?>, '<?php echo \Dsc\ArrayHelper::get($item, 'price'); ?>', '<?php echo \Dsc\ArrayHelper::get($item, 'product.title'); ?>', '<?php echo \Shop\Models\Products::product_thumb(\Dsc\ArrayHelper::get($item, 'image')); ?>', '/shop/product/<?php echo \Dsc\ArrayHelper::get($item, 'product.slug'); ?>');
 		<?php endforeach; ?>
 		<?php if(!empty($product_list)) : ?>
-		_ltk.Recommender.AddSku(<?php echo '"'.implode('","',$product_list).'"'; ?>);
+		//_ltk.Recommender.AddSku(<?php echo '"'.implode('","',$product_list).'"'; ?>);
 		<?php endif; ?>
 	  	_ltk.SCA.Submit();
 		<?php else : ?>
@@ -43,7 +43,7 @@
 
 		_ltk.Order.Submit();
 		<?php if(!empty($product_list)) : ?>
-		_ltk.Recommender.AddSku(<?php echo '"'.implode('","',$product_list).'"'; ?>);
+		//_ltk.Recommender.AddSku(<?php echo '"'.implode('","',$product_list).'"'; ?>);
 		<?php endif; ?>
 
 		_ltk.SCA.SetCustomer('<?php echo $this->order->customer['email']; ?>', '<?php echo $this->order->customer['first_name']; ?>', '<?php echo $this->order->customer['last_name']; ?>');
