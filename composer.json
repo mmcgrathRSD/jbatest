@@ -32,7 +32,7 @@
         "premierperformance/admin": "dev-master",
         "premierperformance/assets": "dev-master",
         "premierperformance/data": "dev-master",
-        "premierperformance/library": "ddev-master",
+        "premierperformance/library": "dev-master",
         "premierperformance/mailer": "dev-master",
         "premierperformance/minify": "dev-master",
         "premierperformance/modules": "dev-master",
